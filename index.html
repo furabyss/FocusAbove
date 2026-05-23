@@ -3171,7 +3171,7 @@
             <section class="brand">
               <div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="8" y="8" width="48" height="48" rx="14" fill="currentColor"></rect><circle cx="32" cy="32" r="13" fill="none" stroke="#fff7ee" stroke-width="6"></circle><circle cx="46" cy="18" r="3" fill="#fff7ee" fill-opacity="0.9"></circle></svg><span>FocusAbove</span></div>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.3.2, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.3.3, ⓒ 2026 Fur-Abyss</p>
             </section>
 
             <div class="settings-tab-strip" role="tablist" aria-label="설정 범주">
@@ -3337,6 +3337,14 @@
                     <select id="illustrationPromptStyleSelect">
                       <option value="tag-list">일반 프롬프트</option>
                       <option value="natural-language">자연어 프롬프트</option>
+                    </select>
+                  </label>
+                  <label>
+                    화풍 유형
+                    <select id="illustrationArtStyleSelect">
+                      <option value="">선택하지 않음</option>
+                      <option value="anime">아니메</option>
+                      <option value="photo">사진</option>
                     </select>
                   </label>
                   <label>
@@ -3718,6 +3726,10 @@
         illustrationPromptStyle: "프롬프트 형식",
         illustrationPromptStyleTags: "일반 프롬프트",
         illustrationPromptStyleNatural: "자연어 프롬프트",
+        illustrationArtStyle: "화풍 유형",
+        illustrationArtStyleNone: "선택하지 않음",
+        illustrationArtStyleAnime: "아니메",
+        illustrationArtStylePhoto: "사진",
         imageModelSelect: "이미지 모델",
         autoImageModel: "자동 선택",
         refreshImageModels: "이미지 모델 새로고침",
@@ -3975,6 +3987,10 @@
         illustrationPromptStyle: "Prompt style",
         illustrationPromptStyleTags: "Standard prompt",
         illustrationPromptStyleNatural: "Natural language prompt",
+        illustrationArtStyle: "Art style",
+        illustrationArtStyleNone: "None",
+        illustrationArtStyleAnime: "Anime",
+        illustrationArtStylePhoto: "Photo",
         imageModelSelect: "Image model",
         autoImageModel: "Auto select",
         refreshImageModels: "Refresh image models",
@@ -4178,10 +4194,11 @@
     const DEFAULT_RP_ILLUSTRATION_SETTINGS = {
       enabled: false,
       promptStyle: "tag-list",
+      artStyle: "",
       imageModel: "",
-      ignoreNonCharacterPeople: false,
-      cfgScale: 7,
-      steps: 20,
+      ignoreNonCharacterPeople: true,
+      cfgScale: 3,
+      steps: 16,
       width: 512,
       height: 512
     };
@@ -4317,6 +4334,7 @@
       illustrationEnabledInput: document.getElementById("illustrationEnabledInput"),
       illustrationIgnoreNonCharacterPeopleInput: document.getElementById("illustrationIgnoreNonCharacterPeopleInput"),
       illustrationPromptStyleSelect: document.getElementById("illustrationPromptStyleSelect"),
+      illustrationArtStyleSelect: document.getElementById("illustrationArtStyleSelect"),
       imageModelSelect: document.getElementById("imageModelSelect"),
       refreshImageModelsButton: document.getElementById("refreshImageModelsButton"),
       illustrationGenerationControls: document.getElementById("illustrationGenerationControls"),
@@ -4835,6 +4853,7 @@
       return {
         enabled: Boolean(settings?.enabled),
         promptStyle: normalizeIllustrationPromptStyle(settings?.promptStyle),
+        artStyle: normalizeIllustrationArtStyle(settings?.artStyle),
         imageModel: typeof settings?.imageModel === "string" ? settings.imageModel : "",
         ignoreNonCharacterPeople: Boolean(settings?.ignoreNonCharacterPeople),
         cfgScale: normalizeOptionalNumber(settings?.cfgScale, { min: 1, max: 20 }) ?? DEFAULT_RP_ILLUSTRATION_SETTINGS.cfgScale,
@@ -4846,6 +4865,10 @@
 
     function normalizeIllustrationPromptStyle(value) {
       return value === "natural-language" ? "natural-language" : "tag-list";
+    }
+
+    function normalizeIllustrationArtStyle(value) {
+      return value === "anime" || value === "photo" ? value : "";
     }
 
     function normalizeImageModelList(value) {
@@ -5723,6 +5746,7 @@
       elements.illustrationEnabledInput.checked = illustrationSettings.enabled;
       elements.illustrationIgnoreNonCharacterPeopleInput.checked = illustrationSettings.ignoreNonCharacterPeople;
       elements.illustrationPromptStyleSelect.value = illustrationSettings.promptStyle;
+      elements.illustrationArtStyleSelect.value = illustrationSettings.artStyle;
       renderImageModelSelect(illustrationSettings.imageModel);
       elements.illustrationCfgScaleInput.value = illustrationSettings.cfgScale;
       elements.illustrationStepsInput.value = illustrationSettings.steps;
@@ -6850,6 +6874,7 @@
       return {
         enabled: elements.illustrationEnabledInput.checked,
         promptStyle: normalizeIllustrationPromptStyle(elements.illustrationPromptStyleSelect.value),
+        artStyle: normalizeIllustrationArtStyle(elements.illustrationArtStyleSelect.value),
         imageModel: elements.imageModelSelect.value || "",
         ignoreNonCharacterPeople: elements.illustrationIgnoreNonCharacterPeopleInput.checked,
         cfgScale: normalizeOptionalNumber(elements.illustrationCfgScaleInput.value, { min: 1, max: 20 }) ?? DEFAULT_RP_ILLUSTRATION_SETTINGS.cfgScale,
@@ -8931,6 +8956,9 @@
         body: JSON.stringify({
           model: auxiliaryModel,
           stream: false,
+          reasoning: {
+            max_tokens: 0
+          },
           messages: [
             {
               role: "system",
@@ -8966,7 +8994,7 @@
       }
 
       const payload = await response.json();
-      const prompt = cleanIllustrationPrompt(extractFinalAssistantContent(payload));
+      const prompt = applyIllustrationArtStylePrefix(cleanIllustrationPrompt(extractFinalAssistantContent(payload)), illustrationSettings.artStyle);
       if (!prompt) {
         throw new Error(t("missingResponseContent"));
       }
@@ -8989,6 +9017,17 @@
         .replace(/^prompt\s*:/i, "")
         .replace(/\s+/g, " ")
         .trim();
+    }
+
+    function applyIllustrationArtStylePrefix(prompt, artStyle) {
+      const cleanPrompt = cleanIllustrationPrompt(prompt);
+      const normalizedArtStyle = normalizeIllustrationArtStyle(artStyle);
+      const prefix = normalizedArtStyle === "anime"
+        ? "anime, manga"
+        : normalizedArtStyle === "photo"
+          ? "photorealistic"
+          : "";
+      return [prefix, cleanPrompt].filter(Boolean).join(", ");
     }
 
     async function generateStableDiffusionImage(prompt) {
@@ -11341,6 +11380,10 @@
       setFieldLabel(elements.illustrationPromptStyleSelect, t("illustrationPromptStyle"));
       elements.illustrationPromptStyleSelect.options[0].textContent = t("illustrationPromptStyleTags");
       elements.illustrationPromptStyleSelect.options[1].textContent = t("illustrationPromptStyleNatural");
+      setFieldLabel(elements.illustrationArtStyleSelect, t("illustrationArtStyle"));
+      elements.illustrationArtStyleSelect.options[0].textContent = t("illustrationArtStyleNone");
+      elements.illustrationArtStyleSelect.options[1].textContent = t("illustrationArtStyleAnime");
+      elements.illustrationArtStyleSelect.options[2].textContent = t("illustrationArtStylePhoto");
       setFieldLabel(elements.imageModelSelect, t("imageModelSelect"));
       elements.refreshImageModelsButton.textContent = t("refreshImageModels");
       setRangeFieldLabel(elements.illustrationCfgScaleInput, t("cfgScale"));
