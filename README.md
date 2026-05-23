@@ -1,6 +1,8 @@
 # FocusAbove
 JS-based local LLM frontend powered by a single HTML file.
 
+Live Web App: https://chat.furabyss.com
+
 ## What you can do
 - Chatting with your own local LLM/VLM
 - Roleplaying with your own local LLM/VLM
