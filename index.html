@@ -1078,6 +1078,11 @@
       box-shadow: 0 0 0 4px rgba(43, 122, 75, 0.12);
     }
 
+    .message-state-dot.processing {
+      background: rgba(196, 138, 33, 0.82);
+      box-shadow: 0 0 0 4px rgba(196, 138, 33, 0.16);
+    }
+
     .message-state-dot.error {
       background: rgba(180, 65, 45, 0.78);
       box-shadow: 0 0 0 4px rgba(180, 65, 45, 0.14);
@@ -3066,6 +3071,20 @@ https://github.com/nodeca/pako/blob/main/LICENSE
   </script>
 </head>
 <body>
+  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position: absolute; width: 0; height: 0; overflow: hidden;">
+    <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14"></path><path d="M5 12h14"></path></symbol>
+    <symbol id="icon-import" viewBox="0 0 24 24"><path d="M3 12h9"></path><path d="M8.5 7.5L13 12l-4.5 4.5"></path><path d="M14 6h5v12h-5"></path></symbol>
+    <symbol id="icon-image" viewBox="0 0 24 24"><rect x="4.5" y="5.5" width="15" height="13" rx="2.2"></rect><circle cx="9.2" cy="9.5" r="1.2"></circle><path d="M6.8 15.6l2.8-3 2.3 2.2 2.2-2.5 2.1 3.3"></path></symbol>
+    <symbol id="icon-note" viewBox="0 0 24 24"><path d="M6 3.5h8.5l3.5 3.5V19a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 6 19z"></path><path d="M14.5 3.5V7H18"></path><path d="M8.2 9.6h6.2"></path><path d="M8.2 12.3h7.1"></path><path d="M8.2 15h5.4"></path></symbol>
+    <symbol id="icon-chevron-up" viewBox="0 0 24 24"><path d="M17 15L12 10L7 15"></path></symbol>
+    <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M4 7h16"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"></path><path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path></symbol>
+    <symbol id="icon-save" viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5z"></path><path d="M8 4v6h8V4"></path><path d="M8 20v-6h8v6"></path></symbol>
+    <symbol id="icon-export" viewBox="0 0 24 24"><path d="M12 16V4"></path><path d="M7.5 8.5L12 4l4.5 4.5"></path><path d="M5 14v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"></path></symbol>
+    <symbol id="icon-edit" viewBox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></symbol>
+    <symbol id="icon-close" viewBox="0 0 24 24"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"></path></symbol>
+    <symbol id="icon-reroll" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.34 5.66"></path><path d="M20 4v7h-7"></path></symbol>
+  </svg>
   <div id="appShell" class="app-shell">
     <header class="main-header">
       <div class="main-title">
@@ -3093,10 +3112,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <h2 id="desktopTabsTitle" class="section-title">채팅 탭</h2>
             <div class="tab-utility-row desktop-tab-utility-row">
               <button id="desktopNewChatButton" type="button" class="tab-utility-button" aria-label="새 탭" title="새 탭">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-plus"></use></svg>
               </button>
               <button id="desktopImportChatsButton" type="button" class="tab-utility-button secondary" aria-label="JSON 임포트" title="JSON 임포트">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h9"></path><path d="M8.5 7.5L13 12l-4.5 4.5"></path><path d="M14 6h5v12h-5"></path></svg>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-import"></use></svg>
               </button>
             </div>
           </div>
@@ -3124,7 +3143,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       </div>
       <div class="composer-actions">
         <button id="imageUploadButton" type="button" class="composer-upload-button" aria-label="이미지 업로드" title="이미지 업로드">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="5.5" width="15" height="13" rx="2.2"></rect><circle cx="9.2" cy="9.5" r="1.2"></circle><path d="M6.8 15.6l2.8-3 2.3 2.2 2.2-2.5 2.1 3.3"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-image"></use></svg>
         </button>
         <button id="sendButton" type="submit">보내기</button>
       </div>
@@ -3132,19 +3151,19 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
     <div class="scroll-jump-stack" aria-label="플로팅 버튼">
       <button id="authorsNoteButton" type="button" class="scroll-jump-button authors-note-button" aria-label="작가 노트" title="작가 노트">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h8.5l3.5 3.5V19a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 6 19z"></path><path d="M14.5 3.5V7H18"></path><path d="M8.2 9.6h6.2"></path><path d="M8.2 12.3h7.1"></path><path d="M8.2 15h5.4"></path></svg>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-note"></use></svg>
       </button>
 
       <button id="scrollTopButton" type="button" class="scroll-jump-button scroll-top-button" aria-label="맨 위로 가기" title="맨 위로 가기">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 15L12 10L7 15"></path></svg>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-chevron-up"></use></svg>
       </button>
 
       <button id="scrollBottomButton" type="button" class="scroll-jump-button scroll-bottom-button" aria-label="맨 아래로 가기" title="맨 아래로 가기">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 15L12 10L7 15"></path></svg>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-chevron-up"></use></svg>
       </button>
 
       <button id="clearMessagesButton" type="button" class="scroll-jump-button scroll-clear-button" aria-label="메시지 비우기" title="메시지 비우기">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"></path><path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path></svg>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-trash"></use></svg>
       </button>
     </div>
 
@@ -3185,7 +3204,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section class="brand">
               <div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="8" y="8" width="48" height="48" rx="14" fill="currentColor"></rect><circle cx="32" cy="32" r="13" fill="none" stroke="#fff7ee" stroke-width="6"></circle><circle cx="46" cy="18" r="3" fill="#fff7ee" fill-opacity="0.9"></circle></svg><span>FocusAbove</span></div>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.3.4, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.3.5, ⓒ 2026 Fur-Abyss</p>
             </section>
 
             <div class="settings-tab-strip" role="tablist" aria-label="설정 범주">
@@ -3434,10 +3453,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section>
               <div class="tab-utility-row">
                 <button id="newChatButton" type="button" class="tab-utility-button" aria-label="새 탭" title="새 탭">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-plus"></use></svg>
                 </button>
                 <button id="importChatsButton" type="button" class="tab-utility-button secondary" aria-label="JSON 임포트" title="JSON 임포트">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h9"></path><path d="M8.5 7.5L13 12l-4.5 4.5"></path><path d="M14 6h5v12h-5"></path></svg>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-import"></use></svg>
                 </button>
               </div>
               <input id="importChatsInput" type="file" accept="application/json,.json" class="sr-only">
@@ -3486,13 +3505,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                 <div class="card-editor-toolbar">
                   <div class="card-editor-actions card-editor-action-row">
                     <button id="characterSaveButton" type="button" class="chat-item-icon-button card-action-icon-button" aria-label="저장" title="저장">
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"></path><path d="M8 4v6h8V4"></path><path d="M8 20v-6h8v6"></path></svg>
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-save"></use></svg>
                     </button>
                     <button id="characterExportButton" type="button" class="chat-item-icon-button card-action-icon-button" aria-label="내보내기" title="내보내기">
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4"></path><path d="M7.5 8.5L12 4l4.5 4.5"></path><path d="M5 14v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"></path></svg>
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-export"></use></svg>
                     </button>
                     <button id="characterDeleteButton" type="button" class="chat-item-icon-button card-action-icon-button danger" aria-label="삭제" title="삭제">
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"></path><path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path></svg>
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-trash"></use></svg>
                     </button>
                   </div>
                   <div class="card-editor-media-actions">
@@ -3537,13 +3556,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                 <div class="card-editor-toolbar">
                   <div class="card-editor-actions card-editor-action-row">
                     <button id="personaSaveButton" type="button" class="chat-item-icon-button card-action-icon-button" aria-label="저장" title="저장">
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"></path><path d="M8 4v6h8V4"></path><path d="M8 20v-6h8v6"></path></svg>
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-save"></use></svg>
                     </button>
                     <button id="personaExportButton" type="button" class="chat-item-icon-button card-action-icon-button" aria-label="내보내기" title="내보내기">
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4"></path><path d="M7.5 8.5L12 4l4.5 4.5"></path><path d="M5 14v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"></path></svg>
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-export"></use></svg>
                     </button>
                     <button id="personaDeleteButton" type="button" class="chat-item-icon-button card-action-icon-button danger" aria-label="삭제" title="삭제">
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"></path><path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path></svg>
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-trash"></use></svg>
                     </button>
                   </div>
                   <div class="card-editor-media-actions">
@@ -3628,6 +3647,79 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     const APP_SECRET_KEY_RECORD_PREFIX = "app-secret-key-";
     const APP_SECRET_KEY_RING_SIZE = 13;
     const APP_SECRET_PROBE_TEXT = "focusabove-secret-probe-v1";
+    function iconSvg(iconName, viewBox = "0 0 24 24") {
+      return `<svg viewBox="${viewBox}" aria-hidden="true"><use href="#icon-${iconName}"></use></svg>`;
+    }
+
+    function createButton(options = {}) {
+      const {
+        className = "",
+        label = "",
+        title = "",
+        textContent = null,
+        html = "",
+        attributes = null,
+        disabled = false,
+        stopPropagation = false,
+        onClick = null
+      } = options;
+      const button = document.createElement("button");
+      button.type = "button";
+      if (className) {
+        button.className = className;
+      }
+      if (label) {
+        button.setAttribute("aria-label", label);
+      }
+      if (title) {
+        button.title = title;
+      }
+      if (textContent !== null) {
+        button.textContent = String(textContent);
+      }
+      if (html) {
+        button.innerHTML = html;
+      }
+      if (attributes && typeof attributes === "object") {
+        Object.entries(attributes).forEach(([name, value]) => {
+          button.setAttribute(name, String(value));
+        });
+      }
+      button.disabled = Boolean(disabled);
+      if (typeof onClick === "function") {
+        button.addEventListener("click", (event) => {
+          if (stopPropagation) {
+            event.stopPropagation();
+          }
+          onClick(event);
+        });
+      }
+      return button;
+    }
+
+    function createIconButton(options = {}) {
+      const {
+        className = "",
+        label = "",
+        title = label,
+        iconName = "",
+        tone = "default",
+        active = false,
+        disabled = false,
+        stopPropagation = false,
+        onClick = null
+      } = options;
+      return createButton({
+        className: [className, tone === "default" ? "" : tone, active ? "active" : ""].filter(Boolean).join(" "),
+        label,
+        title,
+        html: iconName ? iconSvg(iconName) : "",
+        disabled,
+        stopPropagation,
+        onClick
+      });
+    }
+
     const TAB_LOCK_KEY = "focusabove.active-tab.v1";
     const TAB_LOCK_TTL_MS = 15000;
     const TAB_LOCK_HEARTBEAT_MS = 4000;
@@ -3755,6 +3847,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         imageModelsLoaded: ({ count }) => `이미지 모델 ${count}개를 불러왔습니다.`,
         imageModelsFailed: ({ error }) => `이미지 모델 조회 실패: ${error}`,
         illustrationAuxiliaryModelRequired: "보조 모델을 선택해야 삽화 생성을 사용할 수 있습니다.",
+        illustrationImageApiRequired: "이미지 API 주소를 입력해야 삽화 생성을 사용할 수 있습니다.",
         cfgScale: "CFG 스케일",
         steps: "스텝",
         imageWidth: "가로",
@@ -3762,6 +3855,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         generatedIllustration: "생성된 삽화",
         illustrationGenerating: "삽화 생성 중",
         illustrationError: ({ error }) => `삽화 생성 실패: ${error}`,
+        rpPostProcessing: "후처리 중",
         rpSceneStateToggleShow: "펼치기",
         rpSceneStateToggleHide: "접기",
         rpSceneStateLabel: "장면 상태",
@@ -4020,6 +4114,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         imageModelsLoaded: ({ count }) => `Loaded ${count} image model${count === 1 ? "" : "s"}.`,
         imageModelsFailed: ({ error }) => `Failed to load image models: ${error}`,
         illustrationAuxiliaryModelRequired: "Select an auxiliary model to use illustration generation.",
+        illustrationImageApiRequired: "Enter an image API base URL to use illustration generation.",
         cfgScale: "CFG scale",
         steps: "Steps",
         imageWidth: "Width",
@@ -4027,6 +4122,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         generatedIllustration: "Generated illustration",
         illustrationGenerating: "Generating illustration",
         illustrationError: ({ error }) => `Illustration failed: ${error}`,
+        rpPostProcessing: "Post-processing",
         rpSceneStateToggleShow: "Expand",
         rpSceneStateToggleHide: "Collapse",
         rpSceneStateLabel: "Scene state",
@@ -4222,7 +4318,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       promptStyle: "tag-list",
       artStyle: "",
       imageModel: "",
-      ignoreNonCharacterPeople: true,
+      ignoreNonCharacterPeople: false,
       cfgScale: 3,
       steps: 16,
       width: 512,
@@ -4417,6 +4513,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     let isRefreshingImageModels = false;
     let currentStreamingMessageId = "";
     let currentRequestAbortController = null;
+    let postResponseStatusRunId = 0;
     let editingMessageId = "";
     let chatStatusToastTimerId = 0;
     let isPrimaryTab = false;
@@ -5142,7 +5239,29 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         snapshot.settings.apiKey = "";
         snapshot.settings.imageApiKey = "";
       }
+      scrubEphemeralMessageStateFromSnapshot(snapshot);
       return snapshot;
+    }
+
+    function scrubEphemeralMessageStateFromSnapshot(snapshot) {
+      const chatGroups = [snapshot?.chats, ...Object.values(snapshot?.rp?.chatsByCharacterId || {})];
+      chatGroups.forEach((chats) => {
+        if (!Array.isArray(chats)) {
+          return;
+        }
+
+        chats.forEach((chat) => {
+          if (!Array.isArray(chat?.messages)) {
+            return;
+          }
+
+          chat.messages.forEach((message) => {
+            if (message && typeof message === "object") {
+              delete message.auxiliaryStatus;
+            }
+          });
+        });
+      });
     }
 
     async function hydrateSettingsSecrets(nextState) {
@@ -6222,12 +6341,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (rpCardListRenderSignatures[kind] !== listSignature) {
         listElement.innerHTML = "";
         getRpCardCollection(kind).forEach((card) => {
-          const button = document.createElement("button");
-          button.type = "button";
-          button.className = `card-browser-item${card.id === draft.cardId ? " active" : ""}`;
-          button.title = card.name;
-          button.setAttribute("aria-label", t("cardSelect", { name: card.name }));
-          button.addEventListener("click", () => selectRpCard(kind, card.id));
+          const button = createButton({
+            className: `card-browser-item${card.id === draft.cardId ? " active" : ""}`,
+            label: t("cardSelect", { name: card.name }),
+            title: card.name,
+            onClick: () => selectRpCard(kind, card.id)
+          });
 
           const thumb = document.createElement("div");
           thumb.className = "card-browser-thumb";
@@ -6401,21 +6520,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function createChatItemIconButton(label, icon, onClick, tone = "default") {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = `chat-item-icon-button${tone === "default" ? "" : ` ${tone}`}`;
-      button.setAttribute("aria-label", label);
-      button.title = label;
-      button.innerHTML = icon === "edit"
-        ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg>'
-        : icon === "export"
-          ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4"></path><path d="M7.5 8.5L12 4l4.5 4.5"></path><path d="M5 14v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"></path></svg>'
-          : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg>';
-      button.addEventListener("click", (event) => {
-        event.stopPropagation();
-        onClick();
+      return createIconButton({
+        className: "chat-item-icon-button",
+        label,
+        iconName: icon === "edit" || icon === "export" ? icon : "close",
+        tone,
+        stopPropagation: true,
+        onClick
       });
-      return button;
     }
 
     function toggleChatTitleEdit(chatId) {
@@ -6639,17 +6751,17 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         const actions = document.createElement("div");
         actions.className = "prompt-preset-item-actions";
 
-        const loadButton = document.createElement("button");
-        loadButton.type = "button";
-        loadButton.className = "ghost-button";
-        loadButton.textContent = t("loadPreset");
-        loadButton.addEventListener("click", () => loadPromptPreset(preset.id));
+        const loadButton = createButton({
+          className: "ghost-button",
+          textContent: t("loadPreset"),
+          onClick: () => loadPromptPreset(preset.id)
+        });
 
-        const deleteButton = document.createElement("button");
-        deleteButton.type = "button";
-        deleteButton.className = "ghost-button";
-        deleteButton.textContent = t("delete");
-        deleteButton.addEventListener("click", () => deletePromptPreset(preset.id));
+        const deleteButton = createButton({
+          className: "ghost-button",
+          textContent: t("delete"),
+          onClick: () => deletePromptPreset(preset.id)
+        });
 
         actions.append(loadButton, deleteButton);
         item.append(main, actions);
@@ -6887,39 +6999,37 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const hasPendingMessageEdit = hasEditingMessageInChat(chat);
 
       if (isEditableMessage(message)) {
-        const editButton = document.createElement("button");
-        editButton.type = "button";
-        editButton.className = `message-action-button${isEditingMessage(message.id) ? " active" : ""}`;
-        editButton.setAttribute("aria-label", isEditingMessage(message.id) ? t("saveEdit") : t("edit"));
-        editButton.title = isEditingMessage(message.id) ? t("saveEdit") : t("edit");
-        editButton.innerHTML = isEditingMessage(message.id)
-          ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7"></path></svg>'
-          : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg>';
-        editButton.disabled = isSending || (hasPendingMessageEdit && !isEditingMessage(message.id));
-        editButton.addEventListener("click", () => toggleMessageEditing(chat.id, message.id));
+        const isEditing = isEditingMessage(message.id);
+        const editButton = createIconButton({
+          className: "message-action-button",
+          label: isEditing ? t("saveEdit") : t("edit"),
+          iconName: isEditing ? "check" : "edit",
+          active: isEditing,
+          disabled: isSending || (hasPendingMessageEdit && !isEditing),
+          onClick: () => toggleMessageEditing(chat.id, message.id)
+        });
         metaActions.appendChild(editButton);
       }
 
       if (canRerollMessage(chat, message.id)) {
-        const rerollButton = document.createElement("button");
-        rerollButton.type = "button";
-        rerollButton.className = "message-action-button";
-        rerollButton.setAttribute("aria-label", t("reroll"));
-        rerollButton.title = t("reroll");
-        rerollButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.34 5.66"></path><path d="M20 4v7h-7"></path></svg>';
-        rerollButton.disabled = isSending || hasPendingMessageEdit;
-        rerollButton.addEventListener("click", () => rerollAssistantResponse(message.id));
+        const rerollButton = createIconButton({
+          className: "message-action-button",
+          label: t("reroll"),
+          iconName: "reroll",
+          disabled: isSending || hasPendingMessageEdit,
+          onClick: () => rerollAssistantResponse(message.id)
+        });
         metaActions.appendChild(rerollButton);
       }
 
-      const deleteButton = document.createElement("button");
-      deleteButton.type = "button";
-      deleteButton.className = "message-action-button danger";
-      deleteButton.setAttribute("aria-label", t("delete"));
-      deleteButton.title = t("delete");
-      deleteButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"></path><path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path></svg>';
-      deleteButton.disabled = isSending || hasPendingMessageEdit;
-      deleteButton.addEventListener("click", () => deleteMessage(chat.id, message.id));
+      const deleteButton = createIconButton({
+        className: "message-action-button",
+        label: t("delete"),
+        iconName: "trash",
+        tone: "danger",
+        disabled: isSending || hasPendingMessageEdit,
+        onClick: () => deleteMessage(chat.id, message.id)
+      });
       metaActions.appendChild(deleteButton);
 
       return metaActions;
@@ -6963,14 +7073,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           image.alt = attachment.name;
           chip.appendChild(image);
 
-          const removeButton = document.createElement("button");
-          removeButton.type = "button";
-          removeButton.className = "composer-attachment-remove";
-          removeButton.setAttribute("aria-label", `${attachment.name} ${t("remove")}`);
-          removeButton.title = t("remove");
-          removeButton.disabled = isSending;
-          removeButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg>';
-          removeButton.addEventListener("click", () => removePendingAttachment(attachment.id));
+          const removeButton = createIconButton({
+            className: "composer-attachment-remove",
+            label: `${attachment.name} ${t("remove")}`,
+            title: t("remove"),
+            iconName: "close",
+            disabled: isSending,
+            onClick: () => removePendingAttachment(attachment.id)
+          });
           chip.appendChild(removeButton);
 
           const name = document.createElement("span");
@@ -8582,7 +8692,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         apiBase,
         selectedModel,
         sourceMessages: activeChat.messages,
-        notifyMissingAuxiliaryIllustrationModel: shouldNotifyMissingAuxiliaryIllustrationModel()
+        notifyMissingAuxiliaryIllustrationModel: shouldNotifyMissingAuxiliaryIllustrationModel(),
+        notifyMissingIllustrationImageApi: shouldNotifyMissingIllustrationImageApi()
       });
     }
 
@@ -8590,6 +8701,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return isRpModeActive()
         && normalizeRpIllustrationSettings(state.rp?.illustration).enabled
         && !String(state.settings.auxiliaryModel || "").trim();
+    }
+
+    function shouldNotifyMissingIllustrationImageApi() {
+      return isRpModeActive()
+        && normalizeRpIllustrationSettings(state.rp?.illustration).enabled
+        && String(state.settings.auxiliaryModel || "").trim()
+        && !normalizeImageApiBase(state.settings.imageApiBaseUrl);
     }
 
     function hasAuxiliaryModel() {
@@ -8693,6 +8811,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     async function requestAssistantResponse(chat, options) {
       streamingAutoScrollPinnedToBottom = isPageNearBottom();
       lastStreamingPersistRequestAt = 0;
+      const requestStatusRunId = postResponseStatusRunId + 1;
+      postResponseStatusRunId = requestStatusRunId;
       const requestAbortController = new AbortController();
       const rpContext = buildRpPromptContext(chat);
       const sourceMessages = buildMainRequestSourceMessages(chat, options.sourceMessages || chat.messages);
@@ -8732,9 +8852,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         header: true
       });
       setChatStatus(t("streamingResponseActive"));
-      if (options.notifyMissingAuxiliaryIllustrationModel) {
-        setChatStatus(t("illustrationAuxiliaryModelRequired"));
-      }
 
       try {
         const response = await fetch(`${options.apiBase}/chat/completions`, {
@@ -8758,8 +8875,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         persistState();
         replaceMessageArticleDom(chat, assistantMessage, { scrollToBottom: true });
         renderChatList();
-        setChatStatus(t("responseReceivedToast"), "success");
-        void runPostResponseAuxiliaryTasks(chat, assistantMessage);
+        void finalizePostResponseAuxiliaryTasks(chat, assistantMessage, options, requestStatusRunId);
       } catch (error) {
         if (isAbortError(error)) {
           finalizeAbortedAssistantMessage(chat, assistantMessage);
@@ -8810,6 +8926,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     async function generateIllustrationForAssistantMessage(chat, assistantMessage) {
+      if (!normalizeImageApiBase(state.settings.imageApiBaseUrl)) {
+        return;
+      }
+
       const targetMessage = findMessageInChat(chat, assistantMessage.id);
       if (!targetMessage || targetMessage.status !== "complete") {
         return;
@@ -8872,13 +8992,70 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       renderChatList();
     }
 
-    async function runPostResponseAuxiliaryTasks(chat, assistantMessage) {
+    async function finalizePostResponseAuxiliaryTasks(chat, assistantMessage, options, statusRunId) {
+      if (options.notifyMissingAuxiliaryIllustrationModel) {
+        setPostResponseChatStatus(statusRunId, assistantMessage.id, t("illustrationAuxiliaryModelRequired"));
+        return;
+      }
+
+      if (options.notifyMissingIllustrationImageApi) {
+        setPostResponseChatStatus(statusRunId, assistantMessage.id, t("illustrationImageApiRequired"));
+        return;
+      }
+
+      await runPostResponseAuxiliaryTasks(chat, assistantMessage, { statusRunId });
+      setPostResponseChatStatus(statusRunId, assistantMessage.id, t("responseReceivedToast"), "success");
+    }
+
+    function setPostResponseChatStatus(statusRunId, messageId, message, tone = "default") {
+      if (statusRunId !== postResponseStatusRunId) {
+        return;
+      }
+
+      if (currentStreamingMessageId && currentStreamingMessageId !== messageId) {
+        return;
+      }
+
+      setChatStatus(message, tone);
+    }
+
+    function setAssistantAuxiliaryStatus(chat, assistantMessage, statusKey = "") {
+      if (!assistantMessage || assistantMessage.role !== "assistant" || assistantMessage.status !== "complete") {
+        return;
+      }
+
+      if (statusKey) {
+        assistantMessage.auxiliaryStatus = statusKey;
+      } else {
+        delete assistantMessage.auxiliaryStatus;
+      }
+
+      refreshAssistantFooterDom(assistantMessage);
+    }
+
+    function refreshAssistantFooterDom(message) {
+      const refs = getMessageArticleElements(message?.id);
+      if (!refs?.footerElement) {
+        return;
+      }
+
+      const nextFooter = createAssistantFooter(message);
+      refs.footerElement.replaceWith(nextFooter);
+      refs.footerElement = nextFooter;
+    }
+
+    async function runPostResponseAuxiliaryTasks(chat, assistantMessage, options = {}) {
       if (!hasAuxiliaryModel() || !chat || assistantMessage?.status !== "complete") {
         return;
       }
 
       if (state.chats.some((item) => item.id === chat.id)) {
+        if (shouldGenerateAutomaticChatTitle(chat, assistantMessage)) {
+          setAssistantAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing");
+          setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("rpPostProcessing"));
+        }
         await maybeGenerateAutomaticChatTitle(chat, assistantMessage);
+        setAssistantAuxiliaryStatus(chat, assistantMessage);
         return;
       }
 
@@ -8887,12 +9064,21 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
 
       if (shouldGenerateIllustrationForResponse(chat, assistantMessage)) {
+        setAssistantAuxiliaryStatus(chat, assistantMessage, "illustrationGenerating");
+        setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("illustrationGenerating"));
         await generateIllustrationForAssistantMessage(chat, assistantMessage);
       }
+      if (!assistantMessage.isFirstMessage) {
+        setAssistantAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing");
+        setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("rpPostProcessing"));
+      }
       await maybeUpdateRpSceneState(chat, assistantMessage);
-      if (normalizeRpAssistanceSettings(state.rp?.assistance).summaryEnabled) {
+      if (shouldUpdateRpSummary(chat)) {
+        setAssistantAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing");
+        setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("rpPostProcessing"));
         await maybeUpdateRpSummary(chat);
       }
+      setAssistantAuxiliaryStatus(chat, assistantMessage);
     }
 
     async function maybeGenerateAutomaticChatTitle(chat, assistantMessage) {
@@ -9366,6 +9552,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     async function createIllustrationPrompt(chat, assistantMessage) {
+      if (!normalizeImageApiBase(state.settings.imageApiBaseUrl)) {
+        throw new Error(t("illustrationImageApiRequired"));
+      }
+
       const apiBase = normalizeApiBase(state.settings.apiBaseUrl);
       const auxiliaryModel = String(state.settings.auxiliaryModel || "").trim();
       if (!apiBase || !auxiliaryModel) {
@@ -9383,7 +9573,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             "Write one concise Stable Diffusion prompt in English only.",
             buildIllustrationPromptStyleInstruction(illustrationSettings.promptStyle),
             "Preserve stated gender and stable appearance from card details. Do not invent unstated gender.",
-            illustrationSettings.ignoreNonCharacterPeople ? "Depict only the active character; use other-person context only for expression, pose, mood, gaze, or action." : "",
+            buildIllustrationPeopleScopeInstruction(illustrationSettings),
             "For clothing, pose, location, lighting, temporary states, and injuries, prefer latest context over card defaults.",
             "No markdown, explanations, text overlays, watermarks, signatures, UI elements, or camera metadata."
           ].filter(Boolean).join("\n")
@@ -9393,7 +9583,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           content: [
             stableVisualContext,
             mutableContext,
-            "Recent conversation:",
+            illustrationSettings.ignoreNonCharacterPeople
+              ? "Recent conversation (use only the active character's visible state, pose, expression, outfit, location, lighting, and mood):"
+              : "Recent conversation:",
             formatMessagesForAuxiliary(recentMessages, recentMessages.length, null, 420),
             "Latest assistant response to illustrate:",
             trimForAuxiliaryPrompt(assistantMessage.content || "", 1100)
@@ -9406,6 +9598,18 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
 
       return prompt;
+    }
+
+    function buildIllustrationPeopleScopeInstruction(illustrationSettings) {
+      if (!normalizeRpIllustrationSettings(illustrationSettings).ignoreNonCharacterPeople) {
+        return "";
+      }
+
+      return [
+        "Strict solo-character mode: the final image prompt must depict exactly one visible person/character, the active character only.",
+        "Do not mention, include, imply, or silhouette the persona, user, companions, crowds, background people, second bodies, or another person's hands/arms.",
+        "If the scene involves interaction with another person, convert it into the active character's solo pose, expression, gaze, mood, and environmental context."
+      ].join("\n");
     }
 
     function buildIllustrationPromptStyleInstruction(promptStyle) {
@@ -9439,7 +9643,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     async function generateStableDiffusionImage(prompt) {
       const imageApiBase = normalizeImageApiBase(state.settings.imageApiBaseUrl);
       if (!imageApiBase) {
-        throw new Error(t("apiBaseUrlRequired"));
+        throw new Error(t("illustrationImageApiRequired"));
       }
 
       const illustrationSettings = normalizeRpIllustrationSettings(state.rp?.illustration);
@@ -9456,7 +9660,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     async function generateStableDiffusionWebUiImage(imageApiBase, prompt, illustrationSettings) {
       const requestBody = {
         prompt,
-        negative_prompt: "text, watermark, signature, logo, speech bubble, low quality, blurry, distorted",
+        negative_prompt: buildIllustrationNegativePrompt(illustrationSettings),
         cfg_scale: illustrationSettings.cfgScale,
         steps: illustrationSettings.steps,
         width: illustrationSettings.width,
@@ -9502,6 +9706,18 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         height: illustrationSettings.height,
         dataUrl: `data:${imageData.type};base64,${imageData.base64}`
       };
+    }
+
+    function buildIllustrationNegativePrompt(illustrationSettings) {
+      const basePrompt = "text, watermark, signature, logo, speech bubble, low quality, blurry, distorted";
+      if (!normalizeRpIllustrationSettings(illustrationSettings).ignoreNonCharacterPeople) {
+        return basePrompt;
+      }
+
+      return [
+        basePrompt,
+        "multiple people, two people, couple, group, crowd, background people, extra person, other person, second character, companion"
+      ].join(", ");
     }
 
     function shouldTryComfyUiFallback(error) {
@@ -9627,7 +9843,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         "7": {
           class_type: "CLIPTextEncode",
           inputs: {
-            text: "text, watermark, signature, logo, speech bubble, low quality, blurry, distorted",
+            text: buildIllustrationNegativePrompt(settings),
             clip: ["4", 1]
           }
         },
@@ -10051,13 +10267,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         dot.className = "message-state-dot";
         if (message.status === "error") {
           dot.classList.add("error");
+        } else if (hasAssistantAuxiliaryStatus(message)) {
+          dot.classList.add("processing");
         }
         const label = document.createElement("span");
         label.textContent = message.status === "error"
           ? t("requestFailed")
           : message.isFirstMessage
             ? t("firstMessageStatus")
-            : t("responseComplete");
+            : getAssistantFooterStatusText(message);
         state.append(dot, label);
       }
 
@@ -10073,6 +10291,23 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
 
       return footer;
+    }
+
+    function getAssistantFooterStatusText(message) {
+      const auxiliaryStatus = getAssistantAuxiliaryStatusKey(message);
+      if (auxiliaryStatus) {
+        return t(auxiliaryStatus);
+      }
+
+      return t("responseComplete");
+    }
+
+    function hasAssistantAuxiliaryStatus(message) {
+      return Boolean(getAssistantAuxiliaryStatusKey(message));
+    }
+
+    function getAssistantAuxiliaryStatusKey(message) {
+      return String(message?.auxiliaryStatus || "").trim();
     }
 
     function getScrollRoot() {
@@ -10210,12 +10445,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       container.className = "message-rp-state";
 
       const contentId = createId("rp-state-content");
-      const toggle = document.createElement("button");
-      toggle.type = "button";
-      toggle.className = "message-rp-state-toggle";
-      toggle.textContent = t("rpSceneStateToggleShow");
-      toggle.setAttribute("aria-expanded", "false");
-      toggle.setAttribute("aria-controls", contentId);
+      const toggle = createButton({
+        className: "message-rp-state-toggle",
+        textContent: t("rpSceneStateToggleShow"),
+        attributes: {
+          "aria-expanded": "false",
+          "aria-controls": contentId
+        }
+      });
 
       const content = document.createElement("pre");
       content.id = contentId;
@@ -10265,7 +10502,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
 
       if (illustration.image?.dataUrl) {
-        const grid = buildUserAttachmentGrid([illustration.image]);
+        const grid = buildUserAttachmentGrid([illustration.image], { showCaptions: false });
         container.appendChild(grid);
         return container;
       }
@@ -10361,7 +10598,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       element.replaceChildren(stack);
     }
 
-    function buildUserAttachmentGrid(attachments) {
+    function buildUserAttachmentGrid(attachments, options = {}) {
+      const showCaptions = options.showCaptions !== false;
       const grid = document.createElement("div");
       grid.className = "message-image-grid";
 
@@ -10369,23 +10607,25 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         const figure = document.createElement("figure");
         figure.className = "message-image-card";
 
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "message-image-button";
-        button.setAttribute("aria-label", t("previewWithName", { name: attachment.name }));
-        button.title = t("clickToPreview");
-        button.addEventListener("click", () => openImagePreview(attachment));
+        const button = createButton({
+          className: "message-image-button",
+          label: t("previewWithName", { name: attachment.name }),
+          title: t("clickToPreview"),
+          onClick: () => openImagePreview(attachment)
+        });
 
         const image = document.createElement("img");
         image.src = attachment.dataUrl;
         image.alt = attachment.name;
         image.loading = "lazy";
 
-        const caption = document.createElement("figcaption");
-        caption.textContent = attachment.name;
-
         button.appendChild(image);
-        figure.append(button, caption);
+        figure.appendChild(button);
+        if (showCaptions) {
+          const caption = document.createElement("figcaption");
+          caption.textContent = attachment.name;
+          figure.appendChild(caption);
+        }
         grid.appendChild(figure);
       });
 
