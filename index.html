@@ -8886,12 +8886,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return;
       }
 
+      if (shouldGenerateIllustrationForResponse(chat, assistantMessage)) {
+        await generateIllustrationForAssistantMessage(chat, assistantMessage);
+      }
       await maybeUpdateRpSceneState(chat, assistantMessage);
       if (normalizeRpAssistanceSettings(state.rp?.assistance).summaryEnabled) {
         await maybeUpdateRpSummary(chat);
-      }
-      if (shouldGenerateIllustrationForResponse(chat, assistantMessage)) {
-        await generateIllustrationForAssistantMessage(chat, assistantMessage);
       }
     }
 
