@@ -3185,7 +3185,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section class="brand">
               <div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="8" y="8" width="48" height="48" rx="14" fill="currentColor"></rect><circle cx="32" cy="32" r="13" fill="none" stroke="#fff7ee" stroke-width="6"></circle><circle cx="46" cy="18" r="3" fill="#fff7ee" fill-opacity="0.9"></circle></svg><span>FocusAbove</span></div>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.3.3, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.3.4, ⓒ 2026 Fur-Abyss</p>
             </section>
 
             <div class="settings-tab-strip" role="tablist" aria-label="설정 범주">
@@ -8759,9 +8759,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         replaceMessageArticleDom(chat, assistantMessage, { scrollToBottom: true });
         renderChatList();
         setChatStatus(t("responseReceivedToast"), "success");
-        if (shouldGenerateIllustrationForResponse(chat, assistantMessage)) {
-          void generateIllustrationForAssistantMessage(chat, assistantMessage);
-        }
         void runPostResponseAuxiliaryTasks(chat, assistantMessage);
       } catch (error) {
         if (isAbortError(error)) {
@@ -8893,6 +8890,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (normalizeRpAssistanceSettings(state.rp?.assistance).summaryEnabled) {
         await maybeUpdateRpSummary(chat);
       }
+      if (shouldGenerateIllustrationForResponse(chat, assistantMessage)) {
+        await generateIllustrationForAssistantMessage(chat, assistantMessage);
+      }
     }
 
     async function maybeGenerateAutomaticChatTitle(chat, assistantMessage) {
@@ -8941,17 +8941,17 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           content: [
             "You write concise chat tab titles.",
             `Return exactly one short title in ${t("promptLanguageName")}.`,
-            "Do not include markdown, quotes, punctuation decoration, explanations, or labels.",
-            "Keep it under 32 characters when possible."
+            "No markdown, quotes, labels, or explanations.",
+            "Keep it under 32 characters."
           ].join("\n")
         },
         {
           role: "user",
           content: [
             "User's first message:",
-            trimForAuxiliaryPrompt(firstUserMessage?.content || "", 1800),
+            trimForAuxiliaryPrompt(firstUserMessage?.content || "", 700),
             "Assistant's first response:",
-            trimForAuxiliaryPrompt(firstAssistantMessage?.content || "", 1800)
+            trimForAuxiliaryPrompt(firstAssistantMessage?.content || "", 900)
           ].join("\n\n")
         }
       ], { temperature: 0.2 });
@@ -9066,41 +9066,41 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
     async function enhanceRpUserInput(chat, content, options = {}) {
       const baseContent = String(content || "").trim() || getRpDefaultContinuationInput();
-      const isContinuationRequest = Boolean(options.wasEmptyInput) || isRpContinueInput(baseContent);
+      const wasEmptyInput = Boolean(options.wasEmptyInput);
+      const isContinuationRequest = wasEmptyInput || isRpContinueInput(baseContent);
       const character = getRpCardById("character", chat?.characterCardId || state.rp.activeCharacterId);
       const persona = getActiveRpPersona();
       const rpPlaceholders = createRpPromptPlaceholders({ character, persona });
-      const openingMessage = getRpFirstMessageForAuxiliary(chat, rpPlaceholders);
-      const context = buildRpAuxiliaryContext(chat);
-      const recentContextMessages = getRecentRpInputEnhancementMessages(chat, options.excludeMessageId);
-      const enhanced = await requestAuxiliaryChatCompletion([
+      const openingMessage = wasEmptyInput ? getRpFirstMessageForAuxiliary(chat, rpPlaceholders) : "";
+      const mutableContext = wasEmptyInput ? buildRpAuxiliaryMutableContext(chat, { includeSummary: false }) : "";
+      const recentContextMessages = wasEmptyInput ? getRecentRpInputEnhancementMessages(chat, options.excludeMessageId) : [];
+      const enhanced = await requestAuxiliaryChatCompletion(buildRpAuxiliaryRequestMessages(chat, [
         {
           role: "system",
           content: [
-            "You rewrite roleplay user inputs before they are sent to the main RP model.",
+            "Rewrite roleplay user input before it is sent to the main RP model.",
             `Return only the rewritten user input in ${t("promptLanguageName")}.`,
-            "Preserve the user's intent exactly. Do not add outcomes, do not control the assistant character, and do not narrate future results.",
-            "If the input is equivalent to 'continue' or '계속', expand it into a concise natural instruction that asks the scene to continue from the current context.",
-            isContinuationRequest ? "The user submitted an empty or bare continuation input. Use the opening message and recent scene context to write a natural continuation instruction. Do not return only '계속', 'continue', or a bare synonym." : "",
-            "Do not include markdown, labels, explanations, or quotation marks."
+            "Preserve intent. Do not add outcomes, control the assistant character, or narrate future results.",
+            wasEmptyInput ? "The user submitted an empty input. Use the opening message and recent context to write a natural concise continuation instruction; do not return only '계속' or 'continue'." : "Polish only the provided input for clarity and flow. Preserve its meaning, perspective, tense, and length as much as possible; do not add context from previous messages.",
+            "No markdown, labels, explanations, or quotation marks."
           ].filter(Boolean).join("\n")
         },
         {
           role: "user",
           content: [
-            context,
-            isContinuationRequest && openingMessage ? "Opening character first message:" : "",
-            isContinuationRequest && openingMessage ? openingMessage : "",
-            "Recent RP messages:",
-            formatMessagesForAuxiliary(recentContextMessages, recentContextMessages.length, rpPlaceholders),
+            mutableContext,
+            wasEmptyInput && openingMessage ? "Opening character first message:" : "",
+            wasEmptyInput && openingMessage ? openingMessage : "",
+            wasEmptyInput ? "Recent RP messages:" : "",
+            wasEmptyInput ? formatMessagesForAuxiliary(recentContextMessages, recentContextMessages.length, rpPlaceholders, 520) : "",
             "Original user input:",
             baseContent
           ].filter(Boolean).join("\n\n")
         }
-      ], { temperature: 0.25 });
+      ]), { temperature: 0.25 });
 
       const cleaned = cleanAuxiliaryText(enhanced);
-      if (isContinuationRequest && (!cleaned || isRpContinueInput(cleaned))) {
+      if (wasEmptyInput && isContinuationRequest && (!cleaned || isRpContinueInput(cleaned))) {
         return getRpContinuationFallbackInput();
       }
       return cleaned || baseContent;
@@ -9154,56 +9154,57 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     async function createRpSceneState(chat, assistantMessage) {
-      const context = buildRpAuxiliaryContext(chat, assistantMessage);
-      return cleanAuxiliaryText(await requestAuxiliaryChatCompletion([
+      const mutableContext = buildRpAuxiliaryMutableContext(chat, { includeSummary: false, includeAuthorsNote: false });
+      const recentMessages = getRecentAuxiliaryMessagesExcluding(chat, assistantMessage?.id, 3);
+      return cleanAuxiliaryText(await requestAuxiliaryChatCompletion(buildRpAuxiliaryRequestMessages(chat, [
         {
           role: "system",
           content: [
-            "You extract the current mutable state of a roleplay scene.",
+            "Extract the current mutable state of a roleplay scene.",
             `Return concise plain text in ${t("promptLanguageName")} using short bullet-like lines.`,
-            "Track only current scene state: location, time, participants, clothing, carried items, injuries, posture, emotional state, relationship shifts, unresolved immediate goals, and other mutable continuity.",
-            "Use the latest messages as highest priority. Do not summarize prose style. Do not invent unknown facts. Do not include markdown headings or explanations."
+            "Track only current location, time, participants, clothing, items, injuries, posture, emotions, relationship shifts, and immediate goals.",
+            "Use latest messages as highest priority. Do not invent unknown facts or include headings/explanations."
           ].join("\n")
         },
         {
           role: "user",
           content: [
-            context,
+            mutableContext,
             "Recent RP messages:",
-            formatMessagesForAuxiliary(chat.messages, 12),
+            formatMessagesForAuxiliary(recentMessages, recentMessages.length, null, 420),
             "Latest assistant response:",
-            trimForAuxiliaryPrompt(assistantMessage.content || "", 2400)
+            trimForAuxiliaryPrompt(assistantMessage.content || "", 900)
           ].filter(Boolean).join("\n\n")
         }
-      ], { temperature: 0.1 }));
+      ], { message: assistantMessage }), { temperature: 0.1 }));
     }
 
     async function createRpConversationSummary(chat) {
-      const context = buildRpAuxiliaryContext(chat);
+      const mutableContext = buildRpAuxiliaryMutableContext(chat, { includeSummary: false });
       const sourceMessages = getRpSummarySourceMessages(chat);
       const summaryMaxTokens = normalizeRpAssistanceSettings(state.rp?.assistance).summaryMaxTokens;
-      return cleanAuxiliaryText(await requestAuxiliaryChatCompletion([
+      return cleanAuxiliaryText(await requestAuxiliaryChatCompletion(buildRpAuxiliaryRequestMessages(chat, [
         {
           role: "system",
           content: [
-            "You maintain a compact long-term summary for an ongoing roleplay chat.",
+            "Maintain a compact long-term summary for an ongoing roleplay chat.",
             `Return the updated summary in ${t("promptLanguageName")}.`,
             `Keep the summary within roughly ${summaryMaxTokens} tokens.`,
-            "Preserve established facts, character/persona relationship changes, promises, important events, emotional continuity, mysteries, goals, and constraints.",
-            "Keep it concise but specific. Do not include scene prose, markdown headings, or explanations."
+            "Preserve established facts, relationship changes, promises, key events, emotions, mysteries, goals, and constraints.",
+            "Be concise and specific. No scene prose, markdown headings, or explanations."
           ].join("\n")
         },
         {
           role: "user",
           content: [
-            context,
+            mutableContext,
             "Previous summary:",
-            trimForAuxiliaryPrompt(chat.rpSummary || "", 3000) || "(none)",
+            trimForAuxiliaryPrompt(chat.rpSummary || "", 1800) || "(none)",
             "Messages to fold into the summary:",
-            formatMessagesForAuxiliary(sourceMessages, sourceMessages.length)
+            formatMessagesForAuxiliary(sourceMessages, sourceMessages.length, null, 620)
           ].filter(Boolean).join("\n\n")
         }
-      ], { temperature: 0.15, maxTokens: summaryMaxTokens }));
+      ]), { temperature: 0.15, maxTokens: summaryMaxTokens }));
     }
 
     async function requestAuxiliaryChatCompletion(messages, options = {}) {
@@ -9244,17 +9245,74 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return cleanAuxiliaryText(extractFinalAssistantContent(await response.json()));
     }
 
-    function buildRpAuxiliaryContext(chat, message = null) {
+    function buildRpAuxiliaryRequestMessages(chat, taskMessages, options = {}) {
+      return [
+        ...buildRpAuxiliaryPrefixMessages(chat, options.message || null),
+        ...(Array.isArray(taskMessages) ? taskMessages : [])
+      ];
+    }
+
+    function buildRpAuxiliaryPrefixMessages(chat, message = null) {
       const character = getRpCardById("character", chat?.characterCardId || message?.characterCardId || state.rp.activeCharacterId);
       const persona = getRpCardById("persona", message?.personaCardId || state.rp.activePersonaId);
       return [
+        {
+          role: "system",
+          content: [
+            "FocusAbove RP auxiliary request.",
+            "Use stable participant names as baseline context.",
+            "Follow the later task instructions and return only the requested output."
+          ].join("\n")
+        },
+        {
+          role: "system",
+          content: [
+            "[Stable RP Context]",
+            character?.name ? `Character: ${character.name}` : "Character: Unnamed Character",
+            persona?.name ? `Persona: ${persona.name}` : "Persona: Unnamed Persona",
+            "Full card text is omitted unless the task needs visual/card details."
+          ].filter(Boolean).join("\n")
+        }
+      ];
+    }
+
+    function buildRpAuxiliaryContext(chat, message = null) {
+      const prefixText = buildRpAuxiliaryPrefixMessages(chat, message)
+        .map((item) => item.content)
+        .join("\n\n");
+      const mutableContext = buildRpAuxiliaryMutableContext(chat);
+      return [prefixText, mutableContext].filter(Boolean).join("\n\n");
+    }
+
+    function buildRpAuxiliaryMutableContext(chat, options = {}) {
+      const includeSummary = options.includeSummary !== false;
+      const includeSceneState = options.includeSceneState !== false;
+      const includeAuthorsNote = options.includeAuthorsNote !== false;
+      const items = [
+        includeSummary && chat?.rpSummary ? `Existing RP summary: ${trimForAuxiliaryPrompt(chat.rpSummary, 1200)}` : "",
+        includeSceneState && chat?.rpSceneState ? `Current scene state: ${trimForAuxiliaryPrompt(chat.rpSceneState, 700)}` : "",
+        includeAuthorsNote && chat?.authorsNote ? `Author's note: ${trimForAuxiliaryPrompt(chat.authorsNote, 500)}` : ""
+      ].filter(Boolean);
+      if (!items.length) {
+        return "";
+      }
+      return [
+        "[Mutable RP Context]",
+        ...items
+      ].join("\n");
+    }
+
+    function buildRpIllustrationCardContext(chat, message = null, illustrationSettings = null) {
+      const character = getRpCardById("character", chat?.characterCardId || message?.characterCardId || state.rp.activeCharacterId);
+      const persona = getRpCardById("persona", message?.personaCardId || state.rp.activePersonaId);
+      const rpPlaceholders = createRpPromptPlaceholders({ character, persona });
+      const settings = normalizeRpIllustrationSettings(illustrationSettings);
+      return [
+        "[Visual Card Details]",
         character?.name ? `Character: ${character.name}` : "",
-        character?.description ? `Character card: ${trimForAuxiliaryPrompt(character.description, 2400)}` : "",
-        persona?.name ? `Persona: ${persona.name}` : "",
-        persona?.description ? `Persona card: ${trimForAuxiliaryPrompt(persona.description, 2000)}` : "",
-        chat?.rpSummary ? `Existing RP summary: ${trimForAuxiliaryPrompt(chat.rpSummary, 2200)}` : "",
-        chat?.rpSceneState ? `Current scene state: ${trimForAuxiliaryPrompt(chat.rpSceneState, 1800)}` : "",
-        chat?.authorsNote ? `Author's note: ${trimForAuxiliaryPrompt(chat.authorsNote, 1200)}` : ""
+        character?.description ? `Character card: ${trimForAuxiliaryPrompt(replaceRpPromptPlaceholders(character.description, rpPlaceholders), 1100)}` : "",
+        !settings.ignoreNonCharacterPeople && persona?.name ? `Persona: ${persona.name}` : "",
+        !settings.ignoreNonCharacterPeople && persona?.description ? `Persona card: ${trimForAuxiliaryPrompt(replaceRpPromptPlaceholders(persona.description, rpPlaceholders), 700)}` : ""
       ].filter(Boolean).join("\n");
     }
 
@@ -9265,16 +9323,23 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (!firstMessage) {
         return "";
       }
-      return trimForAuxiliaryPrompt(replaceRpPromptPlaceholders(firstMessage.content || "", rpPlaceholders), 2400);
+      return trimForAuxiliaryPrompt(replaceRpPromptPlaceholders(firstMessage.content || "", rpPlaceholders), 1000);
     }
 
-    function formatMessagesForAuxiliary(messages, limit = 10, rpPlaceholders = null) {
+    function getRecentAuxiliaryMessagesExcluding(chat, excludedMessageId = "", limit = 6) {
+      return (Array.isArray(chat?.messages) ? chat.messages : [])
+        .filter((message) => message?.id !== excludedMessageId)
+        .filter((message) => message.role === "user" || message.role === "assistant")
+        .slice(-limit);
+    }
+
+    function formatMessagesForAuxiliary(messages, limit = 10, rpPlaceholders = null, maxLength = 700) {
       return (Array.isArray(messages) ? messages : [])
         .filter((message) => message.role === "user" || message.role === "assistant")
         .slice(-limit)
         .map((message) => {
           const content = replaceRpPromptPlaceholders(message.content || "", rpPlaceholders);
-          return `${message.role === "user" ? "User" : "Assistant"}: ${trimForAuxiliaryPrompt(content, 1200)}`;
+          return `${message.role === "user" ? "User" : "Assistant"}: ${trimForAuxiliaryPrompt(content, maxLength)}`;
         })
         .join("\n\n");
     }
@@ -9307,68 +9372,35 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         throw new Error(t("selectModelRequired"));
       }
 
-      const rpContext = buildRpPromptContext(chat);
       const illustrationSettings = normalizeRpIllustrationSettings(state.rp?.illustration);
-      const recentMessages = chat.messages
-        .filter((message) => message.role === "user" || message.role === "assistant")
-        .slice(-8)
-        .map((message) => `${message.role === "user" ? "User" : "Assistant"}: ${String(message.content || "").slice(0, 1600)}`)
-        .join("\n\n");
-      const rpDetails = rpContext ? [
-        rpContext.character?.name ? `Character: ${rpContext.character.name}` : "",
-        rpContext.character?.description ? `Character card: ${rpContext.character.description}` : "",
-        rpContext.persona?.name ? `Persona: ${rpContext.persona.name}` : "",
-        rpContext.persona?.description ? `Persona card: ${rpContext.persona.description}` : ""
-      ].filter(Boolean).join("\n") : "";
-
-      const response = await fetch(`${apiBase}/chat/completions`, {
-        method: "POST",
-        headers: {
-          ...buildHeaders(),
-          "Content-Type": "application/json"
+      const stableVisualContext = buildRpIllustrationCardContext(chat, assistantMessage, illustrationSettings);
+      const mutableContext = buildRpAuxiliaryMutableContext(chat, { includeSummary: false });
+      const recentMessages = getRecentAuxiliaryMessagesExcluding(chat, assistantMessage?.id, 2);
+      const generatedPrompt = await requestAuxiliaryChatCompletion(buildRpAuxiliaryRequestMessages(chat, [
+        {
+          role: "system",
+          content: [
+            "Write one concise Stable Diffusion prompt in English only.",
+            buildIllustrationPromptStyleInstruction(illustrationSettings.promptStyle),
+            "Preserve stated gender and stable appearance from card details. Do not invent unstated gender.",
+            illustrationSettings.ignoreNonCharacterPeople ? "Depict only the active character; use other-person context only for expression, pose, mood, gaze, or action." : "",
+            "For clothing, pose, location, lighting, temporary states, and injuries, prefer latest context over card defaults.",
+            "No markdown, explanations, text overlays, watermarks, signatures, UI elements, or camera metadata."
+          ].filter(Boolean).join("\n")
         },
-        body: JSON.stringify({
-          model: auxiliaryModel,
-          stream: false,
-          reasoning: {
-            max_tokens: 0
-          },
-          messages: [
-            {
-              role: "system",
-              content: [
-                "You write concise Stable Diffusion image prompts.",
-                "Return exactly one English prompt and nothing else.",
-                "Always write the image prompt in English regardless of the app UI language, chat language, character card language, persona card language, or recent conversation language.",
-                buildIllustrationPromptStyleInstruction(illustrationSettings.promptStyle),
-                "If the character card or persona card explicitly states a character's sex, gender, gender identity, pronouns, or gendered presentation, you must preserve it exactly in the visual prompt and must not depict that character as a different gender.",
-                "If gender is not stated for a character, do not invent or overemphasize gender; describe only what is visually supported by the context.",
-                "If the character card contains visual appearance details such as hair, eyes, face, body type, age impression, species, distinctive marks, color palette, or other stable identifying traits, you must use them as the baseline for the character's visual depiction.",
-                illustrationSettings.ignoreNonCharacterPeople ? "Focus the image prompt on the active character only. Ignore the persona and any other people as visual subjects; do not depict them, do not describe group shots, couples, crowds, extra bodies, extra faces, or multiple people. Use persona/other-person context only when it affects the active character's expression, pose, mood, gaze, or immediate action." : "",
-                "For clothing, outfits, accessories, carried items, injuries, temporary states, pose, location, and other details that can change during roleplay, prefer the latest conversation context and latest assistant response over older card defaults when they conflict.",
-                "Do not include markdown, explanations, text overlays, speech bubbles, watermarks, signatures, UI elements, or camera metadata."
-              ].filter(Boolean).join("\n")
-            },
-            {
-              role: "user",
-              content: [
-                rpDetails,
-                "Recent conversation:",
-                recentMessages,
-                "Latest assistant response to illustrate:",
-                assistantMessage.content
-              ].filter(Boolean).join("\n\n")
-            }
-          ]
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status} ${response.statusText}`);
-      }
-
-      const payload = await response.json();
-      const prompt = applyIllustrationArtStylePrefix(cleanIllustrationPrompt(extractFinalAssistantContent(payload)), illustrationSettings.artStyle);
+        {
+          role: "user",
+          content: [
+            stableVisualContext,
+            mutableContext,
+            "Recent conversation:",
+            formatMessagesForAuxiliary(recentMessages, recentMessages.length, null, 420),
+            "Latest assistant response to illustrate:",
+            trimForAuxiliaryPrompt(assistantMessage.content || "", 1100)
+          ].filter(Boolean).join("\n\n")
+        }
+      ], { message: assistantMessage }));
+      const prompt = applyIllustrationArtStylePrefix(cleanIllustrationPrompt(generatedPrompt), illustrationSettings.artStyle);
       if (!prompt) {
         throw new Error(t("missingResponseContent"));
       }
