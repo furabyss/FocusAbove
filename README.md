@@ -1,4 +1,8 @@
 # FocusAbove
+<p align="center">
+  <img src="https://github.com/furabyss/FocusAbove/blob/main/favicon.png" width="128" height="128" alt="favicon">
+</p>
+
 JS-based local LLM frontend powered by a single HTML file.
 
 Live Web App: https://chat.furabyss.com
