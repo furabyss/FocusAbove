@@ -27,6 +27,10 @@ Live Web App: https://chat.furabyss.com
 [screenshot2]: https://github.com/furabyss/FocusAbove/blob/main/Screenshot/02.png
 [screenshot3]: https://github.com/furabyss/FocusAbove/blob/main/Screenshot/03.png
 
+# Support Languages
+- Korean
+- English
+
 
 # Acknowledgments
 - [KaTeX](https://github.com/KaTeX/KaTeX)
