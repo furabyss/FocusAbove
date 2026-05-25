@@ -235,17 +235,6 @@
       text-transform: uppercase;
     }
 
-    .section-header-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .section-header-row .section-title {
-      margin-bottom: 0;
-    }
-
     .settings-form,
     .chat-form {
       display: flex;
@@ -406,31 +395,6 @@
       stroke-linecap: round;
       stroke-linejoin: round;
       pointer-events: none;
-    }
-
-    .status-pill {
-      padding: 10px 12px;
-      border-radius: var(--radius-md);
-      background: rgba(255, 255, 255, 0.7);
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.5;
-      white-space: pre-wrap;
-    }
-
-    :root[data-resolved-theme="dark"] .status-pill {
-      background: rgba(25, 20, 16, 0.82);
-      border: 1px solid rgba(239, 222, 205, 0.08);
-    }
-
-    .status-pill.success {
-      background: rgba(43, 122, 75, 0.12);
-      color: var(--success);
-    }
-
-    .status-pill.error {
-      background: rgba(180, 65, 45, 0.12);
-      color: var(--danger);
     }
 
     .chat-list,
@@ -1513,9 +1477,22 @@
       margin-top: 16px;
     }
 
+    .message-illustration-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
     .message-illustration-title {
       font-size: 12px;
       font-weight: 800;
+      color: var(--muted);
+    }
+
+    .message-illustration-action {
+      width: 26px;
+      height: 26px;
       color: var(--muted);
     }
 
@@ -1955,13 +1932,6 @@
       padding-top: 12px;
       border-top: 1px solid rgba(88, 64, 38, 0.12);
       background: var(--panel-solid);
-    }
-
-    .card-editor-hero {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      align-items: stretch;
     }
 
     .card-editor-actions {
@@ -3135,7 +3105,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       <div class="composer-input-stack">
         <label>
           <span class="sr-only">메시지</span>
-          <textarea id="messageInput" placeholder="질문이나 지시를 입력하세요. Shift+Enter는 줄바꿈, Enter는 전송입니다."></textarea>
+          <textarea id="messageInput" placeholder=""></textarea>
         </label>
         <input id="imageUploadInput" type="file" accept="image/*" multiple hidden>
         <span id="imageUploadHint" class="composer-attachment-hint" hidden aria-hidden="true"></span>
@@ -3182,7 +3152,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section class="authors-note-form">
               <label>
                 노트
-                <textarea id="authorsNoteInput" placeholder="캐릭터의 다음 응답에서 특히 강조할 디테일, 연출, 감정선, 금지사항을 적어 주세요."></textarea>
+                <textarea id="authorsNoteInput" placeholder=""></textarea>
               </label>
               <div class="button-row">
                 <button id="clearAuthorsNoteButton" type="button" class="ghost-button">비우기</button>
@@ -3204,7 +3174,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section class="brand">
               <div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="8" y="8" width="48" height="48" rx="14" fill="currentColor"></rect><circle cx="32" cy="32" r="13" fill="none" stroke="#fff7ee" stroke-width="6"></circle><circle cx="46" cy="18" r="3" fill="#fff7ee" fill-opacity="0.9"></circle></svg><span>FocusAbove</span></div>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.3.5, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.3.6, ⓒ 2026 Fur-Abyss</p>
             </section>
 
             <div class="settings-tab-strip" role="tablist" aria-label="설정 범주">
@@ -3758,7 +3728,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         newTab: "새 탭",
         importJson: "JSON 임포트",
         messageSrOnly: "메시지",
-        messagePlaceholder: "질문이나 지시를 입력하세요. Shift+Enter는 줄바꿈, Enter는 전송입니다.",
+        messagePlaceholder: "Shift+Enter는 줄바꿈, Enter는 전송입니다.",
         floatingButtons: "플로팅 버튼",
         scrollTop: "맨 위로 가기",
         scrollBottom: "맨 아래로 가기",
@@ -3853,6 +3823,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         imageWidth: "가로",
         imageHeight: "세로",
         generatedIllustration: "생성된 삽화",
+        regenerateIllustration: "삽화 재생성",
+        illustrationRegenerated: "삽화를 다시 생성했습니다.",
         illustrationGenerating: "삽화 생성 중",
         illustrationError: ({ error }) => `삽화 생성 실패: ${error}`,
         rpPostProcessing: "후처리 중",
@@ -4025,7 +3997,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         newTab: "New tab",
         importJson: "Import JSON",
         messageSrOnly: "Message",
-        messagePlaceholder: "Type a question or instruction. Shift+Enter adds a line break, Enter sends.",
+        messagePlaceholder: "Shift+Enter adds a line break, Enter sends.",
         floatingButtons: "Floating buttons",
         scrollTop: "Jump to top",
         scrollBottom: "Jump to bottom",
@@ -4120,6 +4092,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         imageWidth: "Width",
         imageHeight: "Height",
         generatedIllustration: "Generated illustration",
+        regenerateIllustration: "Regenerate illustration",
+        illustrationRegenerated: "Regenerated the illustration.",
         illustrationGenerating: "Generating illustration",
         illustrationError: ({ error }) => `Illustration failed: ${error}`,
         rpPostProcessing: "Post-processing",
@@ -8808,6 +8782,58 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       });
     }
 
+    async function regenerateMessageIllustration(messageId) {
+      if (isSending) {
+        setChatStatus(t("streamingResponseActive"));
+        return;
+      }
+
+      const activeChat = getActiveChat();
+      if (hasEditingMessageInChat(activeChat)) {
+        setChatStatus(t("saveMessageEditsFirst"), "error");
+        focusMessageEditor(editingMessageId);
+        return;
+      }
+
+      const targetMessage = findMessageInChat(activeChat, messageId);
+      if (!targetMessage || targetMessage.role !== "assistant" || targetMessage.status !== "complete") {
+        setChatStatus(t("noResponseToReroll"), "error");
+        return;
+      }
+
+      if (normalizeMessageIllustration(targetMessage.illustration)?.status === "generating") {
+        return;
+      }
+
+      if (!normalizeApiBase(state.settings.apiBaseUrl)) {
+        setChatStatus(t("apiBaseUrlRequired"), "error");
+        return;
+      }
+
+      if (!hasAuxiliaryModel()) {
+        setChatStatus(t("illustrationAuxiliaryModelRequired"), "error");
+        return;
+      }
+
+      if (!normalizeImageApiBase(state.settings.imageApiBaseUrl)) {
+        setChatStatus(t("illustrationImageApiRequired"), "error");
+        return;
+      }
+
+      setAssistantAuxiliaryStatus(activeChat, targetMessage, "illustrationGenerating");
+      setChatStatus(t("illustrationGenerating"));
+      await generateIllustrationForAssistantMessage(activeChat, targetMessage, { scrollToBottom: false });
+      setAssistantAuxiliaryStatus(activeChat, targetMessage);
+
+      const latestMessage = findMessageInChat(activeChat, messageId);
+      const latestIllustration = normalizeMessageIllustration(latestMessage?.illustration);
+      if (latestIllustration?.status === "complete") {
+        setChatStatus(t("illustrationRegenerated"), "success");
+      } else if (latestIllustration?.status === "error") {
+        setChatStatus(t("illustrationError", { error: latestIllustration.error || t("requestFailed") }), "error");
+      }
+    }
+
     async function requestAssistantResponse(chat, options) {
       streamingAutoScrollPinnedToBottom = isPageNearBottom();
       lastStreamingPersistRequestAt = 0;
@@ -8925,10 +8951,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return normalizeRpIllustrationSettings(state.rp?.illustration).enabled;
     }
 
-    async function generateIllustrationForAssistantMessage(chat, assistantMessage) {
+    async function generateIllustrationForAssistantMessage(chat, assistantMessage, options = {}) {
       if (!normalizeImageApiBase(state.settings.imageApiBaseUrl)) {
         return;
       }
+
+      const shouldScrollToBottom = options.scrollToBottom !== false;
 
       const targetMessage = findMessageInChat(chat, assistantMessage.id);
       if (!targetMessage || targetMessage.status !== "complete") {
@@ -8943,7 +8971,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
-      updateIllustrationMessageState(chat, targetMessage, { scrollToBottom: true });
+      updateIllustrationMessageState(chat, targetMessage, { scrollToBottom: shouldScrollToBottom });
 
       try {
         const prompt = await createIllustrationPrompt(chat, targetMessage);
@@ -8961,7 +8989,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           error: "",
           updatedAt: new Date().toISOString()
         };
-        updateIllustrationMessageState(chat, latestMessage, { scrollToBottom: true });
+        updateIllustrationMessageState(chat, latestMessage, { scrollToBottom: shouldScrollToBottom });
       } catch (error) {
         console.error("Failed to generate illustration", error);
         const latestMessage = findMessageInChat(chat, targetMessage.id);
@@ -9512,6 +9540,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return trimForAuxiliaryPrompt(replaceRpPromptPlaceholders(firstMessage.content || "", rpPlaceholders), 1000);
     }
 
+    function getRecentAuxiliaryMessagesBefore(chat, targetMessageId = "", limit = 6) {
+      const messages = Array.isArray(chat?.messages) ? chat.messages : [];
+      const targetIndex = messages.findIndex((message) => message?.id === targetMessageId);
+      const sourceMessages = targetIndex >= 0 ? messages.slice(0, targetIndex) : messages;
+      return sourceMessages
+        .filter((message) => message.role === "user" || message.role === "assistant")
+        .slice(-limit);
+    }
+
     function getRecentAuxiliaryMessagesExcluding(chat, excludedMessageId = "", limit = 6) {
       return (Array.isArray(chat?.messages) ? chat.messages : [])
         .filter((message) => message?.id !== excludedMessageId)
@@ -9565,7 +9602,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const illustrationSettings = normalizeRpIllustrationSettings(state.rp?.illustration);
       const stableVisualContext = buildRpIllustrationCardContext(chat, assistantMessage, illustrationSettings);
       const mutableContext = buildRpAuxiliaryMutableContext(chat, { includeSummary: false });
-      const recentMessages = getRecentAuxiliaryMessagesExcluding(chat, assistantMessage?.id, 2);
+      const recentMessages = getRecentAuxiliaryMessagesBefore(chat, assistantMessage?.id, 2);
       const generatedPrompt = await requestAuxiliaryChatCompletion(buildRpAuxiliaryRequestMessages(chat, [
         {
           role: "system",
@@ -10480,10 +10517,23 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const container = document.createElement("div");
       container.className = "message-illustration";
 
+      const header = document.createElement("div");
+      header.className = "message-illustration-header";
+
       const title = document.createElement("div");
       title.className = "message-illustration-title";
       title.textContent = t("generatedIllustration");
-      container.appendChild(title);
+      header.appendChild(title);
+
+      const regenerateButton = createIconButton({
+        className: "message-action-button message-illustration-action",
+        label: t("regenerateIllustration"),
+        iconName: "reroll",
+        disabled: illustration.status === "generating",
+        onClick: () => regenerateMessageIllustration(message.id)
+      });
+      header.appendChild(regenerateButton);
+      container.appendChild(header);
 
       if (illustration.status === "generating") {
         const placeholder = document.createElement("div");
@@ -12070,7 +12120,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (modelSectionTitle) {
         modelSectionTitle.textContent = t("conversationSettings");
       }
-      setFieldLabel(elements.modelSelect, t("modelSelect")); 
+      setFieldLabel(elements.modelSelect, t("modelSelect"));
       setFieldLabel(elements.auxiliaryModelSelect, t("auxiliaryModelSelect"));
       setFieldLabel(elements.temperatureInput, t("temperature"));
       elements.temperatureInput.placeholder = t("thinkingDefaultPlaceholder");
