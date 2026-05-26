@@ -11,6 +11,7 @@ Live Web App: https://chat.furabyss.com
 - Chatting with your own local LLM/VLM
 - Roleplaying with your own local LLM/VLM
 - Generating illust for RP with SD WebUI/ComfyUI/Draw Things/etc
+- And also, T2I generation in chat mode is available.
 
 # Screenshots
 
