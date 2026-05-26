@@ -2192,6 +2192,10 @@
       accent-color: var(--primary);
     }
 
+    .inline-checkbox.sub-option {
+      margin-left: 22px;
+    }
+
     .stat-card {
       padding: 14px;
       border-radius: var(--radius-lg);
@@ -3174,13 +3178,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section class="brand">
               <div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="8" y="8" width="48" height="48" rx="14" fill="currentColor"></rect><circle cx="32" cy="32" r="13" fill="none" stroke="#fff7ee" stroke-width="6"></circle><circle cx="46" cy="18" r="3" fill="#fff7ee" fill-opacity="0.9"></circle></svg><span>FocusAbove</span></div>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.3.6, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.4.0, ⓒ 2026 Fur-Abyss</p>
             </section>
 
             <div class="settings-tab-strip" role="tablist" aria-label="설정 범주">
               <button id="settingsGeneralTabButton" type="button" class="settings-tab-button active" role="tab" aria-selected="true" aria-controls="settingsGeneralPanel">일반</button>
               <button id="settingsModelTabButton" type="button" class="settings-tab-button" role="tab" aria-selected="false" aria-controls="settingsModelPanel">모델</button>
-              <button id="settingsIllustrationTabButton" type="button" class="settings-tab-button" role="tab" aria-selected="false" aria-controls="settingsIllustrationPanel" hidden>삽화</button>
+              <button id="settingsIllustrationTabButton" type="button" class="settings-tab-button" role="tab" aria-selected="false" aria-controls="settingsIllustrationPanel" hidden>이미지</button>
             </div>
 
             <section id="settingsGeneralPanel" class="settings-tab-panel" role="tabpanel" aria-labelledby="settingsGeneralTabButton">
@@ -3325,13 +3329,17 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
             <section id="settingsIllustrationPanel" class="settings-tab-panel" role="tabpanel" aria-labelledby="settingsIllustrationTabButton" hidden>
               <section>
-                <h2 class="section-title">삽화 생성</h2>
+                <h2 class="section-title">이미지 생성</h2>
                 <div class="illustration-controls">
+                  <label class="inline-checkbox" for="chatT2iEnabledInput">
+                    <input id="chatT2iEnabledInput" type="checkbox">
+                    채팅 모드에서 T2I 이미지 생성 사용
+                  </label>
                   <label class="inline-checkbox" for="illustrationEnabledInput">
                     <input id="illustrationEnabledInput" type="checkbox">
                     삽화 생성
                   </label>
-                  <label class="inline-checkbox" for="illustrationIgnoreNonCharacterPeopleInput">
+                  <label class="inline-checkbox sub-option" for="illustrationIgnoreNonCharacterPeopleInput">
                     <input id="illustrationIgnoreNonCharacterPeopleInput" type="checkbox">
                     페르소나 및 기타 인물 무시
                   </label>
@@ -3701,6 +3709,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     const THINKING_STREAMING_RENDER_THROTTLE_MS = 2500;
     const MAX_IMAGE_DIMENSION = 1024;
     const MAX_PENDING_IMAGE_BYTES = 12 * 1024 * 1024;
+    const CHAT_T2I_SKIP_TOKEN = "FOCUSABOVE_NO_T2I_IMAGE";
     const MATH_RENDER_DELIMITERS = [
       { left: "$$", right: "$$", display: true },
       { left: "\\[", right: "\\]", display: true },
@@ -3741,7 +3750,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         settingsCategory: "설정 범주",
         settingsGeneral: "일반",
         settingsModel: "모델",
-        settingsIllustration: "삽화",
+        settingsIllustration: "이미지",
         connectionSettings: "연결 설정",
         apiBaseUrl: "API 주소",
         apiBaseUrlPlaceholder: "예: http://127.0.0.1:1234/v1",
@@ -3800,8 +3809,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         promptPresetDeleted: ({ name }) => `'${name}' 프리셋을 삭제했습니다.`,
         confirmDeletePromptPreset: ({ name }) => `'${name}' 프리셋을 삭제할까요?`,
         refreshModels: "모델 새로고침",
-        illustrationGeneration: "삽화 생성",
-        illustrationEnabled: "삽화 생성 [보조 모델, 이미지 API]",
+        illustrationGeneration: "이미지 생성",
+        illustrationEnabled: "RP 모드에서 자동으로 삽화 생성 [보조 모델, 이미지 API]",
+        chatT2iEnabled: "채팅 모드에서 T2I 이미지 생성 사용 [보조 모델, 이미지 API]",
         illustrationIgnoreNonCharacterPeople: "페르소나 및 기타 인물 무시",
         illustrationPromptStyle: "프롬프트 형식",
         illustrationPromptStyleTags: "일반 프롬프트",
@@ -3822,9 +3832,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         steps: "스텝",
         imageWidth: "가로",
         imageHeight: "세로",
+        generatedImage: "생성된 이미지",
         generatedIllustration: "생성된 삽화",
         regenerateIllustration: "삽화 재생성",
         illustrationRegenerated: "삽화를 다시 생성했습니다.",
+        imageGenerating: "이미지 생성 중",
         illustrationGenerating: "삽화 생성 중",
         illustrationError: ({ error }) => `삽화 생성 실패: ${error}`,
         rpPostProcessing: "후처리 중",
@@ -4010,7 +4022,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         settingsCategory: "Settings categories",
         settingsGeneral: "General",
         settingsModel: "Model",
-        settingsIllustration: "Illustration",
+        settingsIllustration: "Image",
         connectionSettings: "Connection settings",
         apiBaseUrl: "API base URL",
         apiBaseUrlPlaceholder: "e.g. http://127.0.0.1:1234/v1",
@@ -4069,8 +4081,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         promptPresetDeleted: ({ name }) => `Deleted the preset '${name}'.`,
         confirmDeletePromptPreset: ({ name }) => `Delete the preset '${name}'?`,
         refreshModels: "Refresh models",
-        illustrationGeneration: "Illustration generation",
-        illustrationEnabled: "Generate illustrations [Aux. model, Image API]",
+        illustrationGeneration: "Image generation",
+        illustrationEnabled: "Generate illustrations in RP mode [Aux. model, Image API]",
+        chatT2iEnabled: "Use T2I image generation in chat mode [Aux. model, Image API]",
         illustrationIgnoreNonCharacterPeople: "Ignore persona and other people",
         illustrationPromptStyle: "Prompt style",
         illustrationPromptStyleTags: "Standard prompt",
@@ -4091,9 +4104,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         steps: "Steps",
         imageWidth: "Width",
         imageHeight: "Height",
+        generatedImage: "Generated image",
         generatedIllustration: "Generated illustration",
         regenerateIllustration: "Regenerate illustration",
         illustrationRegenerated: "Regenerated the illustration.",
+        imageGenerating: "Generating image",
         illustrationGenerating: "Generating illustration",
         illustrationError: ({ error }) => `Illustration failed: ${error}`,
         rpPostProcessing: "Post-processing",
@@ -4274,6 +4289,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         language: normalizedLanguage,
         themeMode: "system",
         smoothStreaming: true,
+        chatT2iEnabled: false,
         selectedModel: "",
         auxiliaryModel: "",
         systemPrompt: "",
@@ -4428,6 +4444,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       saveModelSettingsButton: document.getElementById("saveModelSettingsButton"),
       refreshModelsButton: document.getElementById("refreshModelsButton"),
       illustrationEnabledInput: document.getElementById("illustrationEnabledInput"),
+      chatT2iEnabledInput: document.getElementById("chatT2iEnabledInput"),
       illustrationIgnoreNonCharacterPeopleInput: document.getElementById("illustrationIgnoreNonCharacterPeopleInput"),
       illustrationPromptStyleSelect: document.getElementById("illustrationPromptStyleSelect"),
       illustrationArtStyleSelect: document.getElementById("illustrationArtStyleSelect"),
@@ -4621,6 +4638,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       elements.thinkingUnlimitedInput.addEventListener("change", updateActiveThinkingUnlimited);
       elements.rpSummaryEnabledInput.addEventListener("change", syncRpAssistanceControls);
       elements.illustrationEnabledInput.addEventListener("change", syncIllustrationControls);
+      elements.chatT2iEnabledInput.addEventListener("change", syncIllustrationControls);
       [
         elements.illustrationCfgScaleInput,
         elements.illustrationStepsInput,
@@ -4830,6 +4848,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         language,
         themeMode: normalizeThemeMode(parsed?.settings?.themeMode),
         smoothStreaming,
+        chatT2iEnabled: typeof parsed?.settings?.chatT2iEnabled === "boolean"
+          ? parsed.settings.chatT2iEnabled
+          : DEFAULT_SETTINGS.chatT2iEnabled,
         selectedModel: typeof parsed?.settings?.selectedModel === "string"
           ? parsed.settings.selectedModel
           : typeof legacyChat?.model === "string"
@@ -6103,11 +6124,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function setSettingsOverlayTab(nextTab) {
-      activeSettingsTab = nextTab === "model" || (nextTab === "illustration" && isRpModeActive()) ? nextTab : "general";
+      activeSettingsTab = nextTab === "model" || nextTab === "illustration" ? nextTab : "general";
       const isGeneral = activeSettingsTab === "general";
       const isModel = activeSettingsTab === "model";
       const isIllustration = activeSettingsTab === "illustration";
-      elements.settingsIllustrationTabButton.hidden = !isRpModeActive();
+      elements.settingsIllustrationTabButton.hidden = false;
 
       elements.settingsGeneralTabButton.classList.toggle("active", isGeneral);
       elements.settingsGeneralTabButton.setAttribute("aria-selected", isGeneral ? "true" : "false");
@@ -6156,6 +6177,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     function populateIllustrationSettingsForm() {
       const illustrationSettings = normalizeRpIllustrationSettings(state.rp?.illustration);
       elements.illustrationEnabledInput.checked = illustrationSettings.enabled;
+      elements.chatT2iEnabledInput.checked = state.settings.chatT2iEnabled === true;
       elements.illustrationIgnoreNonCharacterPeopleInput.checked = illustrationSettings.ignoreNonCharacterPeople;
       elements.illustrationPromptStyleSelect.value = illustrationSettings.promptStyle;
       elements.illustrationArtStyleSelect.value = illustrationSettings.artStyle;
@@ -6915,7 +6937,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
       const content = document.createElement("div");
       content.className = "message-content";
-      renderMessageContent(content, message);
+      renderMessageContent(content, message, chat);
 
       const body = document.createElement("div");
       body.className = "message-body";
@@ -7197,6 +7219,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       state.settings.language = nextDefaultSettings.language;
       state.settings.themeMode = nextDefaultSettings.themeMode;
       state.settings.smoothStreaming = nextDefaultSettings.smoothStreaming;
+      state.settings.chatT2iEnabled = nextDefaultSettings.chatT2iEnabled;
       if (isRpModeActive() && state.rp) {
         state.rp.responsePerspective = DEFAULT_RP_RESPONSE_PERSPECTIVE;
         state.rp.illustration = { ...DEFAULT_RP_ILLUSTRATION_SETTINGS };
@@ -7282,6 +7305,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
 
       state.rp.illustration = readIllustrationSettingsForm();
+      state.settings.chatT2iEnabled = elements.chatT2iEnabledInput.checked;
       persistState();
       syncIllustrationControls();
       setChatStatus(t("illustrationSettingsSaved"), "success");
@@ -7302,9 +7326,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function syncIllustrationControls() {
-      const enabled = elements.illustrationEnabledInput.checked;
+      const rpEnabled = elements.illustrationEnabledInput.checked;
+      const chatT2iEnabled = elements.chatT2iEnabledInput.checked;
+      const enabled = rpEnabled || chatT2iEnabled;
       [
-        elements.illustrationIgnoreNonCharacterPeopleInput,
         elements.illustrationCfgScaleInput,
         elements.illustrationStepsInput,
         elements.illustrationWidthInput,
@@ -7312,6 +7337,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       ].forEach((input) => {
         input.disabled = !enabled;
       });
+      elements.illustrationIgnoreNonCharacterPeopleInput.disabled = !rpEnabled;
 
       elements.illustrationCfgScaleValue.textContent = String(elements.illustrationCfgScaleInput.value || DEFAULT_RP_ILLUSTRATION_SETTINGS.cfgScale);
       elements.illustrationStepsValue.textContent = String(elements.illustrationStepsInput.value || DEFAULT_RP_ILLUSTRATION_SETTINGS.steps);
@@ -8671,6 +8697,38 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       });
     }
 
+    function shouldCheckChatT2iPrompt(chat, userMessage) {
+      return !isRpModeActive()
+        && !isRpChat(chat)
+        && state.settings.chatT2iEnabled === true
+        && normalizeApiBase(state.settings.apiBaseUrl)
+        && hasAuxiliaryModel()
+        && normalizeImageApiBase(state.settings.imageApiBaseUrl)
+        && userMessage?.role === "user"
+        && String(userMessage.content || "").trim();
+    }
+
+    async function prepareChatT2iPrompt(chat, userMessage, options = {}) {
+      if (!shouldCheckChatT2iPrompt(chat, userMessage)) {
+        return "";
+      }
+
+      try {
+        const prompt = await createChatT2iPrompt(chat, userMessage, options);
+        return isChatT2iSkipPrompt(prompt) ? "" : prompt;
+      } catch (error) {
+        console.error("Failed to prepare chat T2I prompt", error);
+        return "";
+      }
+    }
+
+    function getLatestUserMessageForChatT2i(messages) {
+      return (Array.isArray(messages) ? messages : [])
+        .slice()
+        .reverse()
+        .find((message) => message?.role === "user") || null;
+    }
+
     function shouldNotifyMissingAuxiliaryIllustrationModel() {
       return isRpModeActive()
         && normalizeRpIllustrationSettings(state.rp?.illustration).enabled
@@ -8766,6 +8824,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return;
       }
 
+      const previousChatT2iPrompt = !isRpChat(activeChat)
+        ? normalizeMessageIllustration(targetAssistant.illustration)?.prompt || ""
+        : "";
+
       activeChat.messages = activeChat.messages.slice(0, assistantIndex);
       activeChat.updatedAt = new Date().toISOString();
       renderAppSections({
@@ -8778,7 +8840,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       await requestAssistantResponse(activeChat, {
         apiBase,
         selectedModel,
-        sourceMessages: activeChat.messages
+        sourceMessages: activeChat.messages,
+        chatT2iAvoidPrompt: previousChatT2iPrompt
       });
     }
 
@@ -8820,9 +8883,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return;
       }
 
-      setAssistantAuxiliaryStatus(activeChat, targetMessage, "illustrationGenerating");
-      setChatStatus(t("illustrationGenerating"));
-      await generateIllustrationForAssistantMessage(activeChat, targetMessage, { scrollToBottom: false });
+      const generationStatusKey = isRpChat(activeChat) ? "illustrationGenerating" : "imageGenerating";
+      setAssistantAuxiliaryStatus(activeChat, targetMessage, generationStatusKey);
+      setChatStatus(t(generationStatusKey));
+      await generateIllustrationForAssistantMessage(activeChat, targetMessage, {
+        scrollToBottom: false,
+        createPrompt: isRpChat(activeChat) ? null : (message) => createChatT2iPromptForAssistantMessage(activeChat, message)
+      });
       setAssistantAuxiliaryStatus(activeChat, targetMessage);
 
       const latestMessage = findMessageInChat(activeChat, messageId);
@@ -8842,24 +8909,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const requestAbortController = new AbortController();
       const rpContext = buildRpPromptContext(chat);
       const sourceMessages = buildMainRequestSourceMessages(chat, options.sourceMessages || chat.messages);
-      const requestBody = {
-        model: options.selectedModel,
-        messages: buildChatRequestMessages(sourceMessages, state.settings.systemPrompt, rpContext),
-        stream: true,
-        stream_options: {
-          include_usage: true
-        }
-      };
-
-      if (typeof state.settings.temperature === "number") {
-        requestBody.temperature = state.settings.temperature;
-      }
-
-      if (state.settings.thinkingUnlimited === false && typeof state.settings.thinkingTokenLimit === "number") {
-        requestBody.reasoning = {
-          max_tokens: state.settings.thinkingTokenLimit
-        };
-      }
 
       const assistantMessage = createMessage("assistant", "", {
         status: "streaming",
@@ -8880,6 +8929,35 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       setChatStatus(t("streamingResponseActive"));
 
       try {
+        const chatT2iPrompt = typeof options.chatT2iPrompt === "string"
+          ? options.chatT2iPrompt
+          : await prepareChatT2iPrompt(chat, getLatestUserMessageForChatT2i(sourceMessages), {
+              avoidPrompt: options.chatT2iAvoidPrompt
+            });
+        const requestBody = {
+          model: options.selectedModel,
+          messages: buildChatRequestMessages(
+            sourceMessages,
+            state.settings.systemPrompt,
+            rpContext,
+            buildChatT2iMainModelInstructions(chatT2iPrompt)
+          ),
+          stream: true,
+          stream_options: {
+            include_usage: true
+          }
+        };
+
+        if (typeof state.settings.temperature === "number") {
+          requestBody.temperature = state.settings.temperature;
+        }
+
+        if (state.settings.thinkingUnlimited === false && typeof state.settings.thinkingTokenLimit === "number") {
+          requestBody.reasoning = {
+            max_tokens: state.settings.thinkingTokenLimit
+          };
+        }
+
         const response = await fetch(`${options.apiBase}/chat/completions`, {
           method: "POST",
           signal: requestAbortController.signal,
@@ -8901,7 +8979,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         persistState();
         replaceMessageArticleDom(chat, assistantMessage, { scrollToBottom: true });
         renderChatList();
-        void finalizePostResponseAuxiliaryTasks(chat, assistantMessage, options, requestStatusRunId);
+        void finalizePostResponseAuxiliaryTasks(chat, assistantMessage, { ...options, chatT2iPrompt }, requestStatusRunId);
       } catch (error) {
         if (isAbortError(error)) {
           finalizeAbortedAssistantMessage(chat, assistantMessage);
@@ -8974,7 +9052,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       updateIllustrationMessageState(chat, targetMessage, { scrollToBottom: shouldScrollToBottom });
 
       try {
-        const prompt = await createIllustrationPrompt(chat, targetMessage);
+        const prompt = cleanIllustrationPrompt(options.prompt)
+          || await (typeof options.createPrompt === "function"
+            ? options.createPrompt(targetMessage)
+            : createIllustrationPrompt(chat, targetMessage));
         const image = await generateStableDiffusionImage(prompt);
         const latestMessage = findMessageInChat(chat, targetMessage.id);
         if (!latestMessage) {
@@ -9031,7 +9112,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return;
       }
 
-      await runPostResponseAuxiliaryTasks(chat, assistantMessage, { statusRunId });
+      await runPostResponseAuxiliaryTasks(chat, assistantMessage, {
+        statusRunId,
+        chatT2iPrompt: options.chatT2iPrompt
+      });
       setPostResponseChatStatus(statusRunId, assistantMessage.id, t("responseReceivedToast"), "success");
     }
 
@@ -9073,11 +9157,20 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     async function runPostResponseAuxiliaryTasks(chat, assistantMessage, options = {}) {
-      if (!hasAuxiliaryModel() || !chat || assistantMessage?.status !== "complete") {
+      if (!chat || assistantMessage?.status !== "complete") {
+        return;
+      }
+
+      if (!hasAuxiliaryModel() && !options.chatT2iPrompt) {
         return;
       }
 
       if (state.chats.some((item) => item.id === chat.id)) {
+        if (options.chatT2iPrompt) {
+          setAssistantAuxiliaryStatus(chat, assistantMessage, "imageGenerating");
+          setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("imageGenerating"));
+          await generateIllustrationForAssistantMessage(chat, assistantMessage, { prompt: options.chatT2iPrompt });
+        }
         if (shouldGenerateAutomaticChatTitle(chat, assistantMessage)) {
           setAssistantAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing");
           setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("rpPostProcessing"));
@@ -9635,6 +9728,73 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
 
       return prompt;
+    }
+
+    async function createChatT2iPrompt(chat, userMessage, options = {}) {
+      const illustrationSettings = normalizeRpIllustrationSettings(state.rp?.illustration);
+      const recentMessages = getRecentAuxiliaryMessagesBefore(chat, userMessage?.id, 3);
+      const avoidPrompt = trimForAuxiliaryPrompt(options.avoidPrompt || "", 700);
+      const generatedPrompt = await requestAuxiliaryChatCompletion([
+        {
+          role: "system",
+          content: [
+            "You classify whether the latest user message asks to create, draw, or generate an image.",
+            `If it does not, output exactly ${CHAT_T2I_SKIP_TOKEN}.`,
+            "If it does, output one concise Stable Diffusion prompt in English only.",
+            buildIllustrationPromptStyleInstruction(illustrationSettings.promptStyle),
+            avoidPrompt ? "If an earlier image prompt is provided, create a meaningfully different composition and details while preserving the user's request." : "",
+            "Use the latest user request as the primary source. No markdown, explanations, quotes, watermarks, signatures, or camera metadata."
+          ].filter(Boolean).join("\n")
+        },
+        {
+          role: "user",
+          content: [
+            "Recent conversation:",
+            formatMessagesForAuxiliary(recentMessages, recentMessages.length, null, 320),
+            "Latest user message:",
+            trimForAuxiliaryPrompt(userMessage.content || "", 900),
+            avoidPrompt ? "Earlier image prompt to avoid:" : "",
+            avoidPrompt
+          ].filter(Boolean).join("\n\n")
+        }
+      ], { temperature: avoidPrompt ? 0.45 : 0.1 });
+      const cleanPrompt = cleanIllustrationPrompt(generatedPrompt);
+      if (!cleanPrompt || isChatT2iSkipPrompt(cleanPrompt)) {
+        return CHAT_T2I_SKIP_TOKEN;
+      }
+      return applyIllustrationArtStylePrefix(cleanPrompt, illustrationSettings.artStyle);
+    }
+
+    async function createChatT2iPromptForAssistantMessage(chat, assistantMessage) {
+      const previousPrompt = normalizeMessageIllustration(assistantMessage?.illustration)?.prompt || "";
+      const previousMessages = getRecentAuxiliaryMessagesBefore(chat, assistantMessage?.id, 12);
+      const userMessage = getLatestUserMessageForChatT2i(previousMessages);
+      const prompt = userMessage
+        ? await createChatT2iPrompt(chat, userMessage, { avoidPrompt: previousPrompt })
+        : "";
+      if (!prompt || isChatT2iSkipPrompt(prompt)) {
+        throw new Error(t("missingResponseContent"));
+      }
+      return prompt;
+    }
+
+    function isChatT2iSkipPrompt(value) {
+      return cleanIllustrationPrompt(value).toUpperCase() === CHAT_T2I_SKIP_TOKEN;
+    }
+
+    function buildChatT2iMainModelInstructions(prompt) {
+      const cleanPrompt = cleanIllustrationPrompt(prompt);
+      if (!cleanPrompt) {
+        return [];
+      }
+
+      return [[
+        "[Planned Image Generation]",
+        "The latest user message includes an image generation request.",
+        "After your response, FocusAbove will generate an image with the image API using this prompt:",
+        cleanPrompt,
+        "Respond with awareness that image generation is being handled, but do not claim that pixels have already been displayed inside the text response."
+      ].join("\n")];
     }
 
     function buildIllustrationPeopleScopeInstruction(illustrationSettings) {
@@ -10196,7 +10356,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
       const contentElement = refs.contentElement;
       if (contentElement) {
-        renderMessageContent(contentElement, message);
+        renderMessageContent(contentElement, message, getActiveChat());
       }
 
       if (message.role === "assistant") {
@@ -10232,7 +10392,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
         const contentElement = refs.contentElement;
         if (contentElement) {
-          renderMessageContent(contentElement, message);
+          renderMessageContent(contentElement, message, chat);
         }
 
         const metaActions = refs.metaActionsElement;
@@ -10429,7 +10589,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       element.dataset.streamingContent = nextContent;
     }
 
-    function renderMessageContent(element, message) {
+    function renderMessageContent(element, message, chat = null) {
       if (isEditingMessage(message.id)) {
         clearStreamingContentRenderState(element);
         renderMessageEditor(element, message);
@@ -10462,7 +10622,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (renderResult.shouldRenderMath) {
         renderMathContent(element);
       }
-      const illustration = buildMessageIllustrationElement(message);
+      const illustration = buildMessageIllustrationElement(message, chat);
       if (illustration) {
         element.appendChild(illustration);
       }
@@ -10508,11 +10668,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return container;
     }
 
-    function buildMessageIllustrationElement(message) {
+    function buildMessageIllustrationElement(message, chat = null) {
       const illustration = normalizeMessageIllustration(message?.illustration);
       if (!illustration) {
         return null;
       }
+      const isRpIllustration = isRpChat(chat) || Boolean(message?.characterCardId);
 
       const container = document.createElement("div");
       container.className = "message-illustration";
@@ -10522,7 +10683,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
       const title = document.createElement("div");
       title.className = "message-illustration-title";
-      title.textContent = t("generatedIllustration");
+      title.textContent = t(isRpIllustration ? "generatedIllustration" : "generatedImage");
       header.appendChild(title);
 
       const regenerateButton = createIconButton({
@@ -10538,7 +10699,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (illustration.status === "generating") {
         const placeholder = document.createElement("div");
         placeholder.className = "message-illustration-placeholder";
-        placeholder.textContent = t("illustrationGenerating");
+        placeholder.textContent = t(isRpIllustration ? "illustrationGenerating" : "imageGenerating");
         container.appendChild(placeholder);
         return container;
       }
@@ -11382,7 +11543,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         .map((cell) => cell.trim());
     }
 
-    function buildChatRequestMessages(messages, systemPrompt, rpContext = null) {
+    function buildChatRequestMessages(messages, systemPrompt, rpContext = null, extraSystemInstructions = []) {
       const rpPlaceholders = createRpPromptPlaceholders(rpContext);
       const requestMessages = messages
         .filter((message) => message.role === "user" || message.role === "assistant")
@@ -11423,6 +11584,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           normalizedPrompt
         ].join("\n"));
       }
+
+      (Array.isArray(extraSystemInstructions) ? extraSystemInstructions : [extraSystemInstructions])
+        .filter(Boolean)
+        .forEach((instruction) => systemInstructions.push(String(instruction)));
 
       if (rpContext?.character && (rpContext.character.name || rpContext.character.description)) {
         systemInstructions.push([
@@ -12142,6 +12307,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         illustrationSectionTitle.textContent = t("illustrationGeneration");
       }
       setLeadingLabelText(document.querySelector('label.inline-checkbox[for="illustrationEnabledInput"]'), t("illustrationEnabled"));
+      setLeadingLabelText(document.querySelector('label.inline-checkbox[for="chatT2iEnabledInput"]'), t("chatT2iEnabled"));
       setLeadingLabelText(document.querySelector('label.inline-checkbox[for="illustrationIgnoreNonCharacterPeopleInput"]'), t("illustrationIgnoreNonCharacterPeople"));
       setFieldLabel(elements.illustrationPromptStyleSelect, t("illustrationPromptStyle"));
       elements.illustrationPromptStyleSelect.options[0].textContent = t("illustrationPromptStyleTags");
