@@ -236,13 +236,19 @@
     }
 
     .settings-form,
-    .chat-form {
+    .chat-form,
+    .message-user-stack,
+    .model-controls,
+    .prompt-preset-form,
+    .authors-note-form {
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
 
-    .settings-inline-grid {
+    .settings-inline-grid,
+    .model-tuning-grid,
+    .illustration-control-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
@@ -324,7 +330,8 @@
       opacity: 0.75;
     }
 
-    .ghost-button {
+    .ghost-button,
+    .toolbar-button {
       background: rgba(163, 75, 31, 0.1);
       color: var(--primary-strong);
     }
@@ -342,11 +349,6 @@
 
     .button-row > * {
       flex: 1 1 0;
-    }
-
-    .toolbar-button {
-      background: rgba(163, 75, 31, 0.1);
-      color: var(--primary-strong);
     }
 
     .tab-utility-row {
@@ -399,10 +401,8 @@
 
     .chat-list,
     .message-stream,
-    .model-list,
     .overlay-content,
     .card-browser-list,
-    .card-editor-preview-pane,
     .card-editor-settings-pane,
     .card-editor-fields {
       scrollbar-width: thin;
@@ -411,10 +411,8 @@
 
     .chat-list::-webkit-scrollbar,
     .message-stream::-webkit-scrollbar,
-    .model-list::-webkit-scrollbar,
     .overlay-content::-webkit-scrollbar,
     .card-browser-list::-webkit-scrollbar,
-    .card-editor-preview-pane::-webkit-scrollbar,
     .card-editor-settings-pane::-webkit-scrollbar,
     .card-editor-fields::-webkit-scrollbar {
       width: 7px;
@@ -423,10 +421,8 @@
 
     .chat-list::-webkit-scrollbar-track,
     .message-stream::-webkit-scrollbar-track,
-    .model-list::-webkit-scrollbar-track,
     .overlay-content::-webkit-scrollbar-track,
     .card-browser-list::-webkit-scrollbar-track,
-    .card-editor-preview-pane::-webkit-scrollbar-track,
     .card-editor-settings-pane::-webkit-scrollbar-track,
     .card-editor-fields::-webkit-scrollbar-track {
       background: rgba(239, 226, 207, 0.32);
@@ -435,10 +431,8 @@
 
     .chat-list::-webkit-scrollbar-thumb,
     .message-stream::-webkit-scrollbar-thumb,
-    .model-list::-webkit-scrollbar-thumb,
     .overlay-content::-webkit-scrollbar-thumb,
     .card-browser-list::-webkit-scrollbar-thumb,
-    .card-editor-preview-pane::-webkit-scrollbar-thumb,
     .card-editor-settings-pane::-webkit-scrollbar-thumb,
     .card-editor-fields::-webkit-scrollbar-thumb {
       background: rgba(163, 75, 31, 0.34);
@@ -448,10 +442,8 @@
 
     .chat-list::-webkit-scrollbar-thumb:hover,
     .message-stream::-webkit-scrollbar-thumb:hover,
-    .model-list::-webkit-scrollbar-thumb:hover,
     .overlay-content::-webkit-scrollbar-thumb:hover,
     .card-browser-list::-webkit-scrollbar-thumb:hover,
-    .card-editor-preview-pane::-webkit-scrollbar-thumb:hover,
     .card-editor-settings-pane::-webkit-scrollbar-thumb:hover,
     .card-editor-fields::-webkit-scrollbar-thumb:hover {
       background: rgba(127, 54, 21, 0.46);
@@ -459,10 +451,8 @@
 
     :root[data-resolved-theme="dark"] .chat-list,
     :root[data-resolved-theme="dark"] .message-stream,
-    :root[data-resolved-theme="dark"] .model-list,
     :root[data-resolved-theme="dark"] .overlay-content,
     :root[data-resolved-theme="dark"] .card-browser-list,
-    :root[data-resolved-theme="dark"] .card-editor-preview-pane,
     :root[data-resolved-theme="dark"] .card-editor-settings-pane,
     :root[data-resolved-theme="dark"] .card-editor-fields {
       scrollbar-color: rgba(235, 161, 112, 0.4) rgba(37, 29, 23, 0.5);
@@ -470,10 +460,8 @@
 
     :root[data-resolved-theme="dark"] .chat-list::-webkit-scrollbar-track,
     :root[data-resolved-theme="dark"] .message-stream::-webkit-scrollbar-track,
-    :root[data-resolved-theme="dark"] .model-list::-webkit-scrollbar-track,
     :root[data-resolved-theme="dark"] .overlay-content::-webkit-scrollbar-track,
     :root[data-resolved-theme="dark"] .card-browser-list::-webkit-scrollbar-track,
-    :root[data-resolved-theme="dark"] .card-editor-preview-pane::-webkit-scrollbar-track,
     :root[data-resolved-theme="dark"] .card-editor-settings-pane::-webkit-scrollbar-track,
     :root[data-resolved-theme="dark"] .card-editor-fields::-webkit-scrollbar-track {
       background: rgba(37, 29, 23, 0.5);
@@ -481,10 +469,8 @@
 
     :root[data-resolved-theme="dark"] .chat-list::-webkit-scrollbar-thumb,
     :root[data-resolved-theme="dark"] .message-stream::-webkit-scrollbar-thumb,
-    :root[data-resolved-theme="dark"] .model-list::-webkit-scrollbar-thumb,
     :root[data-resolved-theme="dark"] .overlay-content::-webkit-scrollbar-thumb,
     :root[data-resolved-theme="dark"] .card-browser-list::-webkit-scrollbar-thumb,
-    :root[data-resolved-theme="dark"] .card-editor-preview-pane::-webkit-scrollbar-thumb,
     :root[data-resolved-theme="dark"] .card-editor-settings-pane::-webkit-scrollbar-thumb,
     :root[data-resolved-theme="dark"] .card-editor-fields::-webkit-scrollbar-thumb {
       background: rgba(235, 161, 112, 0.36);
@@ -493,10 +479,8 @@
 
     :root[data-resolved-theme="dark"] .chat-list::-webkit-scrollbar-thumb:hover,
     :root[data-resolved-theme="dark"] .message-stream::-webkit-scrollbar-thumb:hover,
-    :root[data-resolved-theme="dark"] .model-list::-webkit-scrollbar-thumb:hover,
     :root[data-resolved-theme="dark"] .overlay-content::-webkit-scrollbar-thumb:hover,
     :root[data-resolved-theme="dark"] .card-browser-list::-webkit-scrollbar-thumb:hover,
-    :root[data-resolved-theme="dark"] .card-editor-preview-pane::-webkit-scrollbar-thumb:hover,
     :root[data-resolved-theme="dark"] .card-editor-settings-pane::-webkit-scrollbar-thumb:hover,
     :root[data-resolved-theme="dark"] .card-editor-fields::-webkit-scrollbar-thumb:hover {
       background: rgba(235, 161, 112, 0.48);
@@ -1069,7 +1053,10 @@
       overflow-wrap: anywhere;
     }
 
-    .message-streaming-text {
+    .message-streaming-text,
+    .message.user .message-content,
+    .message.system .message-content,
+    .message-user-text {
       white-space: pre-wrap;
     }
 
@@ -1102,11 +1089,6 @@
 
     .message.user .message-content-editor:focus {
       box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.18);
-    }
-
-    .message.user .message-content,
-    .message.system .message-content {
-      white-space: pre-wrap;
     }
 
     .message-content > :first-child {
@@ -1188,6 +1170,24 @@
       padding-bottom: 2px;
     }
 
+    .older-messages-sentinel {
+      display: grid;
+      place-items: center;
+      width: min(100%, 520px);
+      min-height: 44px;
+      margin: 0 auto 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(88, 64, 38, 0.1);
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    :root[data-resolved-theme="dark"] .older-messages-sentinel {
+      border-color: rgba(239, 222, 205, 0.08);
+      background: rgba(31, 24, 19, 0.82);
+    }
     .message-content .katex-display > .katex {
       display: inline-block;
       min-width: max-content;
@@ -1404,16 +1404,6 @@
       pointer-events: none;
     }
 
-    .message-user-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .message-user-text {
-      white-space: pre-wrap;
-    }
-
     .message-image-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -1465,7 +1455,21 @@
       border: 1px solid rgba(88, 64, 38, 0.1);
     }
 
-    :root[data-resolved-theme="dark"] .message-image-card img {
+    .message-image-placeholder {
+      display: grid;
+      place-items: center;
+      width: 100%;
+      min-height: 220px;
+      border-radius: 14px;
+      border: 1px solid rgba(88, 64, 38, 0.1);
+      background: rgba(255, 255, 255, 0.16);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    :root[data-resolved-theme="dark"] .message-image-card img,
+    :root[data-resolved-theme="dark"] .message-image-placeholder {
       background: rgba(18, 15, 12, 0.8);
       border-color: rgba(239, 222, 205, 0.08);
     }
@@ -1586,31 +1590,43 @@
       opacity: 0.78;
     }
 
-    .image-preview-overlay {
-      z-index: 40;
+    .image-preview-overlay,
+    .image-crop-overlay {
       padding: 28px;
       background: #140c06;
     }
 
-    .image-preview-panel {
+    .image-preview-overlay {
+      z-index: 40;
+    }
+
+    .image-preview-panel,
+    .image-crop-panel {
       display: flex;
       flex-direction: column;
+      overflow: hidden;
+    }
+
+    .image-preview-panel {
       width: min(1280px, calc(100vw - 40px));
       height: min(calc(100vh - 56px), 1120px);
       height: min(calc(100svh - 56px), 1120px);
       max-height: min(96vh, 1120px);
       max-height: min(96svh, 1120px);
-      overflow: hidden;
     }
 
-    .image-preview-panel .panel-inner {
+    .image-preview-panel .panel-inner,
+    .image-crop-panel .panel-inner {
       display: flex;
       flex-direction: column;
       flex: 1 1 auto;
-      height: 100%;
       min-height: 0;
-      gap: 14px;
       padding: 18px;
+    }
+
+    .image-preview-panel .panel-inner {
+      height: 100%;
+      gap: 14px;
     }
 
     .image-preview-body {
@@ -1657,32 +1673,23 @@
 
     .image-crop-overlay {
       z-index: 45;
-      padding: 28px;
-      background: #140c06;
     }
 
     .image-crop-panel {
-      display: flex;
-      flex-direction: column;
       width: min(760px, calc(100vw - 40px));
       max-height: min(96vh, 980px);
       max-height: min(96svh, 980px);
-      overflow: hidden;
     }
 
     .image-crop-panel .panel-inner {
-      display: flex;
-      flex-direction: column;
-      flex: 1 1 auto;
-      min-height: 0;
       gap: 16px;
-      padding: 18px;
     }
 
     .image-crop-body {
       display: grid;
       grid-template-columns: minmax(0, 1fr) 220px;
       gap: 18px;
+      flex: 1 1 auto;
       min-height: 0;
       align-items: stretch;
     }
@@ -1768,11 +1775,6 @@
       gap: 8px;
       font-size: 13px;
       color: var(--muted);
-    }
-
-    .image-crop-controls input[type="range"] {
-      width: 100%;
-      accent-color: var(--primary);
     }
 
     .image-crop-help,
@@ -1909,16 +1911,13 @@
     }
 
     .card-editor-settings-pane {
-      min-width: 0;
-      min-height: 0;
-      overflow: hidden;
-    }
-
-    .card-editor-settings-pane {
       display: flex;
       flex-direction: column;
       gap: 12px;
       flex: 1 1 auto;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
     }
 
     .card-editor-toolbar {
@@ -2090,11 +2089,6 @@
       background: #2f1714;
     }
 
-    :root[data-resolved-theme="dark"] .authors-note-button.active {
-      color: #fff9f4;
-      background: var(--primary);
-    }
-
     .status-toast-layer {
       position: fixed;
       top: 18px;
@@ -2151,13 +2145,8 @@
       gap: 10px;
     }
 
-    .model-tuning-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .model-tuning-field {
+    .model-tuning-field,
+    .range-field {
       min-width: 0;
     }
 
@@ -2196,14 +2185,16 @@
       margin-left: 22px;
     }
 
-    .stat-card {
+    .stat-card,
+    .prompt-preset-item {
       padding: 14px;
       border-radius: var(--radius-lg);
       background: rgba(255, 255, 255, 0.74);
       border: 1px solid rgba(88, 64, 38, 0.08);
     }
 
-    :root[data-resolved-theme="dark"] .stat-card {
+    :root[data-resolved-theme="dark"] .stat-card,
+    :root[data-resolved-theme="dark"] .prompt-preset-item {
       border-color: rgba(239, 222, 205, 0.08);
       background: rgba(28, 22, 18, 0.82);
     }
@@ -2215,12 +2206,6 @@
       font-family: var(--font-display);
       letter-spacing: -0.04em;
       color: var(--primary-strong);
-    }
-
-    .model-controls {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
     }
 
     .model-prompt-toolbar {
@@ -2246,16 +2231,6 @@
       gap: 14px;
     }
 
-    .illustration-control-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .range-field {
-      min-width: 0;
-    }
-
     .range-field span {
       display: flex;
       align-items: center;
@@ -2269,18 +2244,14 @@
       font-variant-numeric: tabular-nums;
     }
 
+    .image-crop-controls input[type="range"],
     .range-field input[type="range"] {
       width: 100%;
       accent-color: var(--primary);
     }
 
-    .prompt-preset-form {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .prompt-preset-list-section {
+    .prompt-preset-list-section,
+    .panel-list-section {
       min-height: 0;
       display: flex;
       flex-direction: column;
@@ -2299,15 +2270,6 @@
       align-items: flex-start;
       justify-content: space-between;
       gap: 12px;
-      padding: 14px;
-      border-radius: var(--radius-lg);
-      background: rgba(255, 255, 255, 0.74);
-      border: 1px solid rgba(88, 64, 38, 0.08);
-    }
-
-    :root[data-resolved-theme="dark"] .prompt-preset-item {
-      border-color: rgba(239, 222, 205, 0.08);
-      background: rgba(28, 22, 18, 0.82);
     }
 
     .prompt-preset-item-main {
@@ -2338,12 +2300,6 @@
       align-items: center;
       gap: 8px;
       flex: 0 0 auto;
-    }
-
-    .authors-note-form {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
     }
 
     .authors-note-form textarea {
@@ -2546,13 +2502,6 @@
       grid-column: 2;
       grid-row: 1;
       min-height: 0;
-    }
-
-    .panel-list-section {
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-      flex: 1 1 auto;
     }
 
     .sr-only {
@@ -2853,28 +2802,12 @@
         border: 0;
       }
 
-      .image-preview-overlay {
-        padding: 0;
-      }
-
+      .image-preview-overlay,
       .image-crop-overlay {
         padding: 0;
       }
 
-      .image-preview-panel {
-        width: 100vw;
-        max-height: none;
-        height: 100vh;
-        height: 100svh;
-        border-radius: 0;
-        border: 0;
-      }
-
-      .image-preview-panel .panel-inner {
-        gap: 12px;
-        padding: 14px 14px calc(14px + env(safe-area-inset-bottom, 0px));
-      }
-
+      .image-preview-panel,
       .image-crop-panel {
         width: 100vw;
         max-height: none;
@@ -2884,6 +2817,7 @@
         border: 0;
       }
 
+      .image-preview-panel .panel-inner,
       .image-crop-panel .panel-inner {
         gap: 12px;
         padding: 14px 14px calc(14px + env(safe-area-inset-bottom, 0px));
@@ -2891,6 +2825,7 @@
 
       .image-crop-body {
         grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: minmax(0, 1fr) auto;
       }
 
       .image-crop-viewport {
@@ -2978,34 +2913,6 @@
         box-shadow: none;
       }
 
-      .status-toast {
-        background: var(--panel-solid);
-      }
-
-      .scroll-jump-button {
-        background: var(--panel-solid);
-      }
-
-      .scroll-clear-button {
-        background: #fff5f2;
-      }
-
-      .status-toast.success {
-        background: #f4fff8;
-      }
-
-      .status-toast.error {
-        background: #fff5f2;
-      }
-
-      :root[data-resolved-theme="dark"] .status-toast {
-        background: var(--panel-solid);
-      }
-
-      :root[data-resolved-theme="dark"] .scroll-jump-button {
-        background: var(--panel-solid);
-      }
-
       :root[data-resolved-theme="dark"] .scroll-clear-button {
         background: #2a1917;
       }
@@ -3018,11 +2925,6 @@
         background: #2a1917;
       }
 
-      .overlay-panel,
-      .image-preview-panel,
-      .image-crop-panel {
-        background: var(--panel-solid);
-      }
     }
   </style>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.17.0/dist/katex.min.css">
@@ -3178,7 +3080,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section class="brand">
               <div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="8" y="8" width="48" height="48" rx="14" fill="currentColor"></rect><circle cx="32" cy="32" r="13" fill="none" stroke="#fff7ee" stroke-width="6"></circle><circle cx="46" cy="18" r="3" fill="#fff7ee" fill-opacity="0.9"></circle></svg><span>FocusAbove</span></div>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.4.0, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.4.1, ⓒ 2026 Fur-Abyss</p>
             </section>
 
             <div class="settings-tab-strip" role="tablist" aria-label="설정 범주">
@@ -3621,6 +3523,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     const APP_DB_VERSION = 1;
     const APP_DB_STORE = "focusabove";
     const APP_DB_RECORD_KEY = "app-state";
+    const APP_MEDIA_RECORD_PREFIX = "media:";
     const APP_SECRET_RECORD_KEY = "app-secrets";
     const APP_SECRET_KEY_RECORD_PREFIX = "app-secret-key-";
     const APP_SECRET_KEY_RING_SIZE = 13;
@@ -3709,6 +3612,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     const THINKING_STREAMING_RENDER_THROTTLE_MS = 2500;
     const MAX_IMAGE_DIMENSION = 1024;
     const MAX_PENDING_IMAGE_BYTES = 12 * 1024 * 1024;
+    const INITIAL_MESSAGE_RENDER_LIMIT = 80;
+    const MESSAGE_RENDER_BATCH_SIZE = 40;
+    const OLDER_MESSAGE_LOAD_THRESHOLD_PX = 520;
+    const EAGER_ASSISTANT_IMAGE_LIMIT = 4;
+    const LAZY_IMAGE_ROOT_MARGIN = "900px 0px";
     const CHAT_T2I_SKIP_TOKEN = "FOCUSABOVE_NO_T2I_IMAGE";
     const MATH_RENDER_DELIMITERS = [
       { left: "$$", right: "$$", display: true },
@@ -3901,6 +3809,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         imageUpload: "이미지 업로드",
         imageUploadTitle: ({ dimension, bytes }) => `이미지 업로드 (업로드 후 최대 ${dimension}px로 축소, 총 ${bytes}까지.)`,
         imageOnly: "이미지만 전송됨",
+        imageLoading: "이미지 불러오는 중",
+        olderMessagesLoading: "이전 메시지를 불러오는 중",
         clickToPreview: "클릭해 크게 보기",
         previewWithName: ({ name }) => `${name} 크게 보기`,
         streamingThinking: "생각 중",
@@ -3927,11 +3837,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         imageTitleMultiple: ({ count }) => `이미지 ${count}장`,
         switchedToRpMode: "RP 모드로 전환했습니다.",
         switchedToChatMode: "채팅 모드로 전환했습니다.",
-        generalSettingsSaved: "일반 설정을 브라우저 저장소에 저장했습니다. 필요하면 모델을 다시 불러오세요.",
+        settingsSaved: "설정을 저장했습니다.",
         generalSettingsRestored: "일반 설정을 기본값으로 복원했습니다.",
         authorsNoteCleared: "작가 노트를 비웠습니다.",
-        modelSettingsSaved: "모델 설정을 저장했습니다.",
-        illustrationSettingsSaved: "삽화 설정을 저장했습니다.",
         imageCropCanceled: "이미지 자르기를 취소했습니다.",
         rpImageApplied: ({ kind }) => `${kind} 이미지를 정사각형으로 반영했습니다. 저장해 확정하세요.`,
         imageCropFailed: ({ error }) => `이미지 자르기 실패: ${error}`,
@@ -4173,6 +4081,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         imageUpload: "Upload image",
         imageUploadTitle: ({ dimension, bytes }) => `Upload image (resized to max ${dimension}px after upload, up to ${bytes} total).`,
         imageOnly: "Images only",
+        imageLoading: "Loading image",
+        olderMessagesLoading: "Loading earlier messages",
         clickToPreview: "Click to preview",
         previewWithName: ({ name }) => `Preview ${name}`,
         streamingThinking: "Thinking",
@@ -4199,11 +4109,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         imageTitleMultiple: ({ count }) => `${count} images`,
         switchedToRpMode: "Switched to RP mode.",
         switchedToChatMode: "Switched to chat mode.",
-        generalSettingsSaved: "Saved general settings to browser storage. Refresh models again if needed.",
+        settingsSaved: "Saved settings.",
         generalSettingsRestored: "Restored general settings to defaults.",
         authorsNoteCleared: "Cleared the Author's Note.",
-        modelSettingsSaved: "Saved model settings.",
-        illustrationSettingsSaved: "Saved illustration settings.",
         imageCropCanceled: "Canceled image cropping.",
         rpImageApplied: ({ kind }) => `Applied the ${kind} image as a square. Save to confirm it.`,
         imageCropFailed: ({ error }) => `Image crop failed: ${error}`,
@@ -4533,12 +4441,17 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     const chatTitleDrafts = new Map();
     const assistantMessageHtmlCache = new WeakMap();
     const messageArticleElementCache = new Map();
+    const mediaDataUrlCache = new Map();
     const rpCardListRenderSignatures = {
       character: "",
       persona: ""
     };
     let chatListRenderSignature = "";
     let composerAttachmentRenderSignature = "";
+    let renderedMessageChatId = "";
+    let renderedMessageCount = INITIAL_MESSAGE_RENDER_LIMIT;
+    let isLoadingOlderMessages = false;
+    let lazyImageObserver = null;
     let streamingAutoScrollPinnedToBottom = true;
     let streamingAutoScrollFrameId = 0;
     let lastStreamingPersistRequestAt = 0;
@@ -4759,11 +4672,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function handleWindowScroll() {
-      if (!currentStreamingMessageId) {
-        return;
+      maybeLoadOlderMessagesOnScroll();
+      if (currentStreamingMessageId) {
+        streamingAutoScrollPinnedToBottom = isPageNearBottom();
       }
-
-      streamingAutoScrollPinnedToBottom = isPageNearBottom();
     }
 
     async function loadState() {
@@ -4778,7 +4690,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         if (storedState) {
           const normalizedState = normalizeStoredAppState(storedState);
           const secretHydration = await hydrateSettingsSecrets(normalizedState);
-          if (secretHydration.migrated) {
+          const mediaMigrated = await migrateStateMediaToIndexedDb(normalizedState);
+          if (secretHydration.migrated || mediaMigrated) {
             await writeStoredState(cloneStateForPersistence(normalizedState));
           }
           localStorage.removeItem(APP_STORAGE_KEY);
@@ -4787,6 +4700,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
         if (legacyState) {
           await hydrateSettingsSecrets(legacyState);
+          await migrateStateMediaToIndexedDb(legacyState);
           await writeStoredState(cloneStateForPersistence(legacyState));
           localStorage.removeItem(APP_STORAGE_KEY);
           return legacyState;
@@ -5199,6 +5113,67 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       });
     }
 
+    async function writeMediaRecord(mediaId, attachment, options = {}) {
+      if (!supportsIndexedDb() || !mediaId || !attachment?.dataUrl) {
+        return false;
+      }
+
+      await writeIndexedDbRecord(`${APP_MEDIA_RECORD_PREFIX}${mediaId}`, { dataUrl: attachment.dataUrl });
+      if (options.cache !== false) {
+        mediaDataUrlCache.set(mediaId, attachment.dataUrl);
+      }
+      return true;
+    }
+
+    async function resolveImageAttachmentDataUrl(attachment) {
+      if (typeof attachment?.dataUrl === "string" && attachment.dataUrl) {
+        return attachment.dataUrl;
+      }
+      const mediaId = attachment?.mediaId || "";
+      if (!mediaId) {
+        return "";
+      }
+
+      if (mediaDataUrlCache.has(mediaId)) {
+        return mediaDataUrlCache.get(mediaId) || "";
+      }
+
+      if (!supportsIndexedDb()) {
+        return "";
+      }
+
+      try {
+        const record = await readIndexedDbRecord(`${APP_MEDIA_RECORD_PREFIX}${mediaId}`);
+        const dataUrl = typeof record?.dataUrl === "string" ? record.dataUrl : "";
+        if (dataUrl) {
+          mediaDataUrlCache.set(mediaId, dataUrl);
+        }
+        return dataUrl;
+      } catch (error) {
+        console.error("Failed to read media record", error);
+        return "";
+      }
+    }
+
+    async function detachImageAttachmentMedia(attachment) {
+      const normalized = cloneImageAttachment(attachment);
+      if (!supportsIndexedDb() || !normalized.dataUrl) {
+        return normalized;
+      }
+
+      const mediaId = normalized.mediaId || createId("media");
+      await writeMediaRecord(mediaId, normalized);
+      return {
+        ...normalized,
+        mediaId,
+        dataUrl: ""
+      };
+    }
+
+    async function detachImageAttachmentsMedia(attachments) {
+      return Promise.all(normalizeImageAttachments(attachments).map(detachImageAttachmentMedia));
+    }
+
     async function writeStoredState(snapshot) {
       if (supportsIndexedDb()) {
         try {
@@ -5234,6 +5209,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         snapshot.settings.apiKey = "";
         snapshot.settings.imageApiKey = "";
       }
+      forEachStateImageAttachment(snapshot, (attachment) => {
+        if (attachment?.mediaId) {
+          attachment.dataUrl = "";
+        }
+      });
       scrubEphemeralMessageStateFromSnapshot(snapshot);
       return snapshot;
     }
@@ -5257,6 +5237,53 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           });
         });
       });
+    }
+
+    function forEachStateImageAttachment(targetState, callback) {
+      if (!targetState || typeof callback !== "function") {
+        return;
+      }
+
+      [targetState.chats, ...Object.values(targetState.rp?.chatsByCharacterId || {})].forEach((chats) => {
+        (Array.isArray(chats) ? chats : []).forEach((chat) => {
+          (Array.isArray(chat?.messages) ? chat.messages : []).forEach((message) => {
+            (Array.isArray(message?.attachments) ? message.attachments : []).forEach(callback);
+            message?.illustration?.image && callback(message.illustration.image);
+          });
+        });
+      });
+
+      [targetState.rp?.characterCards, targetState.rp?.personaCards].forEach((cards) => {
+        (Array.isArray(cards) ? cards : []).forEach((card) => {
+          card?.profileImage && callback(card.profileImage);
+        });
+      });
+    }
+
+    async function migrateStateMediaToIndexedDb(targetState) {
+      if (!supportsIndexedDb()) {
+        return false;
+      }
+
+      const attachments = [];
+      forEachStateImageAttachment(targetState, (attachment) => {
+        if (attachment?.dataUrl) {
+          attachments.push(attachment);
+        }
+      });
+
+      if (!attachments.length) {
+        return false;
+      }
+
+      for (const attachment of attachments) {
+        const mediaId = attachment.mediaId || createId("media");
+        await writeMediaRecord(mediaId, attachment, { cache: false });
+        attachment.mediaId = mediaId;
+        attachment.dataUrl = "";
+      }
+
+      return true;
     }
 
     async function hydrateSettingsSecrets(nextState) {
@@ -6348,9 +6375,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           thumb.className = "card-browser-thumb";
           if (card.profileImage?.dataUrl) {
             const image = document.createElement("img");
-            image.src = card.profileImage.dataUrl;
+            image.alt = card.name;
+            queueImageElementSource(image, card.profileImage);
+            thumb.appendChild(image);
+          } else if (card.profileImage?.mediaId) {
+            const image = document.createElement("img");
             image.alt = card.name;
             thumb.appendChild(image);
+            queueImageElementSource(image, card.profileImage);
           } else {
             thumb.textContent = getCardInitial(card.name, kind === "character" ? "C" : "P");
           }
@@ -6590,7 +6622,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         elements.chatSubtitle.title = elements.chatSubtitle.textContent;
         elements.messageStream.innerHTML = "";
         elements.systemPromptInput.value = state.settings.systemPrompt || "";
+        renderedMessageChatId = "";
+        renderedMessageCount = INITIAL_MESSAGE_RENDER_LIMIT;
         return;
+      }
+
+      if (renderedMessageChatId !== activeChat.id) {
+        renderedMessageChatId = activeChat.id;
+        renderedMessageCount = INITIAL_MESSAGE_RENDER_LIMIT;
       }
 
       elements.chatTitle.textContent = activeChat.title;
@@ -6620,15 +6659,62 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         empty.textContent = t("emptyState");
         elements.messageStream.appendChild(empty);
       } else {
-        activeChat.messages.forEach((message) => {
+        const visibleMessages = getRenderedMessagesForActiveChat(activeChat);
+        if (visibleMessages.length < activeChat.messages.length) {
+          elements.messageStream.appendChild(buildOlderMessagesSentinel());
+        }
+        visibleMessages.forEach((message) => {
           const article = buildMessageArticle(activeChat, message);
           elements.messageStream.appendChild(article);
           cacheMessageArticleElements(article);
         });
       }
 
+      if (!isLoadingOlderMessages) {
+        requestAnimationFrame(() => {
+          scrollPageToMessageEnd();
+        });
+      }
+    }
+
+    function getRenderedMessagesForActiveChat(chat) {
+      const messages = Array.isArray(chat?.messages) ? chat.messages : [];
+      const count = Math.min(messages.length, Math.max(INITIAL_MESSAGE_RENDER_LIMIT, renderedMessageCount));
+      renderedMessageCount = count;
+      return messages.slice(-count);
+    }
+
+    function buildOlderMessagesSentinel() {
+      const sentinel = document.createElement("div");
+      sentinel.className = "older-messages-sentinel";
+      sentinel.textContent = t("olderMessagesLoading");
+      return sentinel;
+    }
+
+    function maybeLoadOlderMessagesOnScroll() {
+      if (isLoadingOlderMessages || isSending) {
+        return;
+      }
+
+      const activeChat = getActiveChat();
+      const messages = Array.isArray(activeChat?.messages) ? activeChat.messages : [];
+      if (!messages.length || renderedMessageCount >= messages.length) {
+        return;
+      }
+
+      const scrollRoot = getScrollRoot();
+      if (scrollRoot.scrollTop > OLDER_MESSAGE_LOAD_THRESHOLD_PX) {
+        return;
+      }
+
+      isLoadingOlderMessages = true;
+      const previousScrollHeight = scrollRoot.scrollHeight;
+      renderedMessageCount = Math.min(messages.length, renderedMessageCount + MESSAGE_RENDER_BATCH_SIZE);
+      renderActiveChat();
       requestAnimationFrame(() => {
-        scrollPageToMessageEnd();
+        const nextScrollHeight = scrollRoot.scrollHeight;
+        scrollRoot.scrollTop += Math.max(0, nextScrollHeight - previousScrollHeight);
+        isLoadingOlderMessages = false;
       });
     }
 
@@ -6976,16 +7062,16 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           ? getRpCardById("persona", message.personaCardId || state.rp.activePersonaId)?.profileImage
           : null;
 
-      if (!profileImage?.dataUrl) {
+      if (!profileImage?.dataUrl && !profileImage?.mediaId) {
         return null;
       }
 
       const avatar = document.createElement("div");
       avatar.className = "message-avatar";
       const image = document.createElement("img");
-      image.src = profileImage.dataUrl;
       image.alt = message.role === "assistant" ? roleLabel("assistant", message) : roleLabel("user", message);
       avatar.appendChild(image);
+      queueImageElementSource(image, profileImage);
       return avatar;
     }
 
@@ -7065,9 +7151,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           chip.className = "composer-attachment-chip";
 
           const image = document.createElement("img");
-          image.src = attachment.dataUrl;
           image.alt = attachment.name;
           chip.appendChild(image);
+          queueImageElementSource(image, attachment);
 
           const removeButton = createIconButton({
             className: "composer-attachment-remove",
@@ -7203,7 +7289,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       persistState();
       renderAll({ persist: false });
       populateSettingsForm();
-      setChatStatus(t("generalSettingsSaved"), "success");
+      setChatStatus(t("settingsSaved"), "success");
     }
 
     async function resetSettingsToDefault() {
@@ -7296,7 +7382,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       });
       resetModelSettingsDraft();
       renderAppSections({ persist: false, modelSelect: true, modelsPanel: true, activeChat: true });
-      setChatStatus(t("modelSettingsSaved"), "success");
+      setChatStatus(t("settingsSaved"), "success");
     }
 
     function handleIllustrationSettingsSave() {
@@ -7308,7 +7394,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       state.settings.chatT2iEnabled = elements.chatT2iEnabledInput.checked;
       persistState();
       syncIllustrationControls();
-      setChatStatus(t("illustrationSettingsSaved"), "success");
+      setChatStatus(t("settingsSaved"), "success");
     }
 
     function readIllustrationSettingsForm() {
@@ -7449,12 +7535,71 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       closeOverlay(elements.personaOverlay);
     }
 
-    function openImagePreview(attachment) {
-      if (!attachment?.dataUrl) {
+    function getLazyImageObserver() {
+      if (lazyImageObserver || typeof IntersectionObserver !== "function") {
+        return lazyImageObserver;
+      }
+
+      lazyImageObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) {
+            return;
+          }
+
+          lazyImageObserver.unobserve(entry.target);
+          const image = entry.target.querySelector("img");
+          if (image?.__focusaboveAttachment) {
+            void setImageElementSourceFromAttachment(image, image.__focusaboveAttachment);
+          }
+        });
+      }, { rootMargin: LAZY_IMAGE_ROOT_MARGIN });
+      return lazyImageObserver;
+    }
+
+    async function setImageElementSourceFromAttachment(image, attachment) {
+      if (!image || image.dataset.mediaLoaded === "true") {
         return;
       }
 
-      elements.imagePreviewImage.src = attachment.dataUrl;
+      const dataUrl = await resolveImageAttachmentDataUrl(attachment);
+      if (!dataUrl || !image.isConnected) {
+        return;
+      }
+
+      image.src = dataUrl;
+      image.dataset.mediaLoaded = "true";
+      const placeholder = image.previousElementSibling;
+      if (placeholder?.classList.contains("message-image-placeholder")) {
+        placeholder.remove();
+      }
+      image.hidden = false;
+    }
+
+    function queueImageElementSource(image, attachment, options = {}) {
+      image.__focusaboveAttachment = attachment;
+      if (options.defer) {
+        image.hidden = true;
+        const placeholder = document.createElement("div");
+        placeholder.className = "message-image-placeholder";
+        placeholder.textContent = t("imageLoading");
+        image.before(placeholder);
+        const observer = getLazyImageObserver();
+        if (observer) {
+          observer.observe(image.parentElement || image);
+          return;
+        }
+      }
+
+      void setImageElementSourceFromAttachment(image, attachment);
+    }
+
+    async function openImagePreview(attachment) {
+      const dataUrl = await resolveImageAttachmentDataUrl(attachment);
+      if (!dataUrl) {
+        return;
+      }
+
+      elements.imagePreviewImage.src = dataUrl;
       elements.imagePreviewImage.alt = attachment.name || "확대된 첨부 이미지";
       elements.imagePreviewCaption.textContent = attachment.name || "";
       openOverlay(elements.imagePreviewOverlay);
@@ -7542,6 +7687,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return;
       }
 
+      syncRpImageCropViewportSize();
       const viewportSize = Math.max(1, Math.round(elements.rpImageCropViewport.clientWidth || 320));
       const baseScale = Math.max(viewportSize / rpImageCropState.naturalWidth, viewportSize / rpImageCropState.naturalHeight);
       const displayScale = baseScale * rpImageCropState.zoom;
@@ -7564,6 +7710,24 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       elements.rpImageCropImage.style.height = `${displayHeight}px`;
       elements.rpImageCropImage.style.transform = `translate3d(${rpImageCropState.offsetX}px, ${rpImageCropState.offsetY}px, 0)`;
       elements.rpImageCropZoomValue.textContent = `${Math.round(rpImageCropState.zoom * 100)}%`;
+    }
+
+    function syncRpImageCropViewportSize() {
+      const shell = elements.rpImageCropViewport.parentElement;
+      if (!shell) {
+        return;
+      }
+
+      const shellStyle = window.getComputedStyle(shell);
+      const horizontalPadding = parseFloat(shellStyle.paddingLeft) + parseFloat(shellStyle.paddingRight);
+      const verticalPadding = parseFloat(shellStyle.paddingTop) + parseFloat(shellStyle.paddingBottom);
+      const availableWidth = Math.max(1, shell.clientWidth - horizontalPadding);
+      const availableHeight = Math.max(1, shell.clientHeight - verticalPadding);
+      const maxViewportSize = window.innerWidth <= 860 ? 360 : 420;
+      const viewportSize = Math.max(1, Math.min(maxViewportSize, availableWidth, availableHeight));
+
+      elements.rpImageCropViewport.style.width = `${viewportSize}px`;
+      elements.rpImageCropViewport.style.height = `${viewportSize}px`;
     }
 
     function handleRpImageCropZoomInput(event) {
@@ -7774,13 +7938,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         const croppedImage = cropImageDataUrl(rpImageCropState.image, rpImageCropState.mimeType, cropX, cropY, cropSize, outputSize);
         const kind = rpImageCropState.kind;
 
-        getRpCardDraft(kind).profileImage = {
+        getRpCardDraft(kind).profileImage = await detachImageAttachmentMedia({
           id: createId("img"),
           name: rpImageCropState.fileName,
           mimeType: croppedImage.mimeType,
           sizeBytes: croppedImage.sizeBytes,
           dataUrl: croppedImage.dataUrl
-        };
+        });
 
         cancelRpImageCrop({ silent: true });
         saveRpCard(kind);
@@ -7951,12 +8115,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         }
       };
 
-      if (card.profileImage?.dataUrl) {
-        const extension = getImageFileExtension(card.profileImage.mimeType);
+      const profileImage = card.profileImage ? await hydrateImageAttachmentForExport(card.profileImage) : null;
+      if (profileImage?.dataUrl) {
+        const extension = getImageFileExtension(profileImage.mimeType);
         const fileName = `profile.${extension}`;
         manifest.card.imageFileName = fileName;
-        manifest.card.imageMimeType = card.profileImage.mimeType || getImageMimeTypeFromExtension(extension);
-        zip.file(fileName, extractBase64Payload(card.profileImage.dataUrl), { base64: true });
+        manifest.card.imageMimeType = profileImage.mimeType || getImageMimeTypeFromExtension(extension);
+        zip.file(fileName, extractBase64Payload(profileImage.dataUrl), { base64: true });
       }
 
       zip.file("manifest.json", JSON.stringify(manifest, null, 2));
@@ -8038,12 +8203,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         const base64 = await imageEntry.async("base64");
         const mimeType = normalizeSupportedImageMimeType(manifest?.card?.imageMimeType)
           || normalizeSupportedImageMimeType(getImageMimeTypeFromExtension(imageFileName.split(".").pop() || "png"));
-        profileImage = await prepareImportedImageAttachment({
+        profileImage = await detachImageAttachmentMedia(await prepareImportedImageAttachment({
           id: createId("img"),
           name: imageFileName,
           mimeType,
           dataUrl: `data:${mimeType};base64,${base64}`
-        });
+        }));
       }
 
       return {
@@ -8140,7 +8305,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       toggleChatTitleEdit(activeChat.id);
     }
 
-    function exportChatToJson(chatId) {
+    async function exportChatToJson(chatId) {
       if (!isPrimaryTab) {
         setTabsStatus(t("activeTabOnlyExport"), "error");
         return;
@@ -8156,7 +8321,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         format: "focusabove-chat-tabs",
         version: 1,
         exportedAt: new Date().toISOString(),
-        chats: [JSON.parse(JSON.stringify(chat))]
+        chats: [await hydrateChatMediaForExport(chat)]
       };
 
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
@@ -8170,6 +8335,25 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       URL.revokeObjectURL(downloadUrl);
 
       setTabsStatus(t("tabJsonExported", { title: chat.title }), "success");
+    }
+
+    async function hydrateImageAttachmentForExport(attachment) {
+      const normalized = cloneImageAttachment(attachment);
+      if (!normalized.dataUrl) {
+        normalized.dataUrl = await resolveImageAttachmentDataUrl(normalized);
+      }
+      return normalized;
+    }
+
+    async function hydrateChatMediaForExport(chat) {
+      const copy = JSON.parse(JSON.stringify(chat));
+      for (const message of copy.messages || []) {
+        message.attachments = await Promise.all(normalizeImageAttachments(message.attachments).map(hydrateImageAttachmentForExport));
+        if (message.illustration?.image) {
+          message.illustration.image = await hydrateImageAttachmentForExport(message.illustration.image);
+        }
+      }
+      return copy;
     }
 
     function triggerImportChats() {
@@ -8274,10 +8458,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
       const messages = [];
       for (const message of chat.messages) {
-        const attachments = await sanitizeImportedImageAttachments(message.attachments);
+        const attachments = await detachImageAttachmentsMedia(await sanitizeImportedImageAttachments(message.attachments));
         const illustration = message.illustration ? { ...message.illustration } : null;
         if (illustration?.image) {
-          illustration.image = await prepareImportedImageAttachment(illustration.image);
+          illustration.image = await detachImageAttachmentMedia(await prepareImportedImageAttachment(illustration.image));
         }
         messages.push({
           ...message,
@@ -8293,7 +8477,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     async function sanitizeImportedImageAttachments(attachments) {
-      const normalizedAttachments = normalizeImageAttachments(attachments);
+      const normalizedAttachments = normalizeImageAttachments(attachments).filter((attachment) => attachment.dataUrl);
       const safeAttachments = [];
       for (const attachment of normalizedAttachments) {
         safeAttachments.push(await prepareImportedImageAttachment(attachment));
@@ -8592,7 +8776,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const activeChat = getActiveChat();
       let content = elements.messageInput.value.trim();
       const wasEmptyRpInput = isRpModeActive() && !content;
-      const attachments = pendingImageAttachments.map(cloneImageAttachment);
+      let attachments = pendingImageAttachments.map(cloneImageAttachment);
 
       if (!activeChat) {
         setChatStatus(t("selectChatTabFirst"), "error");
@@ -8625,6 +8809,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         setChatStatus(t("selectModelRequired"), "error");
         return;
       }
+
+      attachments = await detachImageAttachmentsMedia(attachments);
 
       const shouldEnhanceInput = shouldEnhanceRpInput(activeChat);
       const userMessage = createMessage("user", content, {
@@ -8936,11 +9122,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             });
         const requestBody = {
           model: options.selectedModel,
-          messages: buildChatRequestMessages(
+          messages: await buildChatRequestMessages(
             sourceMessages,
             state.settings.systemPrompt,
             rpContext,
-            buildChatT2iMainModelInstructions(chatT2iPrompt)
+            buildChatT2iMainModelInstructions(chatT2iPrompt, { chat })
           ),
           stream: true,
           stream_options: {
@@ -9056,7 +9242,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           || await (typeof options.createPrompt === "function"
             ? options.createPrompt(targetMessage)
             : createIllustrationPrompt(chat, targetMessage));
-        const image = await generateStableDiffusionImage(prompt);
+        const image = await detachImageAttachmentMedia(await generateStableDiffusionImage(prompt));
         const latestMessage = findMessageInChat(chat, targetMessage.id);
         if (!latestMessage) {
           return;
@@ -9782,9 +9968,18 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return cleanIllustrationPrompt(value).toUpperCase() === CHAT_T2I_SKIP_TOKEN;
     }
 
-    function buildChatT2iMainModelInstructions(prompt) {
+    function buildChatT2iMainModelInstructions(prompt, options = {}) {
       const cleanPrompt = cleanIllustrationPrompt(prompt);
       if (!cleanPrompt) {
+        if (options.chat && !isRpChat(options.chat)) {
+          return [[
+            "[Image Generation Availability]",
+            "FocusAbove has not scheduled image generation for this response and does not provide DALL-E, dalle.text2im, or any other image-generation tool to the main chat model in this turn.",
+            "Do not output tool-call JSON, action/action_input objects, function calls, or claims that an image was generated.",
+            "If the user asks for an image, respond in normal prose that image generation is disabled or unavailable here, and offer a text prompt or description instead."
+          ].join("\n")];
+        }
+
         return [];
       }
 
@@ -10507,6 +10702,28 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return String(message?.auxiliaryStatus || "").trim();
     }
 
+    function shouldDeferAssistantIllustrationImage(message, chat) {
+      if (!message || message.role !== "assistant" || !chat) {
+        return false;
+      }
+
+      const eagerMessageIds = getEagerAssistantImageMessageIds(chat);
+      return !eagerMessageIds.has(message.id);
+    }
+
+    function getEagerAssistantImageMessageIds(chat) {
+      const eagerIds = new Set();
+      const messages = Array.isArray(chat?.messages) ? chat.messages : [];
+      for (let index = messages.length - 1; index >= 0 && eagerIds.size < EAGER_ASSISTANT_IMAGE_LIMIT; index -= 1) {
+        const message = messages[index];
+        const illustration = normalizeMessageIllustration(message?.illustration);
+        if (message?.role === "assistant" && illustration?.status === "complete" && (illustration.image?.dataUrl || illustration.image?.mediaId)) {
+          eagerIds.add(message.id);
+        }
+      }
+      return eagerIds;
+    }
+
     function getScrollRoot() {
       return document.scrollingElement || document.documentElement;
     }
@@ -10712,8 +10929,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return container;
       }
 
-      if (illustration.image?.dataUrl) {
-        const grid = buildUserAttachmentGrid([illustration.image], { showCaptions: false });
+      if (illustration.image?.dataUrl || illustration.image?.mediaId) {
+        const grid = buildUserAttachmentGrid([illustration.image], {
+          showCaptions: false,
+          deferImages: shouldDeferAssistantIllustrationImage(message, chat)
+        });
         container.appendChild(grid);
         return container;
       }
@@ -10811,6 +11031,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
     function buildUserAttachmentGrid(attachments, options = {}) {
       const showCaptions = options.showCaptions !== false;
+      const deferImages = options.deferImages === true;
       const grid = document.createElement("div");
       grid.className = "message-image-grid";
 
@@ -10826,11 +11047,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         });
 
         const image = document.createElement("img");
-        image.src = attachment.dataUrl;
         image.alt = attachment.name;
         image.loading = "lazy";
 
         button.appendChild(image);
+        queueImageElementSource(image, attachment, { defer: deferImages });
         figure.appendChild(button);
         if (showCaptions) {
           const caption = document.createElement("figcaption");
@@ -11010,6 +11231,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     function cloneImageAttachment(attachment) {
       return {
         id: typeof attachment?.id === "string" && attachment.id ? attachment.id : createId("img"),
+        mediaId: typeof attachment?.mediaId === "string" ? attachment.mediaId : "",
         name: typeof attachment?.name === "string" && attachment.name ? attachment.name : "image",
         mimeType: typeof attachment?.mimeType === "string" && attachment.mimeType ? attachment.mimeType : "image/png",
         sizeBytes: normalizeOptionalInteger(attachment?.sizeBytes, { min: 0 }) ?? estimateImageAttachmentBytes(attachment?.dataUrl),
@@ -11021,7 +11243,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return Array.isArray(attachments)
         ? attachments
           .map(cloneImageAttachment)
-          .filter((attachment) => attachment.dataUrl)
+          .filter((attachment) => attachment.dataUrl || attachment.mediaId)
         : [];
     }
 
@@ -11543,11 +11765,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         .map((cell) => cell.trim());
     }
 
-    function buildChatRequestMessages(messages, systemPrompt, rpContext = null, extraSystemInstructions = []) {
+    async function buildChatRequestMessages(messages, systemPrompt, rpContext = null, extraSystemInstructions = []) {
       const rpPlaceholders = createRpPromptPlaceholders(rpContext);
-      const requestMessages = messages
+      const requestMessages = await Promise.all(messages
         .filter((message) => message.role === "user" || message.role === "assistant")
-        .map((message) => buildApiRequestMessage(message, rpPlaceholders));
+        .map((message) => buildApiRequestMessage(message, rpPlaceholders)));
       const normalizedPrompt = replaceRpPromptPlaceholders(String(systemPrompt || "").trim(), rpPlaceholders);
       const normalizedUserAlias = String(rpContext?.persona?.name || state.settings.userAlias || DEFAULT_SETTINGS.userAlias).trim();
       const normalizedModelAlias = String(rpContext?.character?.name || state.settings.modelAlias || DEFAULT_SETTINGS.modelAlias).trim();
@@ -11904,9 +12126,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return compact.length > 24 ? `${compact.slice(0, 24)}...` : compact;
     }
 
-    function buildApiRequestMessage(message, rpPlaceholders = null) {
+    async function buildApiRequestMessage(message, rpPlaceholders = null) {
       const role = message?.role || "user";
-      const attachments = normalizeImageAttachments(message?.attachments);
+      const attachments = await Promise.all(normalizeImageAttachments(message?.attachments).map(async (attachment) => ({
+        ...attachment,
+        dataUrl: await resolveImageAttachmentDataUrl(attachment)
+      })));
       const requestMessage = {
         role,
         content: buildApiMessageContent(role, message?.content, attachments, rpPlaceholders)
@@ -12436,10 +12661,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const cardKind = (value) => value === "캐릭터" ? "character" : value === "페르소나" ? "persona" : value;
       const exactMatches = {
         "탭 이름을 변경했습니다.": "Renamed the tab.",
-        "일반 설정을 브라우저 저장소에 저장했습니다. 필요하면 모델을 다시 불러오세요.": "Saved general settings to browser storage. Refresh models again if needed.",
         "일반 설정을 기본값으로 복원했습니다.": "Restored general settings to defaults.",
         "작가 노트를 비웠습니다.": "Cleared the Author's Note.",
-        "모델 설정을 저장했습니다.": "Saved model settings.",
         "이미지 자르기를 취소했습니다.": "Canceled image cropping.",
         "활성 탭에서만 내보내기를 실행할 수 있습니다.": "You can only export from the active tab.",
         "압축 내보내기 라이브러리를 불러오지 못했습니다.": "Failed to load the zip export library.",
