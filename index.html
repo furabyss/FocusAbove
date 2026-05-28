@@ -3051,17 +3051,16 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       <aside class="panel overlay-panel" role="dialog" aria-modal="true" aria-labelledby="authorsNoteOverlayTitle">
         <div class="panel-inner">
           <div class="overlay-header">
-            <h2 id="authorsNoteOverlayTitle" class="section-title">작가 노트</h2>
-            <button id="closeAuthorsNoteOverlayButton" type="button" class="overlay-close">닫기</button>
+            <h2 id="authorsNoteOverlayTitle" class="section-title"></h2>
+            <button id="closeAuthorsNoteOverlayButton" type="button" class="overlay-close"></button>
           </div>
           <div class="overlay-content">
             <section class="authors-note-form">
               <label>
-                노트
                 <textarea id="authorsNoteInput" placeholder=""></textarea>
               </label>
               <div class="button-row">
-                <button id="clearAuthorsNoteButton" type="button" class="ghost-button">비우기</button>
+                <button id="clearAuthorsNoteButton" type="button" class="ghost-button"></button>
               </div>
             </section>
           </div>
@@ -3073,100 +3072,86 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       <aside class="panel overlay-panel" role="dialog" aria-modal="true" aria-labelledby="settingsOverlayTitle">
         <div class="panel-inner">
           <div class="overlay-header">
-            <h2 id="settingsOverlayTitle" class="section-title">설정</h2>
-            <button id="closeSettingsOverlayButton" type="button" class="overlay-close">닫기</button>
+            <h2 id="settingsOverlayTitle" class="section-title"></h2>
+            <button id="closeSettingsOverlayButton" type="button" class="overlay-close"></button>
           </div>
           <div class="overlay-content settings-overlay-content">
             <section class="brand">
               <div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="8" y="8" width="48" height="48" rx="14" fill="currentColor"></rect><circle cx="32" cy="32" r="13" fill="none" stroke="#fff7ee" stroke-width="6"></circle><circle cx="46" cy="18" r="3" fill="#fff7ee" fill-opacity="0.9"></circle></svg><span>FocusAbove</span></div>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.4.1, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.4.2, ⓒ 2026 Fur-Abyss</p>
             </section>
 
-            <div class="settings-tab-strip" role="tablist" aria-label="설정 범주">
-              <button id="settingsGeneralTabButton" type="button" class="settings-tab-button active" role="tab" aria-selected="true" aria-controls="settingsGeneralPanel">일반</button>
-              <button id="settingsModelTabButton" type="button" class="settings-tab-button" role="tab" aria-selected="false" aria-controls="settingsModelPanel">모델</button>
-              <button id="settingsIllustrationTabButton" type="button" class="settings-tab-button" role="tab" aria-selected="false" aria-controls="settingsIllustrationPanel" hidden>이미지</button>
+            <div class="settings-tab-strip" role="tablist" aria-label="">
+              <button id="settingsGeneralTabButton" type="button" class="settings-tab-button active" role="tab" aria-selected="true" aria-controls="settingsGeneralPanel"></button>
+              <button id="settingsModelTabButton" type="button" class="settings-tab-button" role="tab" aria-selected="false" aria-controls="settingsModelPanel"></button>
+              <button id="settingsIllustrationTabButton" type="button" class="settings-tab-button" role="tab" aria-selected="false" aria-controls="settingsIllustrationPanel" hidden></button>
             </div>
 
             <section id="settingsGeneralPanel" class="settings-tab-panel" role="tabpanel" aria-labelledby="settingsGeneralTabButton">
               <section id="settingsSection" class="settings-section">
                 <form id="settingsForm" class="settings-form">
-                  <h2 class="section-title">연결 설정</h2>
+                  <h2 class="section-title"></h2>
                   <label>
-                    API 주소
-                    <input id="apiBaseUrlInput" name="apiBaseUrl" type="text" placeholder="http://127.0.0.1:1234/v1" autocomplete="off">
+                    <input id="apiBaseUrlInput" name="apiBaseUrl" type="text" placeholder="" autocomplete="off">
                   </label>
                   <label>
-                    API 키
                     <input id="apiKeyInput" name="apiKey" type="password" placeholder="API Key" autocomplete="off">
                   </label>
                   <label>
-                    이미지 API 주소
-                    <input id="imageApiBaseUrlInput" name="imageApiBaseUrl" type="text" placeholder="http://127.0.0.1:7860" autocomplete="off">
+                    <input id="imageApiBaseUrlInput" name="imageApiBaseUrl" type="text" placeholder="" autocomplete="off">
                   </label>
                   <label>
-                    이미지 API 키
                     <input id="imageApiKeyInput" name="imageApiKey" type="password" placeholder="API Key" autocomplete="off">
                   </label>
                   <div class="settings-inline-grid">
                     <label>
-                      사용자 별명
                       <input id="userAliasInput" name="userAlias" type="text" placeholder="사용자" autocomplete="off">
                     </label>
                     <label>
-                      모델 별명
                       <input id="modelAliasInput" name="modelAlias" type="text" placeholder="채찍피티" autocomplete="off">
                     </label>
                   </div>
                   <label>
-                    다크 모드
                     <select id="themeModeSelect" name="themeMode">
-                      <option value="system">시스템 설정값</option>
-                      <option value="dark">사용</option>
-                      <option value="light">사용하지 않음</option>
+                      <option value="system"></option>
+                      <option value="dark"></option>
+                      <option value="light"></option>
                     </select>
                   </label>
                   <label>
-                    언어
                     <select id="languageSelect" name="language">
-                      <option value="ko">한국어</option>
-                      <option value="en">English</option>
+                      <option value="ko"></option>
+                      <option value="en"></option>
                     </select>
                   </label>
                   <label id="rpResponsePerspectiveField" hidden>
-                    RP 응답 시점
                     <select id="rpResponsePerspectiveSelect">
-                      <option value="character-first-person">캐릭터 1인칭 시점</option>
-                      <option value="persona-first-person">페르소나 1인칭 시점</option>
-                      <option value="third-person">3인칭 시점</option>
+                      <option value="character-first-person"></option>
+                      <option value="persona-first-person"></option>
+                      <option value="third-person"></option>
                     </select>
                   </label>
                   <div id="rpAssistanceFields" class="rp-assistance-fields" hidden>
                     <label class="inline-checkbox" for="rpSummaryEnabledInput">
                       <input id="rpSummaryEnabledInput" name="rpSummaryEnabled" type="checkbox">
-                      대화 요약 사용
                     </label>
                     <label id="rpSummaryTokenThresholdField" hidden>
-                      요약 시작 컨텍스트 토큰
                       <input id="rpSummaryTokenThresholdInput" name="rpSummaryTokenThreshold" type="number" min="1000" placeholder="12000">
                     </label>
                     <label id="rpSummaryMaxTokensField" hidden>
-                      요약 최대 토큰
                       <input id="rpSummaryMaxTokensInput" name="rpSummaryMaxTokens" type="number" min="128" placeholder="1000">
                     </label>
                     <label class="inline-checkbox" for="rpInputEnhancementEnabledInput">
                       <input id="rpInputEnhancementEnabledInput" name="rpInputEnhancementEnabled" type="checkbox">
-                      인풋 보강 사용
                     </label>
                   </div>
                   <label class="inline-checkbox" for="smoothStreamingInput">
                     <input id="smoothStreamingInput" name="smoothStreaming" type="checkbox">
-                    부드러운 응답 스트리밍(성능 영향 있음)
                   </label>
                   <div class="button-row settings-tab-actions">
-                    <button type="submit">설정 저장</button>
-                    <button id="resetSettingsButton" type="button" class="ghost-button">기본값 복원</button>
+                    <button type="submit"></button>
+                    <button id="resetSettingsButton" type="button" class="ghost-button"></button>
                   </div>
                 </form>
               </section>
@@ -3176,119 +3161,107 @@ https://github.com/nodeca/pako/blob/main/LICENSE
               <section>
                 <div class="models-summary">
                   <div class="stat-card">
-                    <span>모델 수</span>
+                    <span></span>
                     <strong id="modelCount">0</strong>
                   </div>
                   <div class="stat-card">
-                    <span>마지막 동기화</span>
+                    <span></span>
                     <strong id="modelsSyncedAt">-</strong>
                   </div>
                 </div>
               </section>
 
               <section>
-                <h2 class="section-title">대화 설정</h2>
+                <h2 class="section-title"></h2>
                 <div class="model-controls">
                   <label>
-                    모델 선택
                     <select id="modelSelect"></select>
                   </label>
                   <label>
-                    보조 모델
                     <select id="auxiliaryModelSelect"></select>
                   </label>
                   <div class="model-tuning-grid">
                     <label class="model-tuning-field">
-                      온도
-                      <input id="temperatureInput" type="number" min="0" max="2" step="0.1" placeholder="기본값 사용">
+                      <input id="temperatureInput" type="number" min="0" max="2" step="0.1" placeholder="">
                     </label>
                     <label class="model-tuning-field">
-                      Thinking 토큰 제한
                       <div class="thinking-limit-row">
-                        <input id="thinkingTokenLimitInput" type="number" min="1" step="1" placeholder="서버 기본값 사용">
+                        <input id="thinkingTokenLimitInput" type="number" min="1" step="1" placeholder="">
                         <label class="inline-checkbox" for="thinkingUnlimitedInput">
                           <input id="thinkingUnlimitedInput" type="checkbox">
-                          무제한
                         </label>
                       </div>
                     </label>
                   </div>
-                  <div class="hint">Thinking 토큰 제한은 서버가 reasoning.max_tokens를 지원할 때만 반영됩니다.</div>
+                  <div class="hint"></div>
                   <label>
-                    시스템 프롬프트
-                    <textarea id="systemPromptInput" placeholder="이 탭에만 적용할 시스템 프롬프트를 입력하세요."></textarea>
+                    <textarea id="systemPromptInput" placeholder=""></textarea>
                   </label>
                   <div class="button-row model-prompt-toolbar">
-                    <button id="openPromptPresetOverlayButton" type="button" class="ghost-button">프리셋</button>
+                    <button id="openPromptPresetOverlayButton" type="button" class="ghost-button"></button>
                   </div>
                 </div>
               </section>
               <div class="button-row settings-tab-actions">
-                <button id="saveModelSettingsButton" type="button">설정 저장</button>
-                <button id="refreshModelsButton" type="button" class="ghost-button">모델 새로고침</button>
+                <button id="saveModelSettingsButton" type="button"></button>
+                <button id="refreshModelsButton" type="button" class="ghost-button"></button>
               </div>
             </section>
 
             <section id="settingsIllustrationPanel" class="settings-tab-panel" role="tabpanel" aria-labelledby="settingsIllustrationTabButton" hidden>
               <section>
-                <h2 class="section-title">이미지 생성</h2>
+                <h2 class="section-title"></h2>
                 <div class="illustration-controls">
                   <label class="inline-checkbox" for="chatT2iEnabledInput">
                     <input id="chatT2iEnabledInput" type="checkbox">
-                    채팅 모드에서 T2I 이미지 생성 사용
                   </label>
                   <label class="inline-checkbox" for="illustrationEnabledInput">
                     <input id="illustrationEnabledInput" type="checkbox">
-                    삽화 생성
                   </label>
                   <label class="inline-checkbox sub-option" for="illustrationIgnoreNonCharacterPeopleInput">
                     <input id="illustrationIgnoreNonCharacterPeopleInput" type="checkbox">
-                    페르소나 및 기타 인물 무시
                   </label>
                   <label>
-                    프롬프트 형식
                     <select id="illustrationPromptStyleSelect">
-                      <option value="tag-list">일반 프롬프트</option>
-                      <option value="natural-language">자연어 프롬프트</option>
+                      <option value="tag-list"></option>
+                      <option value="natural-language"></option>
                     </select>
                   </label>
                   <label>
-                    화풍 유형
                     <select id="illustrationArtStyleSelect">
-                      <option value="">선택하지 않음</option>
-                      <option value="anime">아니메</option>
-                      <option value="photo">사진</option>
+                      <option value=""></option>
+                      <option value="anime"></option>
+                      <option value="photo"></option>
                     </select>
                   </label>
                   <label>
-                    이미지 모델
                     <select id="imageModelSelect"></select>
                   </label>
                   <div class="button-row model-prompt-toolbar">
-                    <button id="refreshImageModelsButton" type="button" class="ghost-button">이미지 모델 새로고침</button>
+                    <button id="refreshImageModelsButton" type="button" class="ghost-button"></button>
                   </div>
                   <div id="illustrationGenerationControls" class="illustration-control-grid">
                     <label class="range-field">
-                      <span>CFG 스케일 <output id="illustrationCfgScaleValue">3</output></span>
+                      <span><output id="illustrationCfgScaleValue">3</output></span>
                       <input id="illustrationCfgScaleInput" type="range" min="1" max="20" step="0.5" value="7">
                     </label>
                     <label class="range-field">
-                      <span>스텝 <output id="illustrationStepsValue">16</output></span>
+                      <span><output id="illustrationStepsValue">16</output></span>
                       <input id="illustrationStepsInput" type="range" min="1" max="20" step="1" value="20">
                     </label>
                     <label class="range-field">
-                      <span>가로 <output id="illustrationWidthValue">512</output></span>
+                      <span><output id="illustrationWidthValue">512</output></span>
                       <input id="illustrationWidthInput" type="range" min="512" max="1024" step="64" value="512">
                     </label>
                     <label class="range-field">
-                      <span>세로 <output id="illustrationHeightValue">512</output></span>
+                      <span><output id="illustrationHeightValue">512</output></span>
                       <input id="illustrationHeightInput" type="range" min="512" max="1024" step="64" value="512">
                     </label>
                   </div>
                 </div>
               </section>
               <div class="button-row settings-tab-actions">
-                <button id="saveIllustrationSettingsButton" type="button">설정 저장</button>
+                <button id="saveIllustrationSettingsButton" type="button"></button>
               </div>
             </section>
           </div>
@@ -3300,21 +3273,20 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       <aside class="panel overlay-panel" role="dialog" aria-modal="true" aria-labelledby="promptPresetOverlayTitle">
         <div class="panel-inner">
           <div class="overlay-header">
-            <h2 id="promptPresetOverlayTitle" class="section-title">프롬프트 프리셋</h2>
-            <button id="closePromptPresetOverlayButton" type="button" class="overlay-close">닫기</button>
+            <h2 id="promptPresetOverlayTitle" class="section-title"></h2>
+            <button id="closePromptPresetOverlayButton" type="button" class="overlay-close"></button>
           </div>
           <div class="overlay-content">
             <section class="prompt-preset-form">
               <label>
-                프리셋 이름
-                <input id="promptPresetNameInput" type="text" placeholder="새 프리셋 이름" autocomplete="off">
+                <input id="promptPresetNameInput" type="text" placeholder="" autocomplete="off">
               </label>
               <div class="button-row">
-                <button id="savePromptPresetButton" type="button">현재 프롬프트 저장</button>
+                <button id="savePromptPresetButton" type="button"></button>
               </div>
             </section>
             <section class="prompt-preset-list-section">
-              <h2 id="promptPresetListTitle" class="section-title">저장된 프리셋</h2>
+              <h2 id="promptPresetListTitle" class="section-title"></h2>
               <div id="promptPresetList" class="prompt-preset-list" aria-live="polite"></div>
             </section>
           </div>
@@ -3326,16 +3298,16 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       <aside class="panel overlay-panel" role="dialog" aria-modal="true" aria-labelledby="tabsOverlayTitle">
         <div class="panel-inner">
           <div class="overlay-header">
-            <h2 id="tabsOverlayTitle" class="section-title">채팅 탭</h2>
-            <button id="closeTabsOverlayButton" type="button" class="overlay-close">닫기</button>
+            <h2 id="tabsOverlayTitle" class="section-title"></h2>
+            <button id="closeTabsOverlayButton" type="button" class="overlay-close"></button>
           </div>
           <div class="overlay-content">
             <section>
               <div class="tab-utility-row">
-                <button id="newChatButton" type="button" class="tab-utility-button" aria-label="새 탭" title="새 탭">
+                <button id="newChatButton" type="button" class="tab-utility-button" aria-label="" title="">
                   <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-plus"></use></svg>
                 </button>
-                <button id="importChatsButton" type="button" class="tab-utility-button secondary" aria-label="JSON 임포트" title="JSON 임포트">
+                <button id="importChatsButton" type="button" class="tab-utility-button secondary" aria-label="" title="">
                   <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-import"></use></svg>
                 </button>
               </div>
@@ -3343,7 +3315,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             </section>
 
             <section class="panel-list-section" style="min-height: 0; display: flex; flex-direction: column;">
-              <h2 id="tabsOverlayListTitle" class="section-title">채팅 탭</h2>
+              <h2 id="tabsOverlayListTitle" class="section-title"></h2>
               <div id="chatList" class="chat-list" aria-live="polite"></div>
             </section>
           </div>
@@ -3355,48 +3327,45 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       <aside class="panel overlay-panel" role="dialog" aria-modal="true" aria-labelledby="characterOverlayTitle">
         <div class="panel-inner">
           <div class="overlay-header">
-            <h2 id="characterOverlayTitle" class="section-title">캐릭터 카드</h2>
-            <button id="closeCharacterOverlayButton" type="button" class="overlay-close">닫기</button>
+            <h2 id="characterOverlayTitle" class="section-title"></h2>
+            <button id="closeCharacterOverlayButton" type="button" class="overlay-close"></button>
           </div>
           <div class="overlay-content card-browser-layout">
             <aside class="card-browser-sidebar">
               <div class="card-browser-toolbar">
-                <button id="characterNewButton" type="button">새 카드</button>
-                <button id="characterImportButton" type="button" class="ghost-button">가져오기</button>
+                <button id="characterNewButton" type="button"></button>
+                <button id="characterImportButton" type="button" class="ghost-button"></button>
               </div>
-              <div id="characterCardList" class="card-browser-list" aria-label="캐릭터 카드 목록"></div>
+              <div id="characterCardList" class="card-browser-list" aria-label=""></div>
             </aside>
             <section class="card-browser-editor">
-              <section class="card-editor-settings-pane" aria-label="캐릭터 설정 패널">
+              <section class="card-editor-settings-pane" aria-label="">
                 <div class="card-editor-fields">
                   <label>
-                    캐릭터 이름
-                    <input id="characterCardNameInput" type="text" placeholder="캐릭터 이름">
+                    <input id="characterCardNameInput" type="text" placeholder="">
                   </label>
                   <label>
-                    캐릭터 설정
-                    <textarea id="characterCardDescriptionInput" placeholder="캐릭터의 성격, 배경, 말투, 금지사항, 상황 설정 등을 적어 주세요."></textarea>
+                    <textarea id="characterCardDescriptionInput" placeholder=""></textarea>
                   </label>
                   <label>
-                    첫 메시지
-                    <textarea id="characterCardFirstMessageInput" placeholder="새 RP 채팅에서 먼저 표시할 캐릭터의 첫 메시지를 적어 주세요."></textarea>
+                    <textarea id="characterCardFirstMessageInput" placeholder=""></textarea>
                   </label>
                 </div>
                 <div class="card-editor-toolbar">
                   <div class="card-editor-actions card-editor-action-row">
-                    <button id="characterSaveButton" type="button" class="chat-item-icon-button card-action-icon-button" aria-label="저장" title="저장">
+                    <button id="characterSaveButton" type="button" class="chat-item-icon-button card-action-icon-button" aria-label="" title="">
                       <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-save"></use></svg>
                     </button>
-                    <button id="characterExportButton" type="button" class="chat-item-icon-button card-action-icon-button" aria-label="내보내기" title="내보내기">
+                    <button id="characterExportButton" type="button" class="chat-item-icon-button card-action-icon-button" aria-label="" title="">
                       <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-export"></use></svg>
                     </button>
-                    <button id="characterDeleteButton" type="button" class="chat-item-icon-button card-action-icon-button danger" aria-label="삭제" title="삭제">
+                    <button id="characterDeleteButton" type="button" class="chat-item-icon-button card-action-icon-button danger" aria-label="" title="">
                       <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-trash"></use></svg>
                     </button>
                   </div>
                   <div class="card-editor-media-actions">
-                    <button id="characterImageButton" type="button" class="ghost-button">이미지 지정</button>
-                    <button id="characterImageClearButton" type="button" class="ghost-button">이미지 삭제</button>
+                    <button id="characterImageButton" type="button" class="ghost-button"></button>
+                    <button id="characterImageClearButton" type="button" class="ghost-button"></button>
                   </div>
                 </div>
               </section>
@@ -3410,44 +3379,42 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       <aside class="panel overlay-panel" role="dialog" aria-modal="true" aria-labelledby="personaOverlayTitle">
         <div class="panel-inner">
           <div class="overlay-header">
-            <h2 id="personaOverlayTitle" class="section-title">페르소나 카드</h2>
-            <button id="closePersonaOverlayButton" type="button" class="overlay-close">닫기</button>
+            <h2 id="personaOverlayTitle" class="section-title"></h2>
+            <button id="closePersonaOverlayButton" type="button" class="overlay-close"></button>
           </div>
           <div class="overlay-content card-browser-layout">
             <aside class="card-browser-sidebar">
               <div class="card-browser-toolbar">
-                <button id="personaNewButton" type="button">새 카드</button>
-                <button id="personaImportButton" type="button" class="ghost-button">가져오기</button>
+                <button id="personaNewButton" type="button"></button>
+                <button id="personaImportButton" type="button" class="ghost-button"></button>
               </div>
-              <div id="personaCardList" class="card-browser-list" aria-label="페르소나 카드 목록"></div>
+              <div id="personaCardList" class="card-browser-list" aria-label=""></div>
             </aside>
             <section class="card-browser-editor">
-              <section class="card-editor-settings-pane" aria-label="페르소나 설정 패널">
+              <section class="card-editor-settings-pane" aria-label="">
                 <div class="card-editor-fields">
                   <label>
-                    페르소나 이름
-                    <input id="personaCardNameInput" type="text" placeholder="페르소나 이름">
+                    <input id="personaCardNameInput" type="text" placeholder="">
                   </label>
                   <label>
-                    페르소나 설정
-                    <textarea id="personaCardDescriptionInput" placeholder="사용자 캐릭터의 정체성, 말투, 배경, 관계 설정 등을 적어 주세요."></textarea>
+                    <textarea id="personaCardDescriptionInput" placeholder=""></textarea>
                   </label>
                 </div>
                 <div class="card-editor-toolbar">
                   <div class="card-editor-actions card-editor-action-row">
-                    <button id="personaSaveButton" type="button" class="chat-item-icon-button card-action-icon-button" aria-label="저장" title="저장">
+                    <button id="personaSaveButton" type="button" class="chat-item-icon-button card-action-icon-button" aria-label="" title="">
                       <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-save"></use></svg>
                     </button>
-                    <button id="personaExportButton" type="button" class="chat-item-icon-button card-action-icon-button" aria-label="내보내기" title="내보내기">
+                    <button id="personaExportButton" type="button" class="chat-item-icon-button card-action-icon-button" aria-label="" title="">
                       <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-export"></use></svg>
                     </button>
-                    <button id="personaDeleteButton" type="button" class="chat-item-icon-button card-action-icon-button danger" aria-label="삭제" title="삭제">
+                    <button id="personaDeleteButton" type="button" class="chat-item-icon-button card-action-icon-button danger" aria-label="" title="">
                       <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-trash"></use></svg>
                     </button>
                   </div>
                   <div class="card-editor-media-actions">
-                    <button id="personaImageButton" type="button" class="ghost-button">이미지 지정</button>
-                    <button id="personaImageClearButton" type="button" class="ghost-button">이미지 삭제</button>
+                    <button id="personaImageButton" type="button" class="ghost-button"></button>
+                    <button id="personaImageClearButton" type="button" class="ghost-button"></button>
                   </div>
                 </div>
               </section>
@@ -3461,11 +3428,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       <aside class="panel image-preview-panel" role="dialog" aria-modal="true" aria-labelledby="imagePreviewTitle">
         <div class="panel-inner">
           <div class="overlay-header">
-            <h2 id="imagePreviewTitle" class="section-title">이미지 미리보기</h2>
-            <button id="closeImagePreviewButton" type="button" class="overlay-close">닫기</button>
+            <h2 id="imagePreviewTitle" class="section-title"></h2>
+            <button id="closeImagePreviewButton" type="button" class="overlay-close"></button>
           </div>
           <div class="image-preview-body">
-            <img id="imagePreviewImage" alt="확대된 첨부 이미지">
+            <img id="imagePreviewImage" alt="">
           </div>
           <p id="imagePreviewCaption" class="image-preview-caption"></p>
         </div>
@@ -3476,27 +3443,26 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       <aside class="panel image-crop-panel" role="dialog" aria-modal="true" aria-labelledby="rpImageCropTitle">
         <div class="panel-inner">
           <div class="overlay-header">
-            <h2 id="rpImageCropTitle" class="section-title">정사각형 이미지 자르기</h2>
-            <button id="closeRpImageCropButton" type="button" class="overlay-close">닫기</button>
+            <h2 id="rpImageCropTitle" class="section-title"></h2>
+            <button id="closeRpImageCropButton" type="button" class="overlay-close"></button>
           </div>
           <div class="image-crop-body">
             <div class="image-crop-stage-shell">
-              <div id="rpImageCropViewport" class="image-crop-viewport" aria-label="정사각형 자르기 영역">
-                <img id="rpImageCropImage" alt="자르기 미리보기" draggable="false">
+              <div id="rpImageCropViewport" class="image-crop-viewport" aria-label="">
+                <img id="rpImageCropImage" alt="" draggable="false">
                 <div class="image-crop-grid" aria-hidden="true"></div>
               </div>
             </div>
             <div class="image-crop-controls">
               <p id="rpImageCropMeta" class="image-crop-meta"></p>
-              <p class="image-crop-help">이미지를 끌어서 위치를 맞추고, 확대 슬라이더나 핀치 제스처로 정사각형 구도를 조정하세요.</p>
+              <p class="image-crop-help"></p>
               <label for="rpImageCropZoomInput">
-                확대
                 <input id="rpImageCropZoomInput" type="range" min="1" max="4" step="0.01" value="1">
               </label>
               <p id="rpImageCropZoomValue" class="image-crop-meta">100%</p>
               <div class="image-crop-actions">
-                <button id="cancelRpImageCropButton" type="button" class="ghost-button">취소</button>
-                <button id="applyRpImageCropButton" type="button">적용</button>
+                <button id="cancelRpImageCropButton" type="button" class="ghost-button"></button>
+                <button id="applyRpImageCropButton" type="button"></button>
               </div>
             </div>
           </div>
@@ -3617,6 +3583,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     const OLDER_MESSAGE_LOAD_THRESHOLD_PX = 520;
     const EAGER_ASSISTANT_IMAGE_LIMIT = 4;
     const LAZY_IMAGE_ROOT_MARGIN = "900px 0px";
+    const IMAGE_PLACEHOLDER_DATA_URL = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23efe2cf'/%3E%3Cpath d='M14 42l12-13 9 8 7-9 10 14H14z' fill='%23caa98a'/%3E%3Ccircle cx='24' cy='22' r='5' fill='%23a34b1f' fill-opacity='.38'/%3E%3C/svg%3E";
     const CHAT_T2I_SKIP_TOKEN = "FOCUSABOVE_NO_T2I_IMAGE";
     const MATH_RENDER_DELIMITERS = [
       { left: "$$", right: "$$", display: true },
@@ -7568,6 +7535,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
       image.src = dataUrl;
       image.dataset.mediaLoaded = "true";
+      image.classList.remove("image-loading-placeholder");
       const placeholder = image.previousElementSibling;
       if (placeholder?.classList.contains("message-image-placeholder")) {
         placeholder.remove();
@@ -7575,8 +7543,34 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       image.hidden = false;
     }
 
+    function setImageElementPlaceholderSource(image) {
+      if (!image || image.dataset.mediaLoaded === "true") {
+        return;
+      }
+
+      image.classList.add("image-loading-placeholder");
+      if (image.getAttribute("src") !== IMAGE_PLACEHOLDER_DATA_URL) {
+        image.src = IMAGE_PLACEHOLDER_DATA_URL;
+      }
+    }
+
+    function handleQueuedImageError(event) {
+      const image = event.currentTarget;
+      if (!image || image.getAttribute("src") === IMAGE_PLACEHOLDER_DATA_URL) {
+        return;
+      }
+
+      image.dataset.mediaLoaded = "false";
+      setImageElementPlaceholderSource(image);
+    }
+
     function queueImageElementSource(image, attachment, options = {}) {
       image.__focusaboveAttachment = attachment;
+      if (image.dataset.mediaErrorBound !== "true") {
+        image.addEventListener("error", handleQueuedImageError);
+        image.dataset.mediaErrorBound = "true";
+      }
+      setImageElementPlaceholderSource(image);
       if (options.defer) {
         image.hidden = true;
         const placeholder = document.createElement("div");
@@ -12389,6 +12383,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const textNode = Array.from(label.childNodes).find((node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim());
       if (textNode) {
         textNode.textContent = `${text}\n`;
+        return;
+      }
+
+      const fallbackTextNode = document.createTextNode(`${text}\n`);
+      const firstElement = Array.from(label.childNodes).find((node) => node.nodeType === Node.ELEMENT_NODE);
+      if (label.classList.contains("inline-checkbox") && firstElement) {
+        label.insertBefore(fallbackTextNode, firstElement.nextSibling);
+      } else {
+        label.insertBefore(fallbackTextNode, firstElement || label.firstChild);
       }
     }
 
@@ -12397,9 +12400,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function setRangeFieldLabel(input, text) {
-      const labelText = input?.closest("label")?.querySelector("span")?.firstChild;
+      const span = input?.closest("label")?.querySelector("span");
+      const labelText = span?.firstChild;
       if (labelText?.nodeType === Node.TEXT_NODE) {
         labelText.textContent = `${text} `;
+      } else if (span) {
+        span.insertBefore(document.createTextNode(`${text} `), span.firstChild);
       }
     }
 
