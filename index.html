@@ -3079,7 +3079,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section class="brand">
               <div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="8" y="8" width="48" height="48" rx="14" fill="currentColor"></rect><circle cx="32" cy="32" r="13" fill="none" stroke="#fff7ee" stroke-width="6"></circle><circle cx="46" cy="18" r="3" fill="#fff7ee" fill-opacity="0.9"></circle></svg><span>FocusAbove</span></div>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.4.2, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.4.3, ⓒ 2026 Fur-Abyss</p>
             </section>
 
             <div class="settings-tab-strip" role="tablist" aria-label="">
@@ -8944,21 +8944,32 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         && normalizeRpAssistanceSettings(state.rp?.assistance).inputEnhancementEnabled;
     }
 
-    function buildMainRequestSourceMessages(chat, sourceMessages) {
+    function getMainRequestRpSummaryBoundary(chat, sourceMessages) {
       const messages = Array.isArray(sourceMessages) ? sourceMessages : [];
       if (!shouldUseRpSummary(chat) || !String(chat?.rpSummary || "").trim()) {
+        return 0;
+      }
+
+      const summarizedCount = normalizeOptionalInteger(chat.rpSummaryUpdatedMessageCount, { min: 0 }) ?? 0;
+      const summarizableCount = messages.filter((message) => message.role === "user" || message.role === "assistant").length;
+      return summarizedCount > 0 && summarizedCount <= summarizableCount ? summarizedCount : 0;
+    }
+
+    function buildMainRequestSourceMessages(chat, sourceMessages) {
+      const messages = Array.isArray(sourceMessages) ? sourceMessages : [];
+      const summarizedCount = getMainRequestRpSummaryBoundary(chat, messages);
+      if (!summarizedCount) {
         return messages;
       }
 
-      const recentMessages = messages
-        .filter((message) => message.role === "user" || message.role === "assistant")
-        .slice(-12);
-      const firstMessage = messages.find((message) => message.isFirstMessage);
-      if (!firstMessage || recentMessages.some((message) => message.id === firstMessage.id)) {
-        return recentMessages;
-      }
-
-      return [firstMessage, ...recentMessages];
+      let seenSummarizableMessages = 0;
+      return messages.filter((message) => {
+        if (message.role !== "user" && message.role !== "assistant") {
+          return false;
+        }
+        seenSummarizableMessages += 1;
+        return seenSummarizableMessages > summarizedCount;
+      });
     }
 
     function stopAssistantResponse() {
@@ -9087,8 +9098,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const requestStatusRunId = postResponseStatusRunId + 1;
       postResponseStatusRunId = requestStatusRunId;
       const requestAbortController = new AbortController();
-      const rpContext = buildRpPromptContext(chat);
-      const sourceMessages = buildMainRequestSourceMessages(chat, options.sourceMessages || chat.messages);
+      const rawSourceMessages = Array.isArray(options.sourceMessages)
+        ? options.sourceMessages
+        : Array.isArray(chat?.messages) ? chat.messages : [];
+      const rpContext = buildRpPromptContext(chat, rawSourceMessages);
+      const sourceMessages = buildMainRequestSourceMessages(chat, rawSourceMessages);
 
       const assistantMessage = createMessage("assistant", "", {
         status: "streaming",
@@ -11956,23 +11970,25 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
       return [
         `[Author's Note - Highest Priority]`,
-        `The following author note is a high-priority RP direction for the next response. It is appended at the end of the full context, so review it last and treat it as a strong steering instruction for tone, action, emotion, pacing, and scene detail.`,
+        `The following author note is a high-priority RP direction for the next response. It is appended at the end of the full context so it stays near the completion target. Treat it as a strong steering instruction for tone, action, emotion, pacing, and scene detail.`,
         authorsNote
       ].join("\n");
     }
 
-    function buildRpPromptContext(chat) {
+    function buildRpPromptContext(chat, sourceMessages = null) {
       if (!isRpModeActive()) {
         return null;
       }
+
+      const shouldIncludeSummary = getMainRequestRpSummaryBoundary(chat, sourceMessages || chat?.messages) > 0;
 
       return {
         character: getRpCardById("character", chat?.characterCardId || state.rp.activeCharacterId),
         persona: getActiveRpPersona(),
         responsePerspective: normalizeRpResponsePerspective(state.rp.responsePerspective),
         authorsNote: chat?.authorsNote || "",
-        summary: shouldUseRpSummary(chat) ? (chat?.rpSummary || "") : "",
-        sceneState: hasAuxiliaryModel() ? (chat?.rpSceneState || "") : ""
+        summary: shouldIncludeSummary ? (chat?.rpSummary || "") : "",
+        sceneState: ""
       };
     }
 
