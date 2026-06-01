@@ -1590,8 +1590,7 @@
       opacity: 0.78;
     }
 
-    .image-preview-overlay,
-    .image-crop-overlay {
+    .media-overlay {
       padding: 28px;
       background: #140c06;
     }
@@ -1600,8 +1599,7 @@
       z-index: 40;
     }
 
-    .image-preview-panel,
-    .image-crop-panel {
+    .media-overlay-panel {
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -1615,8 +1613,7 @@
       max-height: min(96svh, 1120px);
     }
 
-    .image-preview-panel .panel-inner,
-    .image-crop-panel .panel-inner {
+    .media-overlay-panel .panel-inner {
       display: flex;
       flex-direction: column;
       flex: 1 1 auto;
@@ -1933,13 +1930,7 @@
       background: var(--panel-solid);
     }
 
-    .card-editor-actions {
-      display: flex;
-      flex-wrap: nowrap;
-      gap: 8px;
-      align-items: center;
-    }
-
+    .card-editor-actions,
     .card-editor-action-row {
       display: flex;
       align-items: center;
@@ -2371,8 +2362,7 @@
       background: var(--panel-solid);
     }
 
-    .image-preview-panel,
-    .image-crop-panel {
+    .media-overlay-panel {
       background: var(--panel-solid);
     }
 
@@ -2658,14 +2648,10 @@
       }
 
       .card-browser-layout {
-        grid-template-columns: 92px minmax(0, 1fr);
-        overflow: hidden;
-      }
-
-      .overlay-content.card-browser-layout {
         display: grid;
         grid-template-columns: 92px minmax(0, 1fr);
         gap: 12px;
+        overflow: hidden;
       }
 
       .card-browser-sidebar {
@@ -2802,13 +2788,11 @@
         border: 0;
       }
 
-      .image-preview-overlay,
-      .image-crop-overlay {
+      .media-overlay {
         padding: 0;
       }
 
-      .image-preview-panel,
-      .image-crop-panel {
+      .media-overlay-panel {
         width: 100vw;
         max-height: none;
         height: 100vh;
@@ -2817,8 +2801,7 @@
         border: 0;
       }
 
-      .image-preview-panel .panel-inner,
-      .image-crop-panel .panel-inner {
+      .media-overlay-panel .panel-inner {
         gap: 12px;
         padding: 14px 14px calc(14px + env(safe-area-inset-bottom, 0px));
       }
@@ -2964,7 +2947,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
   <div id="appShell" class="app-shell">
     <header class="main-header">
       <div class="main-title">
-        <h2 id="chatTitle">채팅을 선택하세요</h2>
+        <h2 id="chatTitle">FocusAbove</h2>
         <p id="chatSubtitle">Loading...</p>
       </div>
       <div class="header-actions">
@@ -2986,14 +2969,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         <div class="desktop-tabs-sidebar-inner">
           <div class="desktop-tabs-toolbar">
             <h2 id="desktopTabsTitle" class="section-title">채팅 탭</h2>
-            <div class="tab-utility-row desktop-tab-utility-row">
-              <button id="desktopNewChatButton" type="button" class="tab-utility-button" aria-label="새 탭" title="새 탭">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-plus"></use></svg>
-              </button>
-              <button id="desktopImportChatsButton" type="button" class="tab-utility-button secondary" aria-label="JSON 임포트" title="JSON 임포트">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-import"></use></svg>
-              </button>
-            </div>
+            <div class="tab-utility-row desktop-tab-utility-row" data-tab-utility-row="desktop"></div>
           </div>
           <section class="panel-list-section desktop-tabs-list-section">
             <div id="desktopChatList" class="chat-list desktop-chat-list" aria-live="polite"></div>
@@ -3050,10 +3026,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     <div id="authorsNoteOverlay" class="overlay-shell" aria-hidden="true">
       <aside class="panel overlay-panel" role="dialog" aria-modal="true" aria-labelledby="authorsNoteOverlayTitle">
         <div class="panel-inner">
-          <div class="overlay-header">
-            <h2 id="authorsNoteOverlayTitle" class="section-title"></h2>
-            <button id="closeAuthorsNoteOverlayButton" type="button" class="overlay-close"></button>
-          </div>
+          <div class="overlay-header" data-overlay-title-id="authorsNoteOverlayTitle" data-overlay-close-id="closeAuthorsNoteOverlayButton"></div>
           <div class="overlay-content">
             <section class="authors-note-form">
               <label>
@@ -3071,15 +3044,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     <div id="settingsOverlay" class="overlay-shell" aria-hidden="true">
       <aside class="panel overlay-panel" role="dialog" aria-modal="true" aria-labelledby="settingsOverlayTitle">
         <div class="panel-inner">
-          <div class="overlay-header">
-            <h2 id="settingsOverlayTitle" class="section-title"></h2>
-            <button id="closeSettingsOverlayButton" type="button" class="overlay-close"></button>
-          </div>
+          <div class="overlay-header" data-overlay-title-id="settingsOverlayTitle" data-overlay-close-id="closeSettingsOverlayButton"></div>
           <div class="overlay-content settings-overlay-content">
             <section class="brand">
               <div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="8" y="8" width="48" height="48" rx="14" fill="currentColor"></rect><circle cx="32" cy="32" r="13" fill="none" stroke="#fff7ee" stroke-width="6"></circle><circle cx="46" cy="18" r="3" fill="#fff7ee" fill-opacity="0.9"></circle></svg><span>FocusAbove</span></div>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.4.3, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.4.4, ⓒ 2026 Fur-Abyss</p>
             </section>
 
             <div class="settings-tab-strip" role="tablist" aria-label="">
@@ -3272,10 +3242,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     <div id="promptPresetOverlay" class="overlay-shell" aria-hidden="true">
       <aside class="panel overlay-panel" role="dialog" aria-modal="true" aria-labelledby="promptPresetOverlayTitle">
         <div class="panel-inner">
-          <div class="overlay-header">
-            <h2 id="promptPresetOverlayTitle" class="section-title"></h2>
-            <button id="closePromptPresetOverlayButton" type="button" class="overlay-close"></button>
-          </div>
+          <div class="overlay-header" data-overlay-title-id="promptPresetOverlayTitle" data-overlay-close-id="closePromptPresetOverlayButton"></div>
           <div class="overlay-content">
             <section class="prompt-preset-form">
               <label>
@@ -3297,20 +3264,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     <div id="tabsOverlay" class="overlay-shell" aria-hidden="true">
       <aside class="panel overlay-panel" role="dialog" aria-modal="true" aria-labelledby="tabsOverlayTitle">
         <div class="panel-inner">
-          <div class="overlay-header">
-            <h2 id="tabsOverlayTitle" class="section-title"></h2>
-            <button id="closeTabsOverlayButton" type="button" class="overlay-close"></button>
-          </div>
+          <div class="overlay-header" data-overlay-title-id="tabsOverlayTitle" data-overlay-close-id="closeTabsOverlayButton"></div>
           <div class="overlay-content">
             <section>
-              <div class="tab-utility-row">
-                <button id="newChatButton" type="button" class="tab-utility-button" aria-label="" title="">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-plus"></use></svg>
-                </button>
-                <button id="importChatsButton" type="button" class="tab-utility-button secondary" aria-label="" title="">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-import"></use></svg>
-                </button>
-              </div>
+              <div class="tab-utility-row" data-tab-utility-row="overlay"></div>
               <input id="importChatsInput" type="file" accept="application/json,.json" class="sr-only">
             </section>
 
@@ -3326,16 +3283,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     <div id="characterOverlay" class="overlay-shell" aria-hidden="true">
       <aside class="panel overlay-panel" role="dialog" aria-modal="true" aria-labelledby="characterOverlayTitle">
         <div class="panel-inner">
-          <div class="overlay-header">
-            <h2 id="characterOverlayTitle" class="section-title"></h2>
-            <button id="closeCharacterOverlayButton" type="button" class="overlay-close"></button>
-          </div>
+          <div class="overlay-header" data-overlay-title-id="characterOverlayTitle" data-overlay-close-id="closeCharacterOverlayButton"></div>
           <div class="overlay-content card-browser-layout">
             <aside class="card-browser-sidebar">
-              <div class="card-browser-toolbar">
-                <button id="characterNewButton" type="button"></button>
-                <button id="characterImportButton" type="button" class="ghost-button"></button>
-              </div>
+              <div class="card-browser-toolbar" data-rp-card-toolbar="character"></div>
               <div id="characterCardList" class="card-browser-list" aria-label=""></div>
             </aside>
             <section class="card-browser-editor">
@@ -3352,21 +3303,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                   </label>
                 </div>
                 <div class="card-editor-toolbar">
-                  <div class="card-editor-actions card-editor-action-row">
-                    <button id="characterSaveButton" type="button" class="chat-item-icon-button card-action-icon-button" aria-label="" title="">
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-save"></use></svg>
-                    </button>
-                    <button id="characterExportButton" type="button" class="chat-item-icon-button card-action-icon-button" aria-label="" title="">
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-export"></use></svg>
-                    </button>
-                    <button id="characterDeleteButton" type="button" class="chat-item-icon-button card-action-icon-button danger" aria-label="" title="">
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-trash"></use></svg>
-                    </button>
-                  </div>
-                  <div class="card-editor-media-actions">
-                    <button id="characterImageButton" type="button" class="ghost-button"></button>
-                    <button id="characterImageClearButton" type="button" class="ghost-button"></button>
-                  </div>
+                  <div class="card-editor-actions card-editor-action-row" data-rp-card-action-row="character"></div>
+                  <div class="card-editor-media-actions" data-rp-card-media-actions="character"></div>
                 </div>
               </section>
             </section>
@@ -3378,16 +3316,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     <div id="personaOverlay" class="overlay-shell" aria-hidden="true">
       <aside class="panel overlay-panel" role="dialog" aria-modal="true" aria-labelledby="personaOverlayTitle">
         <div class="panel-inner">
-          <div class="overlay-header">
-            <h2 id="personaOverlayTitle" class="section-title"></h2>
-            <button id="closePersonaOverlayButton" type="button" class="overlay-close"></button>
-          </div>
+          <div class="overlay-header" data-overlay-title-id="personaOverlayTitle" data-overlay-close-id="closePersonaOverlayButton"></div>
           <div class="overlay-content card-browser-layout">
             <aside class="card-browser-sidebar">
-              <div class="card-browser-toolbar">
-                <button id="personaNewButton" type="button"></button>
-                <button id="personaImportButton" type="button" class="ghost-button"></button>
-              </div>
+              <div class="card-browser-toolbar" data-rp-card-toolbar="persona"></div>
               <div id="personaCardList" class="card-browser-list" aria-label=""></div>
             </aside>
             <section class="card-browser-editor">
@@ -3401,21 +3333,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                   </label>
                 </div>
                 <div class="card-editor-toolbar">
-                  <div class="card-editor-actions card-editor-action-row">
-                    <button id="personaSaveButton" type="button" class="chat-item-icon-button card-action-icon-button" aria-label="" title="">
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-save"></use></svg>
-                    </button>
-                    <button id="personaExportButton" type="button" class="chat-item-icon-button card-action-icon-button" aria-label="" title="">
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-export"></use></svg>
-                    </button>
-                    <button id="personaDeleteButton" type="button" class="chat-item-icon-button card-action-icon-button danger" aria-label="" title="">
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-trash"></use></svg>
-                    </button>
-                  </div>
-                  <div class="card-editor-media-actions">
-                    <button id="personaImageButton" type="button" class="ghost-button"></button>
-                    <button id="personaImageClearButton" type="button" class="ghost-button"></button>
-                  </div>
+                  <div class="card-editor-actions card-editor-action-row" data-rp-card-action-row="persona"></div>
+                  <div class="card-editor-media-actions" data-rp-card-media-actions="persona"></div>
                 </div>
               </section>
             </section>
@@ -3424,13 +3343,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       </aside>
     </div>
 
-    <div id="imagePreviewOverlay" class="overlay-shell image-preview-overlay" aria-hidden="true">
-      <aside class="panel image-preview-panel" role="dialog" aria-modal="true" aria-labelledby="imagePreviewTitle">
+    <div id="imagePreviewOverlay" class="overlay-shell image-preview-overlay media-overlay" aria-hidden="true">
+      <aside class="panel image-preview-panel media-overlay-panel" role="dialog" aria-modal="true" aria-labelledby="imagePreviewTitle">
         <div class="panel-inner">
-          <div class="overlay-header">
-            <h2 id="imagePreviewTitle" class="section-title"></h2>
-            <button id="closeImagePreviewButton" type="button" class="overlay-close"></button>
-          </div>
+          <div class="overlay-header" data-overlay-title-id="imagePreviewTitle" data-overlay-close-id="closeImagePreviewButton"></div>
           <div class="image-preview-body">
             <img id="imagePreviewImage" alt="">
           </div>
@@ -3439,13 +3355,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       </aside>
     </div>
 
-    <div id="rpImageCropOverlay" class="overlay-shell image-crop-overlay" aria-hidden="true">
-      <aside class="panel image-crop-panel" role="dialog" aria-modal="true" aria-labelledby="rpImageCropTitle">
+    <div id="rpImageCropOverlay" class="overlay-shell image-crop-overlay media-overlay" aria-hidden="true">
+      <aside class="panel image-crop-panel media-overlay-panel" role="dialog" aria-modal="true" aria-labelledby="rpImageCropTitle">
         <div class="panel-inner">
-          <div class="overlay-header">
-            <h2 id="rpImageCropTitle" class="section-title"></h2>
-            <button id="closeRpImageCropButton" type="button" class="overlay-close"></button>
-          </div>
+          <div class="overlay-header" data-overlay-title-id="rpImageCropTitle" data-overlay-close-id="closeRpImageCropButton"></div>
           <div class="image-crop-body">
             <div class="image-crop-stage-shell">
               <div id="rpImageCropViewport" class="image-crop-viewport" aria-label="">
@@ -3489,11 +3402,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     const APP_DB_VERSION = 1;
     const APP_DB_STORE = "focusabove";
     const APP_DB_RECORD_KEY = "app-state";
+    const APP_CHAT_RECORD_PREFIX = "chat:";
     const APP_MEDIA_RECORD_PREFIX = "media:";
     const APP_SECRET_RECORD_KEY = "app-secrets";
     const APP_SECRET_KEY_RECORD_PREFIX = "app-secret-key-";
     const APP_SECRET_KEY_RING_SIZE = 13;
     const APP_SECRET_PROBE_TEXT = "focusabove-secret-probe-v1";
+    const APP_SPLIT_CHAT_STORAGE_VERSION = 2;
     function iconSvg(iconName, viewBox = "0 0 24 24") {
       return `<svg viewBox="${viewBox}" aria-hidden="true"><use href="#icon-${iconName}"></use></svg>`;
     }
@@ -3554,18 +3469,141 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         active = false,
         disabled = false,
         stopPropagation = false,
-        onClick = null
+        onClick = null,
+        attributes = null
       } = options;
       return createButton({
         className: [className, tone === "default" ? "" : tone, active ? "active" : ""].filter(Boolean).join(" "),
         label,
         title,
         html: iconName ? iconSvg(iconName) : "",
+        attributes,
         disabled,
         stopPropagation,
         onClick
       });
     }
+
+    function appendRpCardControlButton(container, options) {
+      if (!container) {
+        return;
+      }
+
+      if (options.variant === "icon") {
+        container.appendChild(createIconButton(options));
+        return;
+      }
+
+      container.appendChild(createButton(options));
+    }
+
+    function appendTabUtilityButton(container, options) {
+      if (!container) {
+        return;
+      }
+
+      container.appendChild(createIconButton({
+        className: "tab-utility-button",
+        iconName: options.iconName,
+        tone: options.tone || "default",
+        label: options.label,
+        title: options.title,
+        attributes: {
+          id: options.id
+        }
+      }));
+    }
+
+    function populateOverlayHeaderMarkup() {
+      document.querySelectorAll(".overlay-header[data-overlay-title-id][data-overlay-close-id]").forEach((header) => {
+        if (header.childElementCount) {
+          return;
+        }
+
+        const title = document.createElement("h2");
+        title.id = header.dataset.overlayTitleId || "";
+        title.className = "section-title";
+
+        const closeButton = createButton({
+          className: "overlay-close",
+          attributes: {
+            id: header.dataset.overlayCloseId || ""
+          }
+        });
+
+        header.append(title, closeButton);
+      });
+    }
+
+    function populateRpCardControlMarkup(kind) {
+      const toolbar = document.querySelector(`[data-rp-card-toolbar="${kind}"]`);
+      const actionRow = document.querySelector(`[data-rp-card-action-row="${kind}"]`);
+      const mediaActions = document.querySelector(`[data-rp-card-media-actions="${kind}"]`);
+      if (toolbar && !toolbar.childElementCount) {
+        appendRpCardControlButton(toolbar, {
+          attributes: { id: `${kind}NewButton` }
+        });
+        appendRpCardControlButton(toolbar, {
+          className: "ghost-button",
+          attributes: { id: `${kind}ImportButton` }
+        });
+      }
+      if (actionRow && !actionRow.childElementCount) {
+        [
+          ["save", "default"],
+          ["export", "default"],
+          ["trash", "danger"]
+        ].forEach(([iconName, tone]) => {
+          appendRpCardControlButton(actionRow, {
+            variant: "icon",
+            className: "chat-item-icon-button card-action-icon-button",
+            iconName,
+            tone,
+            attributes: {
+              id: `${kind}${iconName === "trash" ? "Delete" : `${iconName.charAt(0).toUpperCase()}${iconName.slice(1)}`}Button`
+            }
+          });
+        });
+      }
+      if (mediaActions && !mediaActions.childElementCount) {
+        appendRpCardControlButton(mediaActions, {
+          className: "ghost-button",
+          attributes: { id: `${kind}ImageButton` }
+        });
+        appendRpCardControlButton(mediaActions, {
+          className: "ghost-button",
+          attributes: { id: `${kind}ImageClearButton` }
+        });
+      }
+    }
+
+    function populateTabUtilityMarkup() {
+      const rows = {
+        desktop: document.querySelector('[data-tab-utility-row="desktop"]'),
+        overlay: document.querySelector('[data-tab-utility-row="overlay"]')
+      };
+      const specs = {
+        desktop: [
+          { id: "desktopNewChatButton", iconName: "plus", label: "새 탭", title: "새 탭" },
+          { id: "desktopImportChatsButton", iconName: "import", tone: "secondary", label: "JSON 임포트", title: "JSON 임포트" }
+        ],
+        overlay: [
+          { id: "newChatButton", iconName: "plus", label: "새 탭", title: "새 탭" },
+          { id: "importChatsButton", iconName: "import", tone: "secondary", label: "JSON 임포트", title: "JSON 임포트" }
+        ]
+      };
+
+      Object.entries(rows).forEach(([key, row]) => {
+        if (!row || row.childElementCount) {
+          return;
+        }
+        specs[key].forEach((spec) => appendTabUtilityButton(row, spec));
+      });
+    }
+
+    populateOverlayHeaderMarkup();
+    populateTabUtilityMarkup();
+    ["character", "persona"].forEach(populateRpCardControlMarkup);
 
     const TAB_LOCK_KEY = "focusabove.active-tab.v1";
     const TAB_LOCK_TTL_MS = 15000;
@@ -3578,8 +3616,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     const THINKING_STREAMING_RENDER_THROTTLE_MS = 2500;
     const MAX_IMAGE_DIMENSION = 1024;
     const MAX_PENDING_IMAGE_BYTES = 12 * 1024 * 1024;
-    const INITIAL_MESSAGE_RENDER_LIMIT = 80;
-    const MESSAGE_RENDER_BATCH_SIZE = 40;
+    const INITIAL_MESSAGE_RENDER_LIMIT = 24;
+    const MESSAGE_RENDER_BATCH_SIZE = 24;
     const OLDER_MESSAGE_LOAD_THRESHOLD_PX = 520;
     const EAGER_ASSISTANT_IMAGE_LIMIT = 4;
     const LAZY_IMAGE_ROOT_MARGIN = "900px 0px";
@@ -4237,6 +4275,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       tabLockWarning: document.getElementById("tabLockWarning"),
       tabLockWarningMessage: document.getElementById("tabLockWarningMessage"),
       desktopTabsSidebar: document.getElementById("desktopTabsSidebar"),
+      modeToggle: document.querySelector(".header-mode-toggle"),
       chatModeButton: document.getElementById("chatModeButton"),
       rpModeButton: document.getElementById("rpModeButton"),
       rpHeaderActions: document.getElementById("rpHeaderActions"),
@@ -4246,8 +4285,19 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       openSettingsOverlayButton: document.getElementById("openSettingsOverlayButton"),
       openTabsOverlayButton: document.getElementById("openTabsOverlayButton"),
       desktopTabsTitle: document.getElementById("desktopTabsTitle"),
+      messageInputLabel: document.querySelector('label:has(#messageInput) .sr-only'),
+      scrollJumpStack: document.querySelector(".scroll-jump-stack"),
+      authorsNoteOverlayTitle: document.getElementById("authorsNoteOverlayTitle"),
+      settingsOverlayTitle: document.getElementById("settingsOverlayTitle"),
+      promptPresetOverlayTitle: document.getElementById("promptPresetOverlayTitle"),
       tabsOverlayTitle: document.getElementById("tabsOverlayTitle"),
       tabsOverlayListTitle: document.getElementById("tabsOverlayListTitle"),
+      promptPresetListTitle: document.getElementById("promptPresetListTitle"),
+      characterOverlayTitle: document.getElementById("characterOverlayTitle"),
+      personaOverlayTitle: document.getElementById("personaOverlayTitle"),
+      imagePreviewTitle: document.getElementById("imagePreviewTitle"),
+      rpImageCropTitle: document.getElementById("rpImageCropTitle"),
+      tabLockWarningTitle: document.getElementById("tabLockWarningTitle"),
       closeSettingsOverlayButton: document.getElementById("closeSettingsOverlayButton"),
       closePromptPresetOverlayButton: document.getElementById("closePromptPresetOverlayButton"),
       closeAuthorsNoteOverlayButton: document.getElementById("closeAuthorsNoteOverlayButton"),
@@ -4260,9 +4310,23 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       settingsGeneralTabButton: document.getElementById("settingsGeneralTabButton"),
       settingsModelTabButton: document.getElementById("settingsModelTabButton"),
       settingsIllustrationTabButton: document.getElementById("settingsIllustrationTabButton"),
+      settingsTabStrip: document.querySelector(".settings-tab-strip"),
       settingsGeneralPanel: document.getElementById("settingsGeneralPanel"),
       settingsModelPanel: document.getElementById("settingsModelPanel"),
       settingsIllustrationPanel: document.getElementById("settingsIllustrationPanel"),
+      settingsGeneralSectionTitle: document.querySelector("#settingsGeneralPanel .section-title"),
+      settingsModelSectionTitle: document.querySelector("#settingsModelPanel .section-title"),
+      settingsIllustrationSectionTitle: document.querySelector("#settingsIllustrationPanel .section-title"),
+      smoothStreamingLabel: document.querySelector('label.inline-checkbox[for="smoothStreamingInput"]'),
+      rpSummaryEnabledLabel: document.querySelector('label.inline-checkbox[for="rpSummaryEnabledInput"]'),
+      rpInputEnhancementEnabledLabel: document.querySelector('label.inline-checkbox[for="rpInputEnhancementEnabledInput"]'),
+      thinkingUnlimitedLabel: document.querySelector('label.inline-checkbox[for="thinkingUnlimitedInput"]'),
+      illustrationEnabledLabel: document.querySelector('label.inline-checkbox[for="illustrationEnabledInput"]'),
+      chatT2iEnabledLabel: document.querySelector('label.inline-checkbox[for="chatT2iEnabledInput"]'),
+      illustrationIgnorePeopleLabel: document.querySelector('label.inline-checkbox[for="illustrationIgnoreNonCharacterPeopleInput"]'),
+      settingsActionButtons: document.querySelectorAll("#settingsForm .button-row button"),
+      modelStatLabels: document.querySelectorAll("#settingsModelPanel .stat-card span"),
+      settingsModelHint: document.querySelector("#settingsModelPanel .hint"),
       settingsForm: document.getElementById("settingsForm"),
       apiBaseUrlInput: document.getElementById("apiBaseUrlInput"),
       apiKeyInput: document.getElementById("apiKeyInput"),
@@ -4344,9 +4408,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       rpImageCropMeta: document.getElementById("rpImageCropMeta"),
       rpImageCropZoomInput: document.getElementById("rpImageCropZoomInput"),
       rpImageCropZoomValue: document.getElementById("rpImageCropZoomValue"),
+      rpImageCropHelp: document.querySelector(".image-crop-help"),
       cancelRpImageCropButton: document.getElementById("cancelRpImageCropButton"),
       applyRpImageCropButton: document.getElementById("applyRpImageCropButton"),
       characterCardList: document.getElementById("characterCardList"),
+      characterSettingsPanel: document.querySelector("#characterOverlay .card-editor-settings-pane"),
       characterCardNameInput: document.getElementById("characterCardNameInput"),
       characterCardDescriptionInput: document.getElementById("characterCardDescriptionInput"),
       characterCardFirstMessageInput: document.getElementById("characterCardFirstMessageInput"),
@@ -4360,6 +4426,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       characterProfileImageInput: document.getElementById("characterProfileImageInput"),
       characterCardImportInput: document.getElementById("characterCardImportInput"),
       personaCardList: document.getElementById("personaCardList"),
+      personaSettingsPanel: document.querySelector("#personaOverlay .card-editor-settings-pane"),
       personaCardNameInput: document.getElementById("personaCardNameInput"),
       personaCardDescriptionInput: document.getElementById("personaCardDescriptionInput"),
       personaNewButton: document.getElementById("personaNewButton"),
@@ -4389,6 +4456,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     let pendingStatePersistRequested = false;
     let persistStateTimerId = 0;
     let persistStateInFlight = Promise.resolve();
+    let isStatePersistWriteInFlight = false;
+    let pendingInactiveChatUnloadRequested = false;
     let rpImageCropState = null;
     let streamingMessageRenderFrameId = 0;
     let pendingStreamingMessageRender = null;
@@ -4398,6 +4467,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     let systemThemeMediaQuery = null;
     let composerLayoutFrameId = 0;
     let composerResizeObserver = null;
+    let cachedUiNumberFormatter = null;
+    let cachedUiNumberFormatterLocale = "";
     let activeSettingsTab = "general";
     let editingChatId = "";
     let modelSettingsDraft = null;
@@ -4418,6 +4489,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     let renderedMessageChatId = "";
     let renderedMessageCount = INITIAL_MESSAGE_RENDER_LIMIT;
     let isLoadingOlderMessages = false;
+    let chatMessageLoadPromises = new Map();
+    let persistedChatRecordIds = new Set();
+    let currentActiveChatLoadRequestId = 0;
     let lazyImageObserver = null;
     let streamingAutoScrollPinnedToBottom = true;
     let streamingAutoScrollFrameId = 0;
@@ -4432,9 +4506,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       bindEvents();
       try {
         state = await loadState();
+        syncPersistedChatRecordIds(state);
       } catch (error) {
         console.error("Failed to initialize state", error);
         state = structuredClone(DEFAULT_APP_STATE);
+        syncPersistedChatRecordIds(state);
       }
 
       claimPrimaryTab({ skipActivation: true });
@@ -4447,6 +4523,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       populateSettingsForm();
       syncChatSelection();
       renderAll({ persist: false });
+      await ensureCurrentActiveChatLoaded();
+      renderAll({ persist: false });
       setSettingsOverlayTab(activeSettingsTab);
       observeComposerLayout();
       scheduleComposerLayoutUpdate();
@@ -4458,110 +4536,142 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
     }
 
+    function bindRpCardEditorEvents(kind, config) {
+      bindClickActions([
+        [config.newButton, () => createNewRpCard(kind)],
+        [config.saveButton, () => {
+          void saveRpCard(kind);
+        }],
+        [config.exportButton, () => exportRpCard(kind)],
+        [config.imageClearButton, () => clearRpCardImage(kind)],
+        [config.deleteButton, () => deleteRpCard(kind)]
+      ]);
+      bindProxyClickAction(config.importButton, config.importInput);
+      bindProxyClickAction(config.imageButton, config.imageInput);
+      bindInputActions(config.fields.map(([field, input]) => [input, () => updateRpCardDraftField(kind, field, input.value)]));
+      config.imageInput.addEventListener("change", (event) => handleRpCardProfileImageSelection(kind, event));
+      config.importInput.addEventListener("change", (event) => handleRpCardImport(kind, event));
+    }
+
     function bindEvents() {
       elements.settingsForm.addEventListener("submit", handleSettingsSave);
-      elements.chatModeButton.addEventListener("click", () => switchAppMode("chat"));
-      elements.rpModeButton.addEventListener("click", () => switchAppMode("rp"));
-      elements.openSettingsOverlayButton.addEventListener("click", () => {
+      bindClickActions([
+        [elements.chatModeButton, () => {
+          void switchAppMode("chat");
+        }],
+        [elements.rpModeButton, () => {
+          void switchAppMode("rp");
+        }],
+        [elements.openPromptPresetOverlayButton, openPromptPresetOverlay],
+        [elements.authorsNoteButton, openAuthorsNoteOverlay],
+        [elements.closeSettingsOverlayButton, () => closeOverlay(elements.settingsOverlay)],
+        [elements.closePromptPresetOverlayButton, () => closeOverlay(elements.promptPresetOverlay)],
+        [elements.closeAuthorsNoteOverlayButton, () => closeOverlay(elements.authorsNoteOverlay)],
+        [elements.closeTabsOverlayButton, () => closeOverlay(elements.tabsOverlay)],
+        [elements.closeCharacterOverlayButton, () => closeOverlay(elements.characterOverlay)],
+        [elements.closePersonaOverlayButton, () => closeOverlay(elements.personaOverlay)],
+        [elements.closeImagePreviewButton, closeImagePreview],
+        [elements.closeRpImageCropButton, () => cancelRpImageCrop({ silent: true })],
+        [elements.settingsGeneralTabButton, () => setSettingsOverlayTab("general")],
+        [elements.settingsModelTabButton, () => setSettingsOverlayTab("model")],
+        [elements.settingsIllustrationTabButton, () => setSettingsOverlayTab("illustration")],
+        [elements.resetSettingsButton, resetSettingsToDefault],
+        [elements.newChatButton, createNewChat],
+        [elements.desktopNewChatButton, createNewChat],
+        [elements.importChatsButton, triggerImportChats],
+        [elements.desktopImportChatsButton, triggerImportChats],
+        [elements.clearMessagesButton, clearActiveMessages],
+        [elements.refreshModelsButton, () => refreshModels({ silent: false })],
+        [elements.refreshImageModelsButton, () => refreshImageModels({ silent: false })],
+        [elements.saveModelSettingsButton, handleModelSettingsSave],
+        [elements.saveIllustrationSettingsButton, handleIllustrationSettingsSave],
+        [elements.savePromptPresetButton, saveCurrentPromptPreset],
+        [elements.clearAuthorsNoteButton, clearAuthorsNote],
+        [elements.scrollTopButton, scrollPageToTop],
+        [elements.scrollBottomButton, scrollPageToBottom],
+        [elements.cancelRpImageCropButton, () => cancelRpImageCrop({ silent: true })],
+        [elements.applyRpImageCropButton, applyRpImageCrop]
+      ]);
+      bindOverlayOpenAction(elements.openSettingsOverlayButton, elements.settingsOverlay, () => {
         resetModelSettingsDraft();
         populateSettingsForm();
         renderAppSections({ persist: false, modelSelect: true, modelsPanel: true });
         setSettingsOverlayTab("general");
-        openOverlay(elements.settingsOverlay);
       });
-      elements.openPromptPresetOverlayButton.addEventListener("click", openPromptPresetOverlay);
-      elements.openTabsOverlayButton.addEventListener("click", () => openOverlay(elements.tabsOverlay));
-      elements.openCharacterOverlayButton.addEventListener("click", () => {
+      bindOverlayOpenAction(elements.openTabsOverlayButton, elements.tabsOverlay);
+      bindOverlayOpenAction(elements.openCharacterOverlayButton, elements.characterOverlay, () => {
         ensureRpModeReady();
         resetRpCardDraft("character");
         renderAppSections({ persist: false, rpCards: true, header: true });
-        openOverlay(elements.characterOverlay);
       });
-      elements.openPersonaOverlayButton.addEventListener("click", () => {
+      bindOverlayOpenAction(elements.openPersonaOverlayButton, elements.personaOverlay, () => {
         ensureRpModeReady();
         resetRpCardDraft("persona");
         renderAppSections({ persist: false, rpCards: true, header: true });
-        openOverlay(elements.personaOverlay);
       });
-      elements.authorsNoteButton.addEventListener("click", openAuthorsNoteOverlay);
-      elements.closeSettingsOverlayButton.addEventListener("click", () => closeOverlay(elements.settingsOverlay));
-      elements.closePromptPresetOverlayButton.addEventListener("click", () => closeOverlay(elements.promptPresetOverlay));
-      elements.closeAuthorsNoteOverlayButton.addEventListener("click", () => closeOverlay(elements.authorsNoteOverlay));
-      elements.closeTabsOverlayButton.addEventListener("click", () => closeOverlay(elements.tabsOverlay));
-      elements.closeCharacterOverlayButton.addEventListener("click", () => closeOverlay(elements.characterOverlay));
-      elements.closePersonaOverlayButton.addEventListener("click", () => closeOverlay(elements.personaOverlay));
-      elements.closeImagePreviewButton.addEventListener("click", closeImagePreview);
-      elements.closeRpImageCropButton.addEventListener("click", () => cancelRpImageCrop({ silent: true }));
-      elements.settingsGeneralTabButton.addEventListener("click", () => setSettingsOverlayTab("general"));
-      elements.settingsModelTabButton.addEventListener("click", () => setSettingsOverlayTab("model"));
-      elements.settingsIllustrationTabButton.addEventListener("click", () => setSettingsOverlayTab("illustration"));
-      elements.resetSettingsButton.addEventListener("click", resetSettingsToDefault);
-      elements.newChatButton.addEventListener("click", createNewChat);
-      elements.desktopNewChatButton.addEventListener("click", createNewChat);
-      elements.importChatsButton.addEventListener("click", triggerImportChats);
-      elements.desktopImportChatsButton.addEventListener("click", triggerImportChats);
       elements.importChatsInput.addEventListener("change", handleImportChats);
-      elements.clearMessagesButton.addEventListener("click", clearActiveMessages);
       elements.chatForm.addEventListener("submit", handleSendMessage);
       elements.imageUploadButton.addEventListener("click", () => {
         if (!isSending) {
           elements.imageUploadInput.click();
         }
       });
-      elements.refreshModelsButton.addEventListener("click", () => refreshModels({ silent: false }));
-      elements.refreshImageModelsButton.addEventListener("click", () => refreshImageModels({ silent: false }));
-      elements.saveModelSettingsButton.addEventListener("click", handleModelSettingsSave);
-      elements.modelSelect.addEventListener("change", updateSelectedModel);
-      elements.auxiliaryModelSelect.addEventListener("change", updateSelectedAuxiliaryModel);
-      elements.temperatureInput.addEventListener("input", updateActiveTemperature);
-      elements.thinkingTokenLimitInput.addEventListener("input", updateActiveThinkingTokenLimit);
-      elements.thinkingUnlimitedInput.addEventListener("change", updateActiveThinkingUnlimited);
-      elements.rpSummaryEnabledInput.addEventListener("change", syncRpAssistanceControls);
-      elements.illustrationEnabledInput.addEventListener("change", syncIllustrationControls);
-      elements.chatT2iEnabledInput.addEventListener("change", syncIllustrationControls);
+      bindInputActions([
+        [elements.temperatureInput, updateActiveTemperature],
+        [elements.thinkingTokenLimitInput, updateActiveThinkingTokenLimit],
+        [elements.systemPromptInput, updateActiveSystemPrompt],
+        [elements.authorsNoteInput, updateAuthorsNote]
+      ]);
+      bindInputActions([
+        [elements.modelSelect, updateSelectedModel],
+        [elements.auxiliaryModelSelect, updateSelectedAuxiliaryModel],
+        [elements.thinkingUnlimitedInput, updateActiveThinkingUnlimited],
+        [elements.rpSummaryEnabledInput, syncRpAssistanceControls],
+        [elements.illustrationEnabledInput, syncIllustrationControls],
+        [elements.chatT2iEnabledInput, syncIllustrationControls],
+        [elements.rpResponsePerspectiveSelect, updateActiveRpResponsePerspective]
+      ], "change");
       [
         elements.illustrationCfgScaleInput,
         elements.illustrationStepsInput,
         elements.illustrationWidthInput,
         elements.illustrationHeightInput
       ].forEach((input) => input.addEventListener("input", syncIllustrationControls));
-      elements.saveIllustrationSettingsButton.addEventListener("click", handleIllustrationSettingsSave);
-      elements.rpResponsePerspectiveSelect.addEventListener("change", updateActiveRpResponsePerspective);
-      elements.systemPromptInput.addEventListener("input", updateActiveSystemPrompt);
-      elements.savePromptPresetButton.addEventListener("click", saveCurrentPromptPreset);
-      elements.authorsNoteInput.addEventListener("input", updateAuthorsNote);
-      elements.clearAuthorsNoteButton.addEventListener("click", clearAuthorsNote);
       elements.messageInput.addEventListener("keydown", handleComposerKeydown);
       elements.imageUploadInput.addEventListener("change", handleImageUploadSelection);
-      elements.scrollTopButton.addEventListener("click", scrollPageToTop);
-      elements.scrollBottomButton.addEventListener("click", scrollPageToBottom);
-      elements.characterNewButton.addEventListener("click", () => createNewRpCard("character"));
-      elements.characterImportButton.addEventListener("click", () => elements.characterCardImportInput.click());
-      elements.characterSaveButton.addEventListener("click", () => saveRpCard("character"));
-      elements.characterExportButton.addEventListener("click", () => exportRpCard("character"));
-      elements.characterImageButton.addEventListener("click", () => elements.characterProfileImageInput.click());
-      elements.characterImageClearButton.addEventListener("click", () => clearRpCardImage("character"));
-      elements.characterDeleteButton.addEventListener("click", () => deleteRpCard("character"));
-      elements.characterCardNameInput.addEventListener("input", () => updateRpCardDraftField("character", "name", elements.characterCardNameInput.value));
-      elements.characterCardDescriptionInput.addEventListener("input", () => updateRpCardDraftField("character", "description", elements.characterCardDescriptionInput.value));
-      elements.characterCardFirstMessageInput.addEventListener("input", () => updateRpCardDraftField("character", "firstMessage", elements.characterCardFirstMessageInput.value));
-      elements.characterProfileImageInput.addEventListener("change", (event) => handleRpCardProfileImageSelection("character", event));
-      elements.characterCardImportInput.addEventListener("change", (event) => handleRpCardImport("character", event));
-      elements.personaNewButton.addEventListener("click", () => createNewRpCard("persona"));
-      elements.personaImportButton.addEventListener("click", () => elements.personaCardImportInput.click());
-      elements.personaSaveButton.addEventListener("click", () => saveRpCard("persona"));
-      elements.personaExportButton.addEventListener("click", () => exportRpCard("persona"));
-      elements.personaImageButton.addEventListener("click", () => elements.personaProfileImageInput.click());
-      elements.personaImageClearButton.addEventListener("click", () => clearRpCardImage("persona"));
-      elements.personaDeleteButton.addEventListener("click", () => deleteRpCard("persona"));
-      elements.personaCardNameInput.addEventListener("input", () => updateRpCardDraftField("persona", "name", elements.personaCardNameInput.value));
-      elements.personaCardDescriptionInput.addEventListener("input", () => updateRpCardDraftField("persona", "description", elements.personaCardDescriptionInput.value));
-      elements.personaProfileImageInput.addEventListener("change", (event) => handleRpCardProfileImageSelection("persona", event));
-      elements.personaCardImportInput.addEventListener("change", (event) => handleRpCardImport("persona", event));
+      bindRpCardEditorEvents("character", {
+        newButton: elements.characterNewButton,
+        importButton: elements.characterImportButton,
+        saveButton: elements.characterSaveButton,
+        exportButton: elements.characterExportButton,
+        imageButton: elements.characterImageButton,
+        imageClearButton: elements.characterImageClearButton,
+        deleteButton: elements.characterDeleteButton,
+        imageInput: elements.characterProfileImageInput,
+        importInput: elements.characterCardImportInput,
+        fields: [
+          ["name", elements.characterCardNameInput],
+          ["description", elements.characterCardDescriptionInput],
+          ["firstMessage", elements.characterCardFirstMessageInput]
+        ]
+      });
+      bindRpCardEditorEvents("persona", {
+        newButton: elements.personaNewButton,
+        importButton: elements.personaImportButton,
+        saveButton: elements.personaSaveButton,
+        exportButton: elements.personaExportButton,
+        imageButton: elements.personaImageButton,
+        imageClearButton: elements.personaImageClearButton,
+        deleteButton: elements.personaDeleteButton,
+        imageInput: elements.personaProfileImageInput,
+        importInput: elements.personaCardImportInput,
+        fields: [
+          ["name", elements.personaCardNameInput],
+          ["description", elements.personaCardDescriptionInput]
+        ]
+      });
       elements.rpImageCropZoomInput.addEventListener("input", handleRpImageCropZoomInput);
       elements.rpImageCropViewport.addEventListener("pointerdown", handleRpImageCropPointerDown);
-      elements.cancelRpImageCropButton.addEventListener("click", () => cancelRpImageCrop({ silent: true }));
-      elements.applyRpImageCropButton.addEventListener("click", applyRpImageCrop);
       window.addEventListener("pointermove", handleRpImageCropPointerMove);
       window.addEventListener("pointerup", handleRpImageCropPointerUp);
       window.addEventListener("pointercancel", handleRpImageCropPointerUp);
@@ -4658,7 +4768,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           const normalizedState = normalizeStoredAppState(storedState);
           const secretHydration = await hydrateSettingsSecrets(normalizedState);
           const mediaMigrated = await migrateStateMediaToIndexedDb(normalizedState);
-          if (secretHydration.migrated || mediaMigrated) {
+          if (secretHydration.migrated || mediaMigrated || !isSplitChatStorageState(storedState)) {
             await writeStoredState(cloneStateForPersistence(normalizedState));
           }
           localStorage.removeItem(APP_STORAGE_KEY);
@@ -4755,11 +4865,16 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         modelsSyncedAt: typeof parsed?.modelsSyncedAt === "string" ? parsed.modelsSyncedAt : "",
         imageModels: normalizeImageModelList(parsed?.imageModels),
         imageModelsSyncedAt: typeof parsed?.imageModelsSyncedAt === "string" ? parsed.imageModelsSyncedAt : "",
+        storageVersion: isSplitChatStorageState(parsed) ? APP_SPLIT_CHAT_STORAGE_VERSION : 1,
         activeMode,
         activeChatId: typeof parsed?.activeChatId === "string" ? parsed.activeChatId : "",
         chats,
         rp
       };
+    }
+
+    function isSplitChatStorageState(parsed) {
+      return parsed?.chatStorage === "split" || Number(parsed?.storageVersion || 0) >= APP_SPLIT_CHAT_STORAGE_VERSION;
     }
 
     function migrateLegacyAuthorsNoteToActiveChat(parsed, chats, rp, activeMode) {
@@ -4808,6 +4923,30 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         : [];
     }
 
+    function bindClickActions(bindings) {
+      bindings.forEach(([element, handler]) => {
+        element.addEventListener("click", handler);
+      });
+    }
+
+    function bindInputActions(bindings, eventName = "input") {
+      bindings.forEach(([element, handler]) => {
+        element.addEventListener(eventName, handler);
+      });
+    }
+
+    function bindOverlayOpenAction(button, overlay, prepare = null) {
+      button.addEventListener("click", () => {
+        if (typeof prepare === "function") {
+          prepare();
+        }
+        openOverlay(overlay);
+      });
+    }
+
+    function bindProxyClickAction(button, target) {
+      button.addEventListener("click", () => target.click());
+    }
     function normalizePromptPreset(preset) {
       if (!preset || typeof preset !== "object") {
         return null;
@@ -4988,6 +5127,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return normalizeImageAttachments(image ? [image] : [])[0] || null;
     }
 
+    function getAllStateChats(targetState = state) {
+      return [targetState?.chats, ...Object.values(targetState?.rp?.chatsByCharacterId || {})]
+        .flatMap((chats) => Array.isArray(chats) ? chats : []);
+    }
+
+    function syncPersistedChatRecordIds(targetState = state) {
+      persistedChatRecordIds = new Set(getAllStateChats(targetState).map((chat) => chat.id).filter(Boolean));
+    }
+
     function supportsIndexedDb() {
       return typeof window.indexedDB !== "undefined";
     }
@@ -5043,6 +5191,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return readIndexedDbRecord(APP_DB_RECORD_KEY);
     }
 
+    async function readChatMessagesFromIndexedDb(chatId) {
+      return readIndexedDbRecord(`${APP_CHAT_RECORD_PREFIX}${chatId}`);
+    }
+
     async function readIndexedDbRecord(recordKey) {
       const db = await openStateDatabase();
       return new Promise((resolve, reject) => {
@@ -5078,6 +5230,43 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
         transaction.objectStore(APP_DB_STORE).delete(recordKey);
       });
+    }
+
+    function createIndexedDbStateWritePlan(snapshot) {
+      const metadataState = snapshot;
+      const chatIds = new Set();
+      const chatRecords = [];
+
+      getAllStateChats(metadataState).forEach((chat) => {
+        if (!chat?.id) {
+          return;
+        }
+
+        const messages = Array.isArray(chat.messages) ? chat.messages : [];
+        const messagesLoaded = chat.messagesLoaded !== false;
+        chat.messageCount = messagesLoaded
+          ? messages.length
+          : normalizeOptionalInteger(chat.messageCount, { min: 0 }) ?? 0;
+        chatIds.add(chat.id);
+
+        if (messagesLoaded) {
+          chatRecords.push({
+            key: `${APP_CHAT_RECORD_PREFIX}${chat.id}`,
+            value: {
+              version: 1,
+              chatId: chat.id,
+              messages
+            }
+          });
+        }
+
+        chat.messages = [];
+        chat.messagesLoaded = false;
+      });
+
+      metadataState.storageVersion = APP_SPLIT_CHAT_STORAGE_VERSION;
+      metadataState.chatStorage = "split";
+      return { metadataState, chatIds, chatRecords };
     }
 
     async function writeMediaRecord(mediaId, attachment, options = {}) {
@@ -5144,7 +5333,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     async function writeStoredState(snapshot) {
       if (supportsIndexedDb()) {
         try {
-          await writeIndexedDbRecord(APP_DB_RECORD_KEY, snapshot);
+          const { metadataState, chatIds, chatRecords } = createIndexedDbStateWritePlan(snapshot);
+          await writeIndexedDbRecord(APP_DB_RECORD_KEY, metadataState);
+
+          const deletedChatIds = [...persistedChatRecordIds].filter((chatId) => !chatIds.has(chatId));
+          await Promise.all(deletedChatIds.map((chatId) => deleteIndexedDbRecord(`${APP_CHAT_RECORD_PREFIX}${chatId}`)));
+          await Promise.all(chatRecords.map((record) => writeIndexedDbRecord(record.key, record.value)));
+          persistedChatRecordIds = chatIds;
 
           localStorage.removeItem(APP_STORAGE_KEY);
           return;
@@ -5504,6 +5699,32 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }));
     }
 
+    function hasPendingStatePersistWork() {
+      return pendingStatePersistRequested || Boolean(persistStateTimerId) || isStatePersistWriteInFlight;
+    }
+
+    function requestInactiveChatUnload() {
+      pendingInactiveChatUnloadRequested = true;
+      flushPendingInactiveChatUnload();
+    }
+
+    function flushPendingInactiveChatUnload() {
+      if (!pendingInactiveChatUnloadRequested || hasPendingStatePersistWork()) {
+        return;
+      }
+
+      pendingInactiveChatUnloadRequested = false;
+      unloadInactiveChatMessages();
+    }
+
+    function writeLegacyEmergencyStateSnapshot() {
+      try {
+        localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(cloneStateForPersistence(state)));
+      } catch (error) {
+        console.error("Failed to write legacy emergency state snapshot", error);
+      }
+    }
+
     function persistState() {
       if (!isPrimaryTab) {
         return;
@@ -5540,6 +5761,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const shouldPersist = pendingStatePersistRequested;
       pendingStatePersistRequested = false;
       if (!shouldPersist) {
+        flushPendingInactiveChatUnload();
         return;
       }
 
@@ -5548,6 +5770,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       persistStateInFlight = persistStateInFlight
         .catch(() => {})
         .then(async () => {
+          isStatePersistWriteInFlight = true;
           await writeStoredState(snapshot);
           signalStateSync();
         })
@@ -5555,6 +5778,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           console.error("Failed to persist state", error);
         })
         .finally(() => {
+          isStatePersistWriteInFlight = false;
+          flushPendingInactiveChatUnload();
           if (pendingStatePersistRequested && !persistStateTimerId) {
             persistStateTimerId = window.setTimeout(flushPendingStatePersist, getPersistStateDebounceMs());
           }
@@ -5572,8 +5797,36 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return null;
       }
 
-      const messages = Array.isArray(chat.messages)
-        ? chat.messages
+      const messagesLoaded = typeof chat.messagesLoaded === "boolean"
+        ? chat.messagesLoaded
+        : Array.isArray(chat.messages);
+      const messages = messagesLoaded ? normalizeStoredChatMessages(chat.messages) : [];
+      const messageCount = messagesLoaded
+        ? messages.length
+        : normalizeOptionalInteger(chat.messageCount, { min: 0 }) ?? 0;
+
+      return {
+        id: typeof chat.id === "string" && chat.id ? chat.id : createId("chat"),
+        title: typeof chat.title === "string" && chat.title.trim() ? chat.title.trim() : suggestChatTitle(messages),
+        systemPrompt: typeof chat.systemPrompt === "string" ? chat.systemPrompt : "",
+        authorsNote: typeof chat.authorsNote === "string" ? chat.authorsNote : "",
+        rpSummary: typeof chat.rpSummary === "string" ? chat.rpSummary : "",
+        rpSummaryUpdatedMessageCount: normalizeOptionalInteger(chat.rpSummaryUpdatedMessageCount, { min: 0 }) ?? 0,
+        rpSceneState: typeof chat.rpSceneState === "string" ? chat.rpSceneState : "",
+        autoTitleGenerated: Boolean(chat.autoTitleGenerated),
+        titleManuallyEdited: Boolean(chat.titleManuallyEdited),
+        characterCardId: typeof chat.characterCardId === "string" ? chat.characterCardId : "",
+        createdAt: typeof chat.createdAt === "string" ? chat.createdAt : new Date().toISOString(),
+        updatedAt: typeof chat.updatedAt === "string" ? chat.updatedAt : new Date().toISOString(),
+        messageCount,
+        messagesLoaded,
+        messages
+      };
+    }
+
+    function normalizeStoredChatMessages(messages) {
+      return Array.isArray(messages)
+        ? messages
           .filter((message) => message && typeof message.content === "string")
           .map((message) => ({
             id: typeof message.id === "string" && message.id ? message.id : createId("msg"),
@@ -5592,22 +5845,106 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             personaCardId: typeof message.personaCardId === "string" ? message.personaCardId : ""
           }))
         : [];
+    }
 
-      return {
-        id: typeof chat.id === "string" && chat.id ? chat.id : createId("chat"),
-        title: typeof chat.title === "string" && chat.title.trim() ? chat.title.trim() : suggestChatTitle(messages),
-        systemPrompt: typeof chat.systemPrompt === "string" ? chat.systemPrompt : "",
-        authorsNote: typeof chat.authorsNote === "string" ? chat.authorsNote : "",
-        rpSummary: typeof chat.rpSummary === "string" ? chat.rpSummary : "",
-        rpSummaryUpdatedMessageCount: normalizeOptionalInteger(chat.rpSummaryUpdatedMessageCount, { min: 0 }) ?? 0,
-        rpSceneState: typeof chat.rpSceneState === "string" ? chat.rpSceneState : "",
-        autoTitleGenerated: Boolean(chat.autoTitleGenerated),
-        titleManuallyEdited: Boolean(chat.titleManuallyEdited),
-        characterCardId: typeof chat.characterCardId === "string" ? chat.characterCardId : "",
-        createdAt: typeof chat.createdAt === "string" ? chat.createdAt : new Date().toISOString(),
-        updatedAt: typeof chat.updatedAt === "string" ? chat.updatedAt : new Date().toISOString(),
-        messages
-      };
+    function getChatMessageCount(chat) {
+      if (!chat || typeof chat !== "object") {
+        return 0;
+      }
+
+      if (chat.messagesLoaded !== false && Array.isArray(chat.messages)) {
+        return chat.messages.length;
+      }
+
+      return normalizeOptionalInteger(chat.messageCount, { min: 0 }) ?? 0;
+    }
+
+    function syncChatMessageCount(chat) {
+      if (!chat || typeof chat !== "object") {
+        return 0;
+      }
+
+      chat.messageCount = getChatMessageCount(chat);
+      return chat.messageCount;
+    }
+
+    function unloadChatMessages(chat) {
+      if (!chat || typeof chat !== "object") {
+        return;
+      }
+
+      syncChatMessageCount(chat);
+      chat.messages = [];
+      chat.messagesLoaded = false;
+    }
+
+    function unloadInactiveChatMessages() {
+      const activeChatId = getCurrentActiveChatId();
+      if (!persistedChatRecordIds.size) {
+        return;
+      }
+
+      getAllStateChats().forEach((chat) => {
+        if (chat.id !== activeChatId) {
+          unloadChatMessages(chat);
+        }
+      });
+    }
+
+    async function ensureChatMessagesLoaded(chatOrId) {
+      const chat = typeof chatOrId === "string" ? findChatById(chatOrId) : chatOrId;
+      if (!chat) {
+        return null;
+      }
+
+      if (chat.messagesLoaded !== false) {
+        syncChatMessageCount(chat);
+        return chat;
+      }
+
+      if (!supportsIndexedDb()) {
+        chat.messages = Array.isArray(chat.messages) ? chat.messages : [];
+        chat.messagesLoaded = true;
+        syncChatMessageCount(chat);
+        return chat;
+      }
+
+      const existingPromise = chatMessageLoadPromises.get(chat.id);
+      if (existingPromise) {
+        return existingPromise;
+      }
+
+      const loadPromise = readChatMessagesFromIndexedDb(chat.id)
+        .then((record) => {
+          chat.messages = normalizeStoredChatMessages(record?.messages);
+          chat.messagesLoaded = true;
+          chat.messageCount = chat.messages.length;
+          return chat;
+        })
+        .finally(() => {
+          chatMessageLoadPromises.delete(chat.id);
+        });
+
+      chatMessageLoadPromises.set(chat.id, loadPromise);
+      return loadPromise;
+    }
+
+    async function ensureChatsLoaded(chats) {
+      await Promise.all((Array.isArray(chats) ? chats : []).map((chat) => ensureChatMessagesLoaded(chat)));
+    }
+
+    async function ensureCurrentActiveChatLoaded() {
+      const activeChatId = getCurrentActiveChatId();
+      if (!activeChatId) {
+        unloadInactiveChatMessages();
+        return null;
+      }
+
+      const chat = await ensureChatMessagesLoaded(activeChatId);
+      if (getCurrentActiveChatId() === activeChatId) {
+        unloadInactiveChatMessages();
+      }
+      return chat;
     }
 
     function normalizeMessageIllustration(illustration) {
@@ -5690,9 +6027,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
 
       state = await loadState();
+      syncPersistedChatRecordIds(state);
       ensureInitialChat();
       populateSettingsForm();
       syncChatSelection();
+      renderAll({ persist: false });
+      await ensureCurrentActiveChatLoaded();
       renderAll();
       if (state.settings.apiBaseUrl) {
         void refreshModels({ silent: true });
@@ -5747,6 +6087,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function releasePrimaryTab() {
+      writeLegacyEmergencyStateSnapshot();
       persistStateNow();
 
       if (tabLockIntervalId) {
@@ -5762,8 +6103,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
     async function refreshStateFromStorage() {
       state = await loadState();
+      syncPersistedChatRecordIds(state);
       populateSettingsForm();
       syncChatSelection();
+      renderAll({ persist: false });
+      await ensureCurrentActiveChatLoaded();
       renderAll({ persist: false });
     }
 
@@ -5836,6 +6180,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         : state.chats.length + 1;
       const characterCard = characterCardId ? getRpCardById("character", characterCardId) : null;
       const firstMessage = String(characterCard?.firstMessage || "").trim();
+      const messages = firstMessage ? [createRpFirstMessageMessage(characterCardId, firstMessage, createdAt)] : [];
       return {
         id: createId("chat"),
         title: t("newChatTitle", { count: titleNumber }),
@@ -5849,7 +6194,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         characterCardId,
         createdAt,
         updatedAt: createdAt,
-        messages: firstMessage ? [createRpFirstMessageMessage(characterCardId, firstMessage, createdAt)] : []
+        messageCount: messages.length,
+        messagesLoaded: true,
+        messages
       };
     }
 
@@ -5901,6 +6248,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
 
       chat.messages.unshift(createRpFirstMessageMessage(characterCard.id, firstMessage, chat.createdAt || new Date().toISOString()));
+      syncChatMessageCount(chat);
       return true;
     }
 
@@ -6096,7 +6444,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       draft[field] = value;
     }
 
-    function switchAppMode(nextMode) {
+    async function switchAppMode(nextMode) {
       const normalizedMode = normalizeAppMode(nextMode);
       if (normalizedMode === normalizeAppMode(state.activeMode)) {
         return;
@@ -6112,6 +6460,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       resetModelSettingsDraft();
       resetRpCardDraft("character");
       resetRpCardDraft("persona");
+      renderAll({ persist: false });
+      await ensureCurrentActiveChatLoaded();
       renderAll();
       setSettingsOverlayTab(activeSettingsTab);
       setChatStatus(normalizedMode === "rp" ? t("switchedToRpMode") : t("switchedToChatMode"), "success");
@@ -6335,7 +6685,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             className: `card-browser-item${card.id === draft.cardId ? " active" : ""}`,
             label: t("cardSelect", { name: card.name }),
             title: card.name,
-            onClick: () => selectRpCard(kind, card.id)
+            onClick: () => {
+              void selectRpCard(kind, card.id);
+            }
           });
 
           const thumb = document.createElement("div");
@@ -6372,7 +6724,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return value ? value.slice(0, 1).toUpperCase() : fallback;
     }
 
-    function selectRpCard(kind, cardId) {
+    async function selectRpCard(kind, cardId) {
       if (!getRpCardCollection(kind).some((card) => card.id === cardId)) {
         return;
       }
@@ -6386,6 +6738,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
 
       resetRpCardDraft(kind);
+      renderAppSections({ persist: false, chatList: kind === "character", activeChat: true, modelsPanel: kind === "character", composerControls: true, rpCards: true, header: true });
+      if (kind === "character") {
+        await ensureCurrentActiveChatLoaded();
+      }
       renderAppSections({
         chatList: kind === "character",
         activeChat: true,
@@ -6410,7 +6766,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           chat.id,
           chat.updatedAt || "",
           chat.title || "",
-          chat.messages?.length || 0,
+          getChatMessageCount(chat),
           editingChatId === chat.id ? (chatTitleDrafts.get(chat.id) ?? "") : ""
         ].join(":"))
           .join("|")
@@ -6449,18 +6805,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       mainButton.type = "button";
       mainButton.className = "chat-item-main";
       mainButton.addEventListener("click", () => {
-        setCurrentActiveChatId(chat.id);
-        resetModelSettingsDraft();
-        renderAppSections({
-          chatList: true,
-          activeChat: true,
-          modelsPanel: true,
-          composerControls: true,
-          header: true
-        });
-        if (options.closeOverlayOnSelect) {
-          closeOverlay(elements.tabsOverlay);
-        }
+        void selectChatById(chat.id, { closeOverlayOnSelect: options.closeOverlayOnSelect });
       });
 
       const copy = document.createElement("div");
@@ -6496,7 +6841,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
       const meta = document.createElement("p");
       meta.className = "chat-item-meta";
-      const messageCount = chat.messages.length;
+      const messageCount = getChatMessageCount(chat);
       meta.textContent = t("chatMeta", { count: messageCount, date: formatDate(chat.updatedAt, true) });
 
       copy.appendChild(meta);
@@ -6507,7 +6852,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       actions.append(
         createChatItemIconButton(isEditing ? t("tabNameDone") : t("tabNameEdit"), "edit", () => toggleChatTitleEdit(chat.id)),
         createChatItemIconButton(t("tabJsonExport"), "export", () => exportChatToJson(chat.id)),
-        createChatItemIconButton(t("tabClose"), "close", () => deleteChatById(chat.id), "danger")
+        createChatItemIconButton(t("tabClose"), "close", () => {
+          void deleteChatById(chat.id);
+        }, "danger")
       );
 
       item.append(mainButton, actions);
@@ -6620,6 +6967,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
       elements.messageStream.innerHTML = "";
 
+      if (activeChat.messagesLoaded === false) {
+        const loading = document.createElement("div");
+        loading.className = "empty-state";
+        loading.textContent = t("olderMessagesLoading");
+        elements.messageStream.appendChild(loading);
+        return;
+      }
+
       if (!activeChat.messages.length) {
         const empty = document.createElement("div");
         empty.className = "empty-state";
@@ -6645,6 +7000,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function getRenderedMessagesForActiveChat(chat) {
+      if (chat?.messagesLoaded === false) {
+        return [];
+      }
+
       const messages = Array.isArray(chat?.messages) ? chat.messages : [];
       const count = Math.min(messages.length, Math.max(INITIAL_MESSAGE_RENDER_LIMIT, renderedMessageCount));
       renderedMessageCount = count;
@@ -6664,6 +7023,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
 
       const activeChat = getActiveChat();
+      if (activeChat?.messagesLoaded === false) {
+        return;
+      }
       const messages = Array.isArray(activeChat?.messages) ? activeChat.messages : [];
       if (!messages.length || renderedMessageCount >= messages.length) {
         return;
@@ -6900,6 +7262,41 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
     function getActiveChat() {
       return getCurrentChatCollection().find((chat) => chat.id === getCurrentActiveChatId()) || null;
+    }
+
+    async function selectChatById(chatId, options = {}) {
+      if (!findChatById(chatId)) {
+        return;
+      }
+
+      currentActiveChatLoadRequestId += 1;
+      const requestId = currentActiveChatLoadRequestId;
+      setCurrentActiveChatId(chatId);
+      resetModelSettingsDraft();
+      renderAppSections({
+        persist: false,
+        chatList: true,
+        activeChat: true,
+        modelsPanel: true,
+        composerControls: true,
+        header: true
+      });
+
+      await ensureCurrentActiveChatLoaded();
+      if (requestId !== currentActiveChatLoadRequestId || getCurrentActiveChatId() !== chatId) {
+        return;
+      }
+
+      renderAppSections({
+        chatList: true,
+        activeChat: true,
+        modelsPanel: true,
+        composerControls: true,
+        header: true
+      });
+      if (options.closeOverlayOnSelect) {
+        closeOverlay(elements.tabsOverlay);
+      }
     }
 
     function findChatById(chatId) {
@@ -7968,7 +8365,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       setChatStatus(t("rpCardCreated", { kind: getRpCardKindNoun(kind) }), "success");
     }
 
-    function saveRpCard(kind) {
+    async function saveRpCard(kind) {
       const draft = getRpCardDraft(kind);
       const card = getRpCardCollection(kind).find((item) => item.id === draft.cardId);
       if (!card) {
@@ -7980,6 +8377,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       card.description = String(draft.description || "");
       if (kind === "character") {
         card.firstMessage = String(draft.firstMessage || "");
+        await ensureChatsLoaded(getRpChatsForCharacterId(card.id));
         syncRpCharacterChatsFirstMessage(card.id);
       }
       card.profileImage = draft.profileImage ? cloneImageAttachment(draft.profileImage) : null;
@@ -7987,13 +8385,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
       resetRpCardDraft(kind);
       renderAppSections({ chatList: kind === "character", activeChat: true, rpCards: true, header: true });
+      requestInactiveChatUnload();
       setChatStatus(t("rpCardSaved", { kind: getRpCardKindNoun(kind) }), "success");
     }
 
     function clearRpCardImage(kind) {
       const draft = getRpCardDraft(kind);
       draft.profileImage = null;
-      saveRpCard(kind);
+      void saveRpCard(kind);
     }
 
     function resetLastRpCardToDefault(kind, card) {
@@ -8255,10 +8654,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         composerControls: true,
         header: true
       });
+      requestInactiveChatUnload();
       setTabsStatus(t("newChatTabCreated"), "success");
     }
 
-    function deleteChatById(chatId) {
+    async function deleteChatById(chatId) {
       const chats = getCurrentChatCollection();
       const chat = chats.find((item) => item.id === chatId);
       if (!chat) {
@@ -8281,6 +8681,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       chatTitleDrafts.delete(chat.id);
       ensureInitialChat();
       syncChatSelection();
+      await ensureCurrentActiveChatLoaded();
       renderAppSections({
         chatList: true,
         activeChat: true,
@@ -8305,7 +8706,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return;
       }
 
-      const chat = getCurrentChatCollection().find((item) => item.id === chatId);
+      const chat = await ensureChatMessagesLoaded(chatId);
       if (!chat) {
         setTabsStatus(t("exportChatNotFound"), "error");
         return;
@@ -8328,6 +8729,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       link.remove();
       URL.revokeObjectURL(downloadUrl);
 
+      requestInactiveChatUnload();
       setTabsStatus(t("tabJsonExported", { title: chat.title }), "success");
     }
 
@@ -8392,6 +8794,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           composerControls: true,
           header: true
         });
+        requestInactiveChatUnload();
         setTabsStatus(t("tabsImported", { count: importedChats.length }), "success");
       } catch (error) {
         console.error("Failed to import chats", error);
@@ -9994,9 +10397,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return [[
         "[Planned Image Generation]",
         "The latest user message includes an image generation request.",
+        "FocusAbove will handle the actual image generation after your text response. The main chat model does not have DALL-E, dalle.text2im, or any callable image-generation tool available inside this response.",
+        "Do not output tool-call JSON, action/action_input objects, function calls, XML tool tags, or code blocks that imitate image-generation tool usage or results.",
         "After your response, FocusAbove will generate an image with the image API using this prompt:",
         cleanPrompt,
-        "Respond with awareness that image generation is being handled, but do not claim that pixels have already been displayed inside the text response."
+        "Respond in normal prose only, with awareness that image generation is being handled, but do not claim that pixels have already been displayed inside the text response."
       ].join("\n")];
     }
 
@@ -10331,7 +10736,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const contentType = response.headers.get("content-type") || "";
       if (!response.body || !/event-stream/i.test(contentType)) {
         const payload = await response.json();
-        const assistantContent = extractFinalAssistantContent(payload);
+        const assistantContent = sanitizeChatModeFakeImageToolCallOutput(extractFinalAssistantContent(payload), chat);
         if (!assistantContent.trim()) {
           throw new Error(t("missingResponseContent"));
         }
@@ -10471,6 +10876,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         assistantMessage.isThinking = false;
         lastThinkingStreamingRenderAt = 0;
         assistantMessage.content += contentText;
+        assistantMessage.content = sanitizeChatModeFakeImageToolCallOutput(assistantMessage.content, chat);
         changed = true;
       }
 
@@ -11140,11 +11546,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return;
       }
 
-      const contentChanged = message.content !== nextContent;
       message.content = nextContent;
-      if (contentChanged && message.role === "assistant") {
-        message.illustration = null;
-      }
       message.timestamp = new Date().toISOString();
       chat.updatedAt = message.timestamp;
       editingMessageId = "";
@@ -12054,6 +12456,25 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return extractDeltaText(payload?.choices?.[0]?.text);
     }
 
+    function sanitizeChatModeFakeImageToolCallOutput(content, chat) {
+      if (!content || isRpChat(chat)) {
+        return content;
+      }
+
+      let nextContent = String(content);
+      const structuredToolPattern = /(?:dalle\.text2im|dall-e|tool_calls|function_call|action_input|<tool\b|<function_calls?\b)/i;
+      if (!structuredToolPattern.test(nextContent)) {
+        return nextContent;
+      }
+
+      nextContent = nextContent.replace(/^\s*```(?:json|xml|yaml|tool)?\s*[\s\S]*?(?:dalle\.text2im|dall-e|tool_calls|function_call|action_input|<tool\b|<function_calls?\b)[\s\S]*?```\s*/i, "");
+      nextContent = nextContent.replace(/^\s*(?:<tool\b[\s\S]*?<\/tool>|<function_calls?\b[\s\S]*?<\/function_calls?>)\s*/i, "");
+      nextContent = nextContent.replace(/^\s*(?:\{[\s\S]{0,1600}?\}|\[[\s\S]{0,1600}?\])\s*/i, (match) => structuredToolPattern.test(match) ? "" : match);
+      nextContent = nextContent.replace(/^\s*(?:(?:action|action_input|tool_calls|function_call)\s*:?\s*[^\n]*\n+)+/i, "");
+      nextContent = nextContent.replace(/^\s*dalle\.text2im\s*\([^)]*\)\s*/i, "");
+      return nextContent.trimStart();
+    }
+
     function applyTokenUsageToMessage(message, usage) {
       const normalizedUsage = normalizeTokenUsage(usage);
       const nextResponseTokens = normalizedUsage?.responseTokens ?? null;
@@ -12107,7 +12528,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function formatTokenCount(value) {
-      return new Intl.NumberFormat(getUiLocale()).format(value);
+      const locale = getUiLocale();
+      if (!cachedUiNumberFormatter || cachedUiNumberFormatterLocale !== locale) {
+        cachedUiNumberFormatter = new Intl.NumberFormat(locale);
+        cachedUiNumberFormatterLocale = locale;
+      }
+
+      return cachedUiNumberFormatter.format(value);
     }
 
     function shouldRetitleChat(chat) {
@@ -12396,14 +12823,26 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return;
       }
 
-      const textNode = Array.from(label.childNodes).find((node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim());
+      let textNode = null;
+      let firstElement = null;
+      for (const node of label.childNodes) {
+        if (!textNode && node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
+          textNode = node;
+        }
+        if (!firstElement && node.nodeType === Node.ELEMENT_NODE) {
+          firstElement = node;
+        }
+        if (textNode && firstElement) {
+          break;
+        }
+      }
+
       if (textNode) {
         textNode.textContent = `${text}\n`;
         return;
       }
 
       const fallbackTextNode = document.createTextNode(`${text}\n`);
-      const firstElement = Array.from(label.childNodes).find((node) => node.nodeType === Node.ELEMENT_NODE);
       if (label.classList.contains("inline-checkbox") && firstElement) {
         label.insertBefore(fallbackTextNode, firstElement.nextSibling);
       } else {
@@ -12437,9 +12876,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     function applyStaticTranslations() {
       document.documentElement.lang = getUiLanguage();
 
-      const modeToggle = document.querySelector(".header-mode-toggle");
-      if (modeToggle) {
-        modeToggle.setAttribute("aria-label", t("modeToggleLabel"));
+      if (elements.modeToggle) {
+        elements.modeToggle.setAttribute("aria-label", t("modeToggleLabel"));
       }
       elements.chatModeButton.textContent = t("chatMode");
       elements.rpModeButton.textContent = t("rpMode");
@@ -12448,44 +12886,38 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       elements.openSettingsOverlayButton.textContent = t("settings");
       elements.openTabsOverlayButton.textContent = t("tabs");
 
-      const messageLabel = elements.messageInput?.closest("label")?.querySelector(".sr-only");
-      if (messageLabel) {
-        messageLabel.textContent = t("messageSrOnly");
+      if (elements.messageInputLabel) {
+        elements.messageInputLabel.textContent = t("messageSrOnly");
       }
       elements.messageInput.placeholder = t("messagePlaceholder");
 
-      const scrollStack = document.querySelector(".scroll-jump-stack");
-      if (scrollStack) {
-        scrollStack.setAttribute("aria-label", t("floatingButtons"));
+      if (elements.scrollJumpStack) {
+        elements.scrollJumpStack.setAttribute("aria-label", t("floatingButtons"));
       }
       setButtonTitleAndAria(elements.scrollTopButton, t("scrollTop"));
       setButtonTitleAndAria(elements.scrollBottomButton, t("scrollBottom"));
       setButtonTitleAndAria(elements.clearMessagesButton, t("clearMessages"));
 
-      const authorsNoteTitle = document.getElementById("authorsNoteOverlayTitle");
-      if (authorsNoteTitle) {
-        authorsNoteTitle.textContent = t("authorsNote");
+      if (elements.authorsNoteOverlayTitle) {
+        elements.authorsNoteOverlayTitle.textContent = t("authorsNote");
       }
       elements.closeAuthorsNoteOverlayButton.textContent = t("close");
       setFieldLabel(elements.authorsNoteInput, t("authorsNoteField"));
       elements.authorsNoteInput.placeholder = t("authorsNotePlaceholder");
       elements.clearAuthorsNoteButton.textContent = t("clear");
 
-      const settingsTitle = document.getElementById("settingsOverlayTitle");
-      if (settingsTitle) {
-        settingsTitle.textContent = t("settings");
+      if (elements.settingsOverlayTitle) {
+        elements.settingsOverlayTitle.textContent = t("settings");
       }
       elements.closeSettingsOverlayButton.textContent = t("close");
-      const settingsTabStrip = document.querySelector(".settings-tab-strip");
-      if (settingsTabStrip) {
-        settingsTabStrip.setAttribute("aria-label", t("settingsCategory"));
+      if (elements.settingsTabStrip) {
+        elements.settingsTabStrip.setAttribute("aria-label", t("settingsCategory"));
       }
       elements.settingsGeneralTabButton.textContent = t("settingsGeneral");
       elements.settingsModelTabButton.textContent = t("settingsModel");
       elements.settingsIllustrationTabButton.textContent = t("settingsIllustration");
-      const generalSectionTitle = document.querySelector("#settingsGeneralPanel .section-title");
-      if (generalSectionTitle) {
-        generalSectionTitle.textContent = t("connectionSettings");
+      if (elements.settingsGeneralSectionTitle) {
+        elements.settingsGeneralSectionTitle.textContent = t("connectionSettings");
       }
       setFieldLabel(elements.apiBaseUrlInput, t("apiBaseUrl"));
       elements.apiBaseUrlInput.placeholder = t("apiBaseUrlPlaceholder");
@@ -12502,35 +12934,38 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       setFieldLabel(elements.languageSelect, t("language"));
       elements.languageSelect.options[0].textContent = t("languageKo");
       elements.languageSelect.options[1].textContent = t("languageEn");
-      setLeadingLabelText(document.querySelector('label.inline-checkbox[for="smoothStreamingInput"]'), t("smoothStreaming"));
+      [
+        [elements.smoothStreamingLabel, "smoothStreaming"],
+        [elements.rpSummaryEnabledLabel, "rpSummaryEnabled"],
+        [elements.rpInputEnhancementEnabledLabel, "rpInputEnhancementEnabled"],
+        [elements.thinkingUnlimitedLabel, "unlimited"],
+        [elements.illustrationEnabledLabel, "illustrationEnabled"],
+        [elements.chatT2iEnabledLabel, "chatT2iEnabled"],
+        [elements.illustrationIgnorePeopleLabel, "illustrationIgnoreNonCharacterPeople"]
+      ].forEach(([label, key]) => setLeadingLabelText(label, t(key)));
       setFieldLabel(elements.rpResponsePerspectiveSelect, t("rpResponsePerspective"));
       elements.rpResponsePerspectiveSelect.options[0].textContent = t("rpPerspectiveCharacter");
       elements.rpResponsePerspectiveSelect.options[1].textContent = t("rpPerspectivePersona");
       elements.rpResponsePerspectiveSelect.options[2].textContent = t("rpPerspectiveThird");
-      setLeadingLabelText(document.querySelector('label.inline-checkbox[for="rpSummaryEnabledInput"]'), t("rpSummaryEnabled"));
       setFieldLabel(elements.rpSummaryTokenThresholdInput, t("rpSummaryTokenThreshold"));
       elements.rpSummaryTokenThresholdInput.placeholder = t("rpSummaryTokenThresholdPlaceholder");
       setFieldLabel(elements.rpSummaryMaxTokensInput, t("rpSummaryMaxTokens"));
       elements.rpSummaryMaxTokensInput.placeholder = t("rpSummaryMaxTokensPlaceholder");
-      setLeadingLabelText(document.querySelector('label.inline-checkbox[for="rpInputEnhancementEnabledInput"]'), t("rpInputEnhancementEnabled"));
-      const settingsButtons = document.querySelectorAll("#settingsForm .button-row button");
-      if (settingsButtons[0]) {
-        settingsButtons[0].textContent = t("saveSettings");
+      if (elements.settingsActionButtons[0]) {
+        elements.settingsActionButtons[0].textContent = t("saveSettings");
       }
-      if (settingsButtons[1]) {
-        settingsButtons[1].textContent = t("restoreDefaults");
+      if (elements.settingsActionButtons[1]) {
+        elements.settingsActionButtons[1].textContent = t("restoreDefaults");
       }
 
-      const modelStatLabels = document.querySelectorAll("#settingsModelPanel .stat-card span");
-      if (modelStatLabels[0]) {
-        modelStatLabels[0].textContent = t("modelsCount");
+      if (elements.modelStatLabels[0]) {
+        elements.modelStatLabels[0].textContent = t("modelsCount");
       }
-      if (modelStatLabels[1]) {
-        modelStatLabels[1].textContent = t("lastSynced");
+      if (elements.modelStatLabels[1]) {
+        elements.modelStatLabels[1].textContent = t("lastSynced");
       }
-      const modelSectionTitle = document.querySelector("#settingsModelPanel .section-title");
-      if (modelSectionTitle) {
-        modelSectionTitle.textContent = t("conversationSettings");
+      if (elements.settingsModelSectionTitle) {
+        elements.settingsModelSectionTitle.textContent = t("conversationSettings");
       }
       setFieldLabel(elements.modelSelect, t("modelSelect"));
       setFieldLabel(elements.auxiliaryModelSelect, t("auxiliaryModelSelect"));
@@ -12538,10 +12973,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       elements.temperatureInput.placeholder = t("thinkingDefaultPlaceholder");
       setFieldLabel(elements.thinkingTokenLimitInput, t("thinkingTokenLimit"));
       elements.thinkingTokenLimitInput.placeholder = t("serverDefaultPlaceholder");
-      setLeadingLabelText(document.querySelector('label.inline-checkbox[for="thinkingUnlimitedInput"]'), t("unlimited"));
-      const thinkingHint = document.querySelector("#settingsModelPanel .hint");
-      if (thinkingHint) {
-        thinkingHint.textContent = t("thinkingHint");
+      if (elements.settingsModelHint) {
+        elements.settingsModelHint.textContent = t("thinkingHint");
       }
       setFieldLabel(elements.systemPromptInput, t("systemPrompt"));
       elements.systemPromptInput.placeholder = t("systemPromptPlaceholder");
@@ -12549,13 +12982,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       elements.saveModelSettingsButton.textContent = t("saveSettings");
       elements.refreshModelsButton.textContent = t("refreshModels");
 
-      const illustrationSectionTitle = document.querySelector("#settingsIllustrationPanel .section-title");
-      if (illustrationSectionTitle) {
-        illustrationSectionTitle.textContent = t("illustrationGeneration");
+      if (elements.settingsIllustrationSectionTitle) {
+        elements.settingsIllustrationSectionTitle.textContent = t("illustrationGeneration");
       }
-      setLeadingLabelText(document.querySelector('label.inline-checkbox[for="illustrationEnabledInput"]'), t("illustrationEnabled"));
-      setLeadingLabelText(document.querySelector('label.inline-checkbox[for="chatT2iEnabledInput"]'), t("chatT2iEnabled"));
-      setLeadingLabelText(document.querySelector('label.inline-checkbox[for="illustrationIgnoreNonCharacterPeopleInput"]'), t("illustrationIgnoreNonCharacterPeople"));
       setFieldLabel(elements.illustrationPromptStyleSelect, t("illustrationPromptStyle"));
       elements.illustrationPromptStyleSelect.options[0].textContent = t("illustrationPromptStyleTags");
       elements.illustrationPromptStyleSelect.options[1].textContent = t("illustrationPromptStyleNatural");
@@ -12571,17 +13000,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       setRangeFieldLabel(elements.illustrationHeightInput, t("imageHeight"));
       elements.saveIllustrationSettingsButton.textContent = t("saveSettings");
 
-      const promptPresetTitle = document.getElementById("promptPresetOverlayTitle");
-      if (promptPresetTitle) {
-        promptPresetTitle.textContent = t("promptPresetOverlayTitle");
+      if (elements.promptPresetOverlayTitle) {
+        elements.promptPresetOverlayTitle.textContent = t("promptPresetOverlayTitle");
       }
       elements.closePromptPresetOverlayButton.textContent = t("close");
       setFieldLabel(elements.promptPresetNameInput, t("promptPresetName"));
       elements.promptPresetNameInput.placeholder = t("promptPresetNamePlaceholder");
       elements.savePromptPresetButton.textContent = t("saveCurrentPromptPreset");
-      const promptPresetListTitle = document.getElementById("promptPresetListTitle");
-      if (promptPresetListTitle) {
-        promptPresetListTitle.textContent = t("savedPromptPresets");
+      if (elements.promptPresetListTitle) {
+        elements.promptPresetListTitle.textContent = t("savedPromptPresets");
       }
       renderPromptPresetList();
 
@@ -12591,17 +13018,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       setButtonTitleAndAria(elements.importChatsButton, t("importJson"));
       setButtonTitleAndAria(elements.desktopImportChatsButton, t("importJson"));
 
-      const characterTitle = document.getElementById("characterOverlayTitle");
-      if (characterTitle) {
-        characterTitle.textContent = t("characterCards");
+      if (elements.characterOverlayTitle) {
+        elements.characterOverlayTitle.textContent = t("characterCards");
       }
       elements.closeCharacterOverlayButton.textContent = t("close");
       elements.characterNewButton.textContent = t("newCard");
       elements.characterImportButton.textContent = t("import");
       elements.characterCardList.setAttribute("aria-label", t("characterCardList"));
-      const characterPanel = document.querySelector("#characterOverlay .card-editor-settings-pane");
-      if (characterPanel) {
-        characterPanel.setAttribute("aria-label", t("characterSettingsPanel"));
+      if (elements.characterSettingsPanel) {
+        elements.characterSettingsPanel.setAttribute("aria-label", t("characterSettingsPanel"));
       }
       setFieldLabel(elements.characterCardNameInput, t("characterName"));
       setFieldLabel(elements.characterCardDescriptionInput, t("characterDescription"));
@@ -12615,17 +13040,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       elements.characterImageButton.textContent = t("chooseImage");
       elements.characterImageClearButton.textContent = t("clearImage");
 
-      const personaTitle = document.getElementById("personaOverlayTitle");
-      if (personaTitle) {
-        personaTitle.textContent = t("personaCards");
+      if (elements.personaOverlayTitle) {
+        elements.personaOverlayTitle.textContent = t("personaCards");
       }
       elements.closePersonaOverlayButton.textContent = t("close");
       elements.personaNewButton.textContent = t("newCard");
       elements.personaImportButton.textContent = t("import");
       elements.personaCardList.setAttribute("aria-label", t("personaCardList"));
-      const personaPanel = document.querySelector("#personaOverlay .card-editor-settings-pane");
-      if (personaPanel) {
-        personaPanel.setAttribute("aria-label", t("personaSettingsPanel"));
+      if (elements.personaSettingsPanel) {
+        elements.personaSettingsPanel.setAttribute("aria-label", t("personaSettingsPanel"));
       }
       setFieldLabel(elements.personaCardNameInput, t("personaName"));
       setFieldLabel(elements.personaCardDescriptionInput, t("personaDescription"));
@@ -12637,31 +13060,27 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       elements.personaImageButton.textContent = t("chooseImage");
       elements.personaImageClearButton.textContent = t("clearImage");
 
-      const imagePreviewTitle = document.getElementById("imagePreviewTitle");
-      if (imagePreviewTitle) {
-        imagePreviewTitle.textContent = t("imagePreview");
+      if (elements.imagePreviewTitle) {
+        elements.imagePreviewTitle.textContent = t("imagePreview");
       }
       elements.closeImagePreviewButton.textContent = t("close");
       elements.imagePreviewImage.alt = t("imagePreviewAlt");
 
-      const cropTitle = document.getElementById("rpImageCropTitle");
-      if (cropTitle) {
-        cropTitle.textContent = t("cropTitle");
+      if (elements.rpImageCropTitle) {
+        elements.rpImageCropTitle.textContent = t("cropTitle");
       }
       elements.closeRpImageCropButton.textContent = t("close");
       elements.rpImageCropViewport.setAttribute("aria-label", t("cropViewport"));
       elements.rpImageCropImage.alt = t("cropPreviewAlt");
-      const cropHelp = document.querySelector(".image-crop-help");
-      if (cropHelp) {
-        cropHelp.textContent = t("cropHelp");
+      if (elements.rpImageCropHelp) {
+        elements.rpImageCropHelp.textContent = t("cropHelp");
       }
       setFieldLabel(elements.rpImageCropZoomInput, t("zoom"));
       elements.cancelRpImageCropButton.textContent = t("cancel");
       elements.applyRpImageCropButton.textContent = t("apply");
 
-      const tabLockTitle = document.getElementById("tabLockWarningTitle");
-      if (tabLockTitle) {
-        tabLockTitle.textContent = t("tabLockTitle");
+      if (elements.tabLockWarningTitle) {
+        elements.tabLockWarningTitle.textContent = t("tabLockTitle");
       }
     }
 
