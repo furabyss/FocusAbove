@@ -3049,7 +3049,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section class="brand">
               <div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="8" y="8" width="48" height="48" rx="14" fill="currentColor"></rect><circle cx="32" cy="32" r="13" fill="none" stroke="#fff7ee" stroke-width="6"></circle><circle cx="46" cy="18" r="3" fill="#fff7ee" fill-opacity="0.9"></circle></svg><span>FocusAbove</span></div>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.4.4, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.5.0, ⓒ 2026 Fur-Abyss</p>
             </section>
 
             <div class="settings-tab-strip" role="tablist" aria-label="">
@@ -3295,7 +3295,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                   <label>
                     <input id="characterCardNameInput" type="text" placeholder="">
                   </label>
+                  <label class="inline-checkbox">
+                    <input id="characterCardIsWorldCardInput" type="checkbox">
+                  </label>
                   <label>
+                    <span id="characterCardDescriptionLabelText"></span>
+                    <select id="characterCardDescriptionModeSelect" hidden>
+                      <option value="world"></option>
+                      <option value="main-character"></option>
+                    </select>
                     <textarea id="characterCardDescriptionInput" placeholder=""></textarea>
                   </label>
                   <label>
@@ -3457,6 +3465,21 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         });
       }
       return button;
+    }
+
+    function createElementWithClass(tagName, className, textContent = null) {
+      const element = document.createElement(tagName);
+      if (className) {
+        element.className = className;
+      }
+      if (textContent !== null) {
+        element.textContent = String(textContent);
+      }
+      return element;
+    }
+
+    function createEmptyState(text) {
+      return createElementWithClass("div", "empty-state", text);
     }
 
     function createIconButton(options = {}) {
@@ -3767,12 +3790,17 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         characterSettingsPanel: "캐릭터 설정 패널",
         personaSettingsPanel: "페르소나 설정 패널",
         characterName: "캐릭터 이름",
+        characterIsWorldCard: "월드 카드",
         personaName: "페르소나 이름",
         characterDescription: "캐릭터 설정",
+        worldCardDescription: "월드 설정",
+        worldCardMainCharacterDescription: "주요 캐릭터 설정",
         personaDescription: "페르소나 설정",
         characterNamePlaceholder: "캐릭터 이름",
         personaNamePlaceholder: "페르소나 이름",
         characterDescriptionPlaceholder: "캐릭터의 성격, 배경, 말투, 금지사항, 상황 설정 등을 적어 주세요.",
+        worldCardDescriptionPlaceholder: "세계관의 규칙, 분위기, 세력, 지역, 기술 수준, 금기, 핵심 갈등 등을 적어 주세요.",
+        worldCardMainCharacterDescriptionPlaceholder: "이 세계관 RP에서 우선적으로 등장시킬 주요 캐릭터들의 프로필, 관계, 역할, 말투, 외형 포인트를 적어 주세요.",
         characterFirstMessage: "첫 메시지",
         characterFirstMessagePlaceholder: "새 RP 채팅에서 먼저 표시할 캐릭터의 첫 메시지를 적어 주세요.",
         personaDescriptionPlaceholder: "사용자 캐릭터의 정체성, 말투, 배경, 관계 설정 등을 적어 주세요.",
@@ -4039,12 +4067,17 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         characterSettingsPanel: "Character settings panel",
         personaSettingsPanel: "Persona settings panel",
         characterName: "Character name",
+        characterIsWorldCard: "World card",
         personaName: "Persona name",
         characterDescription: "Character profile",
+        worldCardDescription: "World profile",
+        worldCardMainCharacterDescription: "Main character profiles",
         personaDescription: "Persona profile",
         characterNamePlaceholder: "Character name",
         personaNamePlaceholder: "Persona name",
         characterDescriptionPlaceholder: "Describe the character's personality, background, speaking style, constraints, and scenario.",
+        worldCardDescriptionPlaceholder: "Describe the world's rules, tone, factions, locations, technology level, taboos, and core conflicts.",
+        worldCardMainCharacterDescriptionPlaceholder: "Describe the major recurring characters for this world RP, including profiles, relationships, roles, voice, and visual traits.",
         characterFirstMessage: "First Message",
         characterFirstMessagePlaceholder: "Write the character's opening message that should already appear at the start of a new RP chat.",
         personaDescriptionPlaceholder: "Describe the user's roleplay identity, voice, background, and relationship setup.",
@@ -4414,6 +4447,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       characterCardList: document.getElementById("characterCardList"),
       characterSettingsPanel: document.querySelector("#characterOverlay .card-editor-settings-pane"),
       characterCardNameInput: document.getElementById("characterCardNameInput"),
+      characterCardIsWorldCardInput: document.getElementById("characterCardIsWorldCardInput"),
+      characterCardDescriptionLabelText: document.getElementById("characterCardDescriptionLabelText"),
+      characterCardDescriptionModeSelect: document.getElementById("characterCardDescriptionModeSelect"),
       characterCardDescriptionInput: document.getElementById("characterCardDescriptionInput"),
       characterCardFirstMessageInput: document.getElementById("characterCardFirstMessageInput"),
       characterNewButton: document.getElementById("characterNewButton"),
@@ -4484,7 +4520,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       character: "",
       persona: ""
     };
-    let chatListRenderSignature = "";
+    const chatListRenderSignatures = {
+      overlay: "",
+      desktop: ""
+    };
     let composerAttachmentRenderSignature = "";
     let renderedMessageChatId = "";
     let renderedMessageCount = INITIAL_MESSAGE_RENDER_LIMIT;
@@ -4496,6 +4535,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     let streamingAutoScrollPinnedToBottom = true;
     let streamingAutoScrollFrameId = 0;
     let lastStreamingPersistRequestAt = 0;
+    let lastChatListViewportBucket = "";
 
     const tabSessionId = createId("tab");
     const tabOpenedAt = new Date().toISOString();
@@ -4523,8 +4563,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       populateSettingsForm();
       syncChatSelection();
       renderAll({ persist: false });
-      await ensureCurrentActiveChatLoaded();
-      renderAll({ persist: false });
+      if (isPrimaryTab) {
+        await ensureCurrentActiveChatLoaded();
+        renderAll({ persist: false });
+      }
       setSettingsOverlayTab(activeSettingsTab);
       observeComposerLayout();
       scheduleComposerLayoutUpdate();
@@ -4598,7 +4640,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         renderAppSections({ persist: false, modelSelect: true, modelsPanel: true });
         setSettingsOverlayTab("general");
       });
-      bindOverlayOpenAction(elements.openTabsOverlayButton, elements.tabsOverlay);
+      bindOverlayOpenAction(elements.openTabsOverlayButton, elements.tabsOverlay, () => {
+        renderChatList({ includeOverlay: true });
+      });
       bindOverlayOpenAction(elements.openCharacterOverlayButton, elements.characterOverlay, () => {
         ensureRpModeReady();
         resetRpCardDraft("character");
@@ -4651,10 +4695,16 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         importInput: elements.characterCardImportInput,
         fields: [
           ["name", elements.characterCardNameInput],
-          ["description", elements.characterCardDescriptionInput],
           ["firstMessage", elements.characterCardFirstMessageInput]
         ]
       });
+      bindInputActions([
+        [elements.characterCardDescriptionInput, updateCharacterCardDescriptionDraft]
+      ]);
+      bindInputActions([
+        [elements.characterCardIsWorldCardInput, updateCharacterCardWorldCardDraft],
+        [elements.characterCardDescriptionModeSelect, updateCharacterCardDescriptionModeDraft]
+      ], "change");
       bindRpCardEditorEvents("persona", {
         newButton: elements.personaNewButton,
         importButton: elements.personaImportButton,
@@ -4678,6 +4728,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       document.addEventListener("wheel", handleDesktopSidebarInnerWheel, { passive: false, capture: true });
       document.addEventListener("keydown", handleGlobalKeydown);
       window.addEventListener("resize", scheduleComposerLayoutUpdate);
+      window.addEventListener("resize", handleChatListViewportResize);
       window.addEventListener("resize", handleRpImageCropViewportResize);
       window.addEventListener("scroll", handleWindowScroll, { passive: true });
       window.addEventListener("storage", handleStorageSync);
@@ -4740,6 +4791,19 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return delta;
     }
 
+    function getChatListViewportBucket() {
+      return window.innerWidth > 860 ? "desktop" : "mobile";
+    }
+
+    function handleChatListViewportResize() {
+      const nextBucket = getChatListViewportBucket();
+      if (nextBucket === lastChatListViewportBucket) {
+        return;
+      }
+      lastChatListViewportBucket = nextBucket;
+      renderChatList();
+    }
+
     function handleRpImageCropViewportResize() {
       if (!rpImageCropState || !elements.rpImageCropOverlay.classList.contains("open")) {
         return;
@@ -4768,7 +4832,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           const normalizedState = normalizeStoredAppState(storedState);
           const secretHydration = await hydrateSettingsSecrets(normalizedState);
           const mediaMigrated = await migrateStateMediaToIndexedDb(normalizedState);
-          if (secretHydration.migrated || mediaMigrated || !isSplitChatStorageState(storedState)) {
+          if (secretHydration.hadPlaintextSecrets || mediaMigrated || !isSplitChatStorageState(storedState)) {
             await writeStoredState(cloneStateForPersistence(normalizedState));
           }
           localStorage.removeItem(APP_STORAGE_KEY);
@@ -5111,16 +5175,31 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
 
       const label = getRpCardKindLabel(kind);
+      const isWorldCard = kind === "character" && normalizeWorldCardFlag(card.isWorldCard ?? card.IsWorldCard);
       return {
         id: typeof card.id === "string" && card.id ? card.id : createId(`${kind}-card`),
         kind,
         name: typeof card.name === "string" && card.name.trim() ? card.name.trim() : t("newKindName", { kind: label }),
         description: typeof card.description === "string" ? card.description : "",
         firstMessage: kind === "character" && typeof card.firstMessage === "string" ? card.firstMessage : "",
+        isWorldCard,
+        mainCharacterDescription: isWorldCard && typeof card.mainCharacterDescription === "string" ? card.mainCharacterDescription : "",
         profileImage: normalizeCardProfileImage(card.profileImage || card.image || card.avatar),
         createdAt: typeof card.createdAt === "string" ? card.createdAt : new Date().toISOString(),
         updatedAt: typeof card.updatedAt === "string" ? card.updatedAt : new Date().toISOString()
       };
+    }
+
+    function normalizeWorldCardFlag(value) {
+      return value === true;
+    }
+
+    function normalizeCharacterCardDescriptionMode(value) {
+      return value === "main-character" ? "main-character" : "world";
+    }
+
+    function isWorldRpCard(card) {
+      return Boolean(card?.kind === "character" && card?.isWorldCard);
     }
 
     function normalizeCardProfileImage(image) {
@@ -5203,6 +5282,42 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
         request.onsuccess = () => resolve(request.result || null);
         request.onerror = () => reject(request.error || new Error("IndexedDB 데이터를 읽지 못했습니다."));
+      });
+    }
+
+    async function readIndexedDbRecordsByKeyPrefix(recordKeyPrefix) {
+      const db = await openStateDatabase();
+      return new Promise((resolve, reject) => {
+        const records = [];
+        const transaction = db.transaction(APP_DB_STORE, "readonly");
+        const store = transaction.objectStore(APP_DB_STORE);
+        const lowerBound = String(recordKeyPrefix || "");
+        const upperBound = `${lowerBound}\uffff`;
+        const keyRange = window.IDBKeyRange
+          ? window.IDBKeyRange.bound(lowerBound, upperBound)
+          : null;
+        const request = keyRange
+          ? store.openCursor(keyRange)
+          : store.openCursor();
+
+        request.onsuccess = () => {
+          const cursor = request.result;
+          if (!cursor) {
+            resolve(records);
+            return;
+          }
+
+          if (!keyRange) {
+            if (typeof cursor.key === "string" && cursor.key.startsWith(lowerBound)) {
+              records.push({ id: cursor.key, value: cursor.value });
+            }
+          } else {
+            records.push({ id: cursor.key, value: cursor.value });
+          }
+          cursor.continue();
+        };
+        request.onerror = () => reject(request.error || new Error("IndexedDB 데이터를 읽지 못했습니다."));
+        transaction.onerror = () => reject(transaction.error || new Error("IndexedDB 데이터를 읽지 못했습니다."));
       });
     }
 
@@ -5450,7 +5565,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
     async function hydrateSettingsSecrets(nextState) {
       if (!supportsSettingsSecretStorage()) {
-        return { migrated: false };
+        return { hadPlaintextSecrets: false };
       }
 
       const legacySecrets = getSettingsSecretsFromState(nextState);
@@ -5461,14 +5576,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       };
       setSettingsSecretsOnState(nextState, nextSecrets);
 
-      const shouldMigrateLegacySecrets = !encryptedSecrets && hasAnySettingsSecret(legacySecrets);
+      const hadPlaintextSecrets = hasAnySettingsSecret(legacySecrets);
+      const shouldMigrateLegacySecrets = !encryptedSecrets && hadPlaintextSecrets;
       if (shouldMigrateLegacySecrets) {
         await writeSettingsSecrets(nextSecrets);
       } else {
         await ensureSettingsSecretKeyRing();
       }
 
-      return { migrated: shouldMigrateLegacySecrets || hasAnySettingsSecret(legacySecrets) };
+      return { hadPlaintextSecrets };
     }
 
     function getSettingsSecretsFromState(sourceState = state) {
@@ -5595,26 +5711,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     async function readSettingsSecretKeyRecords() {
-      const db = await openStateDatabase();
-      return new Promise((resolve, reject) => {
-        const records = [];
-        const transaction = db.transaction(APP_DB_STORE, "readonly");
-        const request = transaction.objectStore(APP_DB_STORE).openCursor();
-
-        request.onsuccess = () => {
-          const cursor = request.result;
-          if (!cursor) {
-            resolve(records);
-            return;
-          }
-          if (typeof cursor.key === "string" && cursor.key.startsWith(APP_SECRET_KEY_RECORD_PREFIX) && cursor.value?.key) {
-            records.push({ id: cursor.key, value: cursor.value });
-          }
-          cursor.continue();
-        };
-        request.onerror = () => reject(request.error || new Error("IndexedDB 키 데이터를 읽지 못했습니다."));
-        transaction.onerror = () => reject(transaction.error || new Error("IndexedDB 키 데이터를 읽지 못했습니다."));
-      });
+      const records = await readIndexedDbRecordsByKeyPrefix(APP_SECRET_KEY_RECORD_PREFIX);
+      return records.filter((record) => record?.value?.key);
     }
 
     async function generateSettingsSecretKey() {
@@ -6107,8 +6205,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       populateSettingsForm();
       syncChatSelection();
       renderAll({ persist: false });
-      await ensureCurrentActiveChatLoaded();
-      renderAll({ persist: false });
+      if (isPrimaryTab) {
+        await ensureCurrentActiveChatLoaded();
+        renderAll({ persist: false });
+      }
     }
 
     function handleStorageSync(event) {
@@ -6409,6 +6509,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         kind,
         name: `${getRpCardKindLabel(kind)} ${count}`,
         description: "",
+        isWorldCard: false,
+        mainCharacterDescription: "",
         firstMessage: kind === "character" ? "" : "",
         profileImage: null,
         createdAt,
@@ -6422,6 +6524,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         cardId: activeCard?.id || "",
         name: activeCard?.name || "",
         description: activeCard?.description || "",
+        isWorldCard: kind === "character" ? Boolean(activeCard?.isWorldCard) : false,
+        mainCharacterDescription: kind === "character" ? (activeCard?.mainCharacterDescription || "") : "",
+        descriptionMode: kind === "character" ? "world" : "world",
         firstMessage: kind === "character" ? (activeCard?.firstMessage || "") : "",
         profileImage: activeCard?.profileImage ? cloneImageAttachment(activeCard.profileImage) : null
       };
@@ -6442,6 +6547,59 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     function updateRpCardDraftField(kind, field, value) {
       const draft = getRpCardDraft(kind);
       draft[field] = value;
+    }
+
+    function getCharacterCardDescriptionDraftValue(draft = getRpCardDraft("character")) {
+      if (draft?.isWorldCard && normalizeCharacterCardDescriptionMode(draft.descriptionMode) === "main-character") {
+        return draft.mainCharacterDescription || "";
+      }
+      return draft?.description || "";
+    }
+
+    function getCharacterCardDescriptionPlaceholderKey(draft = getRpCardDraft("character")) {
+      if (!draft?.isWorldCard) {
+        return "characterDescriptionPlaceholder";
+      }
+      return normalizeCharacterCardDescriptionMode(draft.descriptionMode) === "main-character"
+        ? "worldCardMainCharacterDescriptionPlaceholder"
+        : "worldCardDescriptionPlaceholder";
+    }
+
+    function syncCharacterCardEditorModeControls() {
+      const draft = getRpCardDraft("character");
+      const isWorldCard = Boolean(draft?.isWorldCard);
+      const descriptionMode = normalizeCharacterCardDescriptionMode(draft?.descriptionMode);
+      elements.characterCardIsWorldCardInput.checked = isWorldCard;
+      elements.characterCardDescriptionLabelText.hidden = isWorldCard;
+      elements.characterCardDescriptionModeSelect.hidden = !isWorldCard;
+      elements.characterCardDescriptionModeSelect.value = descriptionMode;
+      elements.characterCardDescriptionInput.value = getCharacterCardDescriptionDraftValue(draft);
+      elements.characterCardDescriptionInput.placeholder = t(getCharacterCardDescriptionPlaceholderKey(draft));
+    }
+
+    function updateCharacterCardDescriptionDraft() {
+      const draft = getRpCardDraft("character");
+      const value = elements.characterCardDescriptionInput.value;
+      if (draft.isWorldCard && normalizeCharacterCardDescriptionMode(draft.descriptionMode) === "main-character") {
+        draft.mainCharacterDescription = value;
+        return;
+      }
+      draft.description = value;
+    }
+
+    function updateCharacterCardWorldCardDraft() {
+      const draft = getRpCardDraft("character");
+      draft.isWorldCard = elements.characterCardIsWorldCardInput.checked;
+      if (!draft.isWorldCard) {
+        draft.descriptionMode = "world";
+      }
+      syncCharacterCardEditorModeControls();
+    }
+
+    function updateCharacterCardDescriptionModeDraft() {
+      const draft = getRpCardDraft("character");
+      draft.descriptionMode = normalizeCharacterCardDescriptionMode(elements.characterCardDescriptionModeSelect.value);
+      syncCharacterCardEditorModeControls();
     }
 
     async function switchAppMode(nextMode) {
@@ -6713,7 +6871,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
 
       nameInput.value = draft.name || "";
-      descriptionInput.value = draft.description || "";
+      if (kind === "character") {
+        syncCharacterCardEditorModeControls();
+      } else {
+        descriptionInput.value = draft.description || "";
+      }
       if (firstMessageInput) {
         firstMessageInput.value = draft.firstMessage || "";
       }
@@ -6752,17 +6914,21 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       });
     }
 
-    function getChatListRenderSignature() {
-      const sortedChats = getCurrentChatCollection()
+    function getSortedCurrentChats() {
+      return getCurrentChatCollection()
         .slice()
         .sort((first, second) => new Date(second.updatedAt) - new Date(first.updatedAt));
+    }
+
+    function getChatListRenderSignature(sortedChats = getSortedCurrentChats()) {
+      const normalizedChats = Array.isArray(sortedChats) ? sortedChats : [];
 
       return [
         normalizeAppLanguage(state.settings.language),
         state.activeMode,
         getCurrentActiveChatId(),
         editingChatId,
-        sortedChats.map((chat) => [
+        normalizedChats.map((chat) => [
           chat.id,
           chat.updatedAt || "",
           chat.title || "",
@@ -6773,32 +6939,57 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       ].join("~");
     }
 
-    function renderChatList() {
-      const nextSignature = getChatListRenderSignature();
-      if (chatListRenderSignature === nextSignature) {
+    function getChatListRenderTargets(options = {}) {
+      const includeOverlay = options.includeOverlay === true || elements.tabsOverlay?.classList.contains("open");
+      const targets = [];
+
+      if (window.innerWidth > 860 && elements.desktopChatList) {
+        targets.push({
+          key: "desktop",
+          container: elements.desktopChatList,
+          closeOverlayOnSelect: false
+        });
+      }
+
+      if (includeOverlay && elements.chatList) {
+        targets.push({
+          key: "overlay",
+          container: elements.chatList,
+          closeOverlayOnSelect: true
+        });
+      }
+
+      return targets;
+    }
+
+    function renderChatList(options = {}) {
+      const renderTargets = getChatListRenderTargets(options);
+      if (!renderTargets.length) {
         return;
       }
 
-      const containers = [elements.chatList, elements.desktopChatList].filter(Boolean);
-      containers.forEach((container) => {
-        container.innerHTML = "";
-      });
+      const sortedChats = getSortedCurrentChats();
+      const nextSignature = getChatListRenderSignature(sortedChats);
 
-      getCurrentChatCollection()
-        .slice()
-        .sort((first, second) => new Date(second.updatedAt) - new Date(first.updatedAt))
-        .forEach((chat) => {
-          containers.forEach((container) => {
-            container.appendChild(buildChatListItem(chat, { closeOverlayOnSelect: container === elements.chatList }));
-          });
+      renderTargets.forEach(({ key, container, closeOverlayOnSelect }) => {
+        if (chatListRenderSignatures[key] === nextSignature) {
+          return;
+        }
+
+        container.innerHTML = "";
+        const fragment = document.createDocumentFragment();
+
+        sortedChats.forEach((chat) => {
+          fragment.appendChild(buildChatListItem(chat, { closeOverlayOnSelect }));
         });
 
-      chatListRenderSignature = nextSignature;
+        container.appendChild(fragment);
+        chatListRenderSignatures[key] = nextSignature;
+      });
     }
 
     function buildChatListItem(chat, options = {}) {
-      const item = document.createElement("div");
-      item.className = `chat-item${chat.id === getCurrentActiveChatId() ? " active" : ""}`;
+      const item = createElementWithClass("div", `chat-item${chat.id === getCurrentActiveChatId() ? " active" : ""}`);
       const isEditing = editingChatId === chat.id;
 
       const mainButton = document.createElement("button");
@@ -6808,8 +6999,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         void selectChatById(chat.id, { closeOverlayOnSelect: options.closeOverlayOnSelect });
       });
 
-      const copy = document.createElement("div");
-      copy.className = "chat-item-copy";
+      const copy = createElementWithClass("div", "chat-item-copy");
 
       if (isEditing) {
         const titleInput = document.createElement("input");
@@ -6833,29 +7023,25 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         });
         copy.appendChild(titleInput);
       } else {
-        const title = document.createElement("p");
-        title.className = "chat-item-title";
-        title.textContent = chat.title;
-        copy.appendChild(title);
+        copy.appendChild(createElementWithClass("p", "chat-item-title", chat.title));
       }
 
-      const meta = document.createElement("p");
-      meta.className = "chat-item-meta";
       const messageCount = getChatMessageCount(chat);
-      meta.textContent = t("chatMeta", { count: messageCount, date: formatDate(chat.updatedAt, true) });
+      const meta = createElementWithClass("p", "chat-item-meta", t("chatMeta", { count: messageCount, date: formatDate(chat.updatedAt, true) }));
 
       copy.appendChild(meta);
       mainButton.appendChild(copy);
 
-      const actions = document.createElement("div");
-      actions.className = "chat-item-actions";
-      actions.append(
-        createChatItemIconButton(isEditing ? t("tabNameDone") : t("tabNameEdit"), "edit", () => toggleChatTitleEdit(chat.id)),
-        createChatItemIconButton(t("tabJsonExport"), "export", () => exportChatToJson(chat.id)),
-        createChatItemIconButton(t("tabClose"), "close", () => {
+      const actions = createElementWithClass("div", "chat-item-actions");
+      [
+        [isEditing ? t("tabNameDone") : t("tabNameEdit"), "edit", () => toggleChatTitleEdit(chat.id)],
+        [t("tabJsonExport"), "export", () => exportChatToJson(chat.id)],
+        [t("tabClose"), "close", () => {
           void deleteChatById(chat.id);
-        }, "danger")
-      );
+        }, "danger"]
+      ].forEach(([label, icon, onClick, tone = "default"]) => {
+        actions.appendChild(createChatItemIconButton(label, icon, onClick, tone));
+      });
 
       item.append(mainButton, actions);
       return item;
@@ -6968,18 +7154,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       elements.messageStream.innerHTML = "";
 
       if (activeChat.messagesLoaded === false) {
-        const loading = document.createElement("div");
-        loading.className = "empty-state";
-        loading.textContent = t("olderMessagesLoading");
-        elements.messageStream.appendChild(loading);
+        elements.messageStream.appendChild(createEmptyState(t("olderMessagesLoading")));
         return;
       }
 
       if (!activeChat.messages.length) {
-        const empty = document.createElement("div");
-        empty.className = "empty-state";
-        empty.textContent = t("emptyState");
-        elements.messageStream.appendChild(empty);
+        elements.messageStream.appendChild(createEmptyState(t("emptyState")));
       } else {
         const visibleMessages = getRenderedMessagesForActiveChat(activeChat);
         if (visibleMessages.length < activeChat.messages.length) {
@@ -7011,10 +7191,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function buildOlderMessagesSentinel() {
-      const sentinel = document.createElement("div");
-      sentinel.className = "older-messages-sentinel";
-      sentinel.textContent = t("olderMessagesLoading");
-      return sentinel;
+      return createElementWithClass("div", "older-messages-sentinel", t("olderMessagesLoading"));
     }
 
     function maybeLoadOlderMessagesOnScroll() {
@@ -7135,32 +7312,19 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       container.innerHTML = "";
       const presets = getSortedPromptPresets();
       if (!presets.length) {
-        const empty = document.createElement("div");
-        empty.className = "empty-state";
-        empty.textContent = t("noPromptPresets");
-        container.appendChild(empty);
+        container.appendChild(createEmptyState(t("noPromptPresets")));
         return;
       }
 
       presets.forEach((preset) => {
-        const item = document.createElement("article");
-        item.className = "prompt-preset-item";
-
-        const main = document.createElement("div");
-        main.className = "prompt-preset-item-main";
-
-        const name = document.createElement("div");
-        name.className = "prompt-preset-item-name";
-        name.textContent = preset.name;
-
-        const preview = document.createElement("p");
-        preview.className = "prompt-preset-item-preview";
-        preview.textContent = String(preset.prompt || "").trim() || "...";
+        const item = createElementWithClass("article", "prompt-preset-item");
+        const main = createElementWithClass("div", "prompt-preset-item-main");
+        const name = createElementWithClass("div", "prompt-preset-item-name", preset.name);
+        const preview = createElementWithClass("p", "prompt-preset-item-preview", String(preset.prompt || "").trim() || "...");
 
         main.append(name, preview);
 
-        const actions = document.createElement("div");
-        actions.className = "prompt-preset-item-actions";
+        const actions = createElementWithClass("div", "prompt-preset-item-actions");
 
         const loadButton = createButton({
           className: "ghost-button",
@@ -7357,24 +7521,17 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function buildMessageArticle(chat, message) {
-      const article = document.createElement("article");
-      article.className = `message ${message.role}`;
+      const article = createElementWithClass("article", `message ${message.role}`);
       article.dataset.messageId = message.id;
       article.classList.toggle("editing", isEditingMessage(message.id));
 
-      const meta = document.createElement("div");
-      meta.className = "message-meta";
+      const meta = createElementWithClass("div", "message-meta");
 
-      const metaMain = document.createElement("div");
-      metaMain.className = "message-meta-main";
+      const metaMain = createElementWithClass("div", "message-meta-main");
 
-      const label = document.createElement("span");
-      label.className = "message-meta-label";
-      label.textContent = roleLabel(message.role, message);
+      const label = createElementWithClass("span", "message-meta-label", roleLabel(message.role, message));
 
-      const timestamp = document.createElement("span");
-      timestamp.className = "message-meta-time";
-      timestamp.textContent = formatDate(message.timestamp, true);
+      const timestamp = createElementWithClass("span", "message-meta-time", formatDate(message.timestamp, true));
 
       metaMain.append(label);
       if (!(message.role === "assistant" && message.isFirstMessage)) {
@@ -7385,12 +7542,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
       meta.append(metaMain, metaActions);
 
-      const content = document.createElement("div");
-      content.className = "message-content";
+      const content = createElementWithClass("div", "message-content");
       renderMessageContent(content, message, chat);
 
-      const body = document.createElement("div");
-      body.className = "message-body";
+      const body = createElementWithClass("div", "message-body");
       body.append(meta, content);
 
       if (message.role === "assistant") {
@@ -7399,8 +7554,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
       const avatar = buildRpMessageAvatar(message);
       if (avatar) {
-        const shell = document.createElement("div");
-        shell.className = "message-shell";
+        const shell = createElementWithClass("div", "message-shell");
         if (message.role === "assistant") {
           shell.append(avatar, body);
         } else {
@@ -7430,8 +7584,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return null;
       }
 
-      const avatar = document.createElement("div");
-      avatar.className = "message-avatar";
+      const avatar = createElementWithClass("div", "message-avatar");
       const image = document.createElement("img");
       image.alt = message.role === "assistant" ? roleLabel("assistant", message) : roleLabel("user", message);
       avatar.appendChild(image);
@@ -7440,13 +7593,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function buildMessageMetaActions(chat, message) {
-      const metaActions = document.createElement("div");
-      metaActions.className = "message-meta-actions";
+      const metaActions = createElementWithClass("div", "message-meta-actions");
       const hasPendingMessageEdit = hasEditingMessageInChat(chat);
+      const buttonConfigs = [];
 
       if (isEditableMessage(message)) {
         const isEditing = isEditingMessage(message.id);
-        const editButton = createIconButton({
+        buttonConfigs.push({
           className: "message-action-button",
           label: isEditing ? t("saveEdit") : t("edit"),
           iconName: isEditing ? "check" : "edit",
@@ -7454,21 +7607,19 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           disabled: isSending || (hasPendingMessageEdit && !isEditing),
           onClick: () => toggleMessageEditing(chat.id, message.id)
         });
-        metaActions.appendChild(editButton);
       }
 
       if (canRerollMessage(chat, message.id)) {
-        const rerollButton = createIconButton({
+        buttonConfigs.push({
           className: "message-action-button",
           label: t("reroll"),
           iconName: "reroll",
           disabled: isSending || hasPendingMessageEdit,
           onClick: () => rerollAssistantResponse(message.id)
         });
-        metaActions.appendChild(rerollButton);
       }
 
-      const deleteButton = createIconButton({
+      buttonConfigs.push({
         className: "message-action-button",
         label: t("delete"),
         iconName: "trash",
@@ -7476,7 +7627,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         disabled: isSending || hasPendingMessageEdit,
         onClick: () => deleteMessage(chat.id, message.id)
       });
-      metaActions.appendChild(deleteButton);
+
+      buttonConfigs.forEach((config) => {
+        metaActions.appendChild(createIconButton(config));
+      });
 
       return metaActions;
     }
@@ -7511,8 +7665,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         container.innerHTML = "";
 
         pendingImageAttachments.forEach((attachment) => {
-          const chip = document.createElement("div");
-          chip.className = "composer-attachment-chip";
+          const chip = createElementWithClass("div", "composer-attachment-chip");
 
           const image = document.createElement("img");
           image.alt = attachment.name;
@@ -7529,10 +7682,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           });
           chip.appendChild(removeButton);
 
-          const name = document.createElement("span");
-          name.className = "composer-attachment-name";
-          name.textContent = attachment.name;
-          chip.appendChild(name);
+          chip.appendChild(createElementWithClass("span", "composer-attachment-name", attachment.name));
 
           container.appendChild(chip);
         });
@@ -8376,6 +8526,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       card.name = String(draft.name || "").trim() || card.name;
       card.description = String(draft.description || "");
       if (kind === "character") {
+        card.isWorldCard = Boolean(draft.isWorldCard);
+        card.mainCharacterDescription = card.isWorldCard ? String(draft.mainCharacterDescription || "") : "";
         card.firstMessage = String(draft.firstMessage || "");
         await ensureChatsLoaded(getRpChatsForCharacterId(card.id));
         syncRpCharacterChatsFirstMessage(card.id);
@@ -8407,6 +8559,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       card.updatedAt = now;
 
       if (kind === "character") {
+        card.isWorldCard = false;
+        card.mainCharacterDescription = "";
         card.firstMessage = "";
         const existingChats = getRpChatsForCharacterId(card.id);
         existingChats.forEach((chat) => {
@@ -8502,6 +8656,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         card: {
           name: card.name,
           description: card.description,
+          IsWorldCard: kind === "character" ? Boolean(card.isWorldCard) : false,
+          mainCharacterDescription: kind === "character" && card.isWorldCard ? String(card.mainCharacterDescription || "") : "",
           firstMessage: kind === "character" ? String(card.firstMessage || "") : "",
           imageFileName: "",
           imageMimeType: ""
@@ -8609,6 +8765,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         kind: expectedKind,
         name: String(manifest?.card?.name || "").trim() || t("newKindName", { kind: getRpCardKindLabel(expectedKind) }),
         description: String(manifest?.card?.description || ""),
+        isWorldCard: expectedKind === "character" ? normalizeWorldCardFlag(manifest?.card?.IsWorldCard) : false,
+        mainCharacterDescription: expectedKind === "character" && normalizeWorldCardFlag(manifest?.card?.IsWorldCard)
+          ? String(manifest?.card?.mainCharacterDescription || "")
+          : "",
         firstMessage: expectedKind === "character" ? String(manifest?.card?.firstMessage || "") : "",
         profileImage,
         createdAt: new Date().toISOString(),
@@ -10211,6 +10371,19 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const persona = getRpCardById("persona", message?.personaCardId || state.rp.activePersonaId);
       const rpPlaceholders = createRpPromptPlaceholders({ character, persona });
       const settings = normalizeRpIllustrationSettings(illustrationSettings);
+      if (isWorldRpCard(character)) {
+        return [
+          "[Visual World Card Details]",
+          character?.name ? `World: ${character.name}` : "",
+          character?.description ? `World settings: ${trimForAuxiliaryPrompt(replaceRpPromptPlaceholders(character.description, rpPlaceholders), 1100)}` : "",
+          character?.mainCharacterDescription
+            ? `Major characters: ${trimForAuxiliaryPrompt(replaceRpPromptPlaceholders(character.mainCharacterDescription, rpPlaceholders), 900)}`
+            : "",
+          !settings.ignoreNonCharacterPeople && persona?.name ? `Persona: ${persona.name}` : "",
+          !settings.ignoreNonCharacterPeople && persona?.description ? `Persona card: ${trimForAuxiliaryPrompt(replaceRpPromptPlaceholders(persona.description, rpPlaceholders), 700)}` : ""
+        ].filter(Boolean).join("\n");
+      }
+
       return [
         "[Visual Card Details]",
         character?.name ? `Character: ${character.name}` : "",
@@ -10290,6 +10463,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
 
       const illustrationSettings = normalizeRpIllustrationSettings(state.rp?.illustration);
+      const characterCard = getRpCardById("character", chat?.characterCardId || assistantMessage?.characterCardId || state.rp.activeCharacterId);
       const stableVisualContext = buildRpIllustrationCardContext(chat, assistantMessage, illustrationSettings);
       const mutableContext = buildRpAuxiliaryMutableContext(chat, { includeSummary: false });
       const recentMessages = getRecentAuxiliaryMessagesBefore(chat, assistantMessage?.id, 2);
@@ -10301,6 +10475,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             buildIllustrationPromptStyleInstruction(illustrationSettings.promptStyle),
             "Preserve stated gender and stable appearance from card details. Do not invent unstated gender.",
             buildIllustrationPeopleScopeInstruction(illustrationSettings),
+            isWorldRpCard(characterCard)
+              ? "For world cards, depict only the character or small set of characters who are actually present in the current scene. Prioritize named major characters when the recent scene supports them. If solo-character mode is enabled, depict only the single most important current-scene character."
+              : "",
             "For clothing, pose, location, lighting, temporary states, and injuries, prefer latest context over card defaults.",
             "No markdown, explanations, text overlays, watermarks, signatures, UI elements, or camera metadata."
           ].filter(Boolean).join("\n")
@@ -11056,32 +11233,26 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function createAssistantFooter(message) {
-      const footer = document.createElement("div");
-      footer.className = "message-footer";
+      const footer = createElementWithClass("div", "message-footer");
 
-      const state = document.createElement("div");
-      state.className = "message-state";
+      const state = createElementWithClass("div", "message-state");
 
       if (message.status === "streaming") {
-        const spinner = document.createElement("span");
-        spinner.className = "message-state-spinner";
-        const label = document.createElement("span");
-        label.textContent = message.isThinking ? t("streamingThinking") : t("streamingResponse");
+        const spinner = createElementWithClass("span", "message-state-spinner");
+        const label = createElementWithClass("span", "", message.isThinking ? t("streamingThinking") : t("streamingResponse"));
         state.append(spinner, label);
       } else {
-        const dot = document.createElement("span");
-        dot.className = "message-state-dot";
+        const dot = createElementWithClass("span", "message-state-dot");
         if (message.status === "error") {
           dot.classList.add("error");
         } else if (hasAssistantAuxiliaryStatus(message)) {
           dot.classList.add("processing");
         }
-        const label = document.createElement("span");
-        label.textContent = message.status === "error"
+        const label = createElementWithClass("span", "", message.status === "error"
           ? t("requestFailed")
           : message.isFirstMessage
             ? t("firstMessageStatus")
-            : getAssistantFooterStatusText(message);
+            : getAssistantFooterStatusText(message));
         state.append(dot, label);
       }
 
@@ -11089,9 +11260,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
       const tokenUsageText = formatMessageTokenUsage(message);
       if (tokenUsageText) {
-        const usage = document.createElement("div");
-        usage.className = "message-token-usage";
-        usage.textContent = tokenUsageText;
+        const usage = createElementWithClass("div", "message-token-usage", tokenUsageText);
         usage.title = tokenUsageText;
         footer.appendChild(usage);
       }
@@ -11409,24 +11578,17 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function renderUserMessageContent(element, message) {
-      const stack = document.createElement("div");
-      stack.className = "message-user-stack";
+      const stack = createElementWithClass("div", "message-user-stack");
 
       if (message.status === "enhancing") {
-        const status = document.createElement("div");
-        status.className = "message-user-text";
-        status.textContent = t("rpInputEnhancingCard");
-        stack.appendChild(status);
+        stack.appendChild(createElementWithClass("div", "message-user-text", t("rpInputEnhancingCard")));
         element.replaceChildren(stack);
         return;
       }
 
       const contentText = String(message.content || "");
       if (contentText) {
-        const text = document.createElement("div");
-        text.className = "message-user-text";
-        text.textContent = contentText;
-        stack.appendChild(text);
+        stack.appendChild(createElementWithClass("div", "message-user-text", contentText));
       }
 
       if (Array.isArray(message.attachments) && message.attachments.length) {
@@ -11434,10 +11596,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
 
       if (!contentText && Array.isArray(message.attachments) && message.attachments.length) {
-        const label = document.createElement("div");
-        label.className = "message-image-only-label";
-        label.textContent = t("imageOnly");
-        stack.insertBefore(label, stack.firstChild);
+        stack.insertBefore(createElementWithClass("div", "message-image-only-label", t("imageOnly")), stack.firstChild);
       }
 
       element.replaceChildren(stack);
@@ -12221,13 +12380,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         .filter(Boolean)
         .forEach((instruction) => systemInstructions.push(String(instruction)));
 
-      if (rpContext?.character && (rpContext.character.name || rpContext.character.description)) {
-        systemInstructions.push([
-          `[RP Character Card]`,
-          `You must roleplay as the following character and stay consistent with this card throughout the conversation.`,
-          `Name: ${rpContext.character.name || "Unnamed Character"}`,
-          replaceRpPromptPlaceholders(rpContext.character.description || "", rpPlaceholders)
-        ].filter(Boolean).join("\n"));
+      if (rpContext?.character && (rpContext.character.name || rpContext.character.description || rpContext.character.mainCharacterDescription)) {
+        systemInstructions.push(buildRpCharacterCardInstruction(rpContext, rpPlaceholders));
       }
 
       if (rpContext?.persona && (rpContext.persona.name || rpContext.persona.description)) {
@@ -12314,6 +12468,34 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       ].join("\n");
     }
 
+    function buildRpCharacterCardInstruction(rpContext, rpPlaceholders = null) {
+      const character = rpContext?.character;
+      if (!character || (!character.name && !character.description && !character.mainCharacterDescription)) {
+        return "";
+      }
+
+      if (!isWorldRpCard(character)) {
+        return [
+          `[RP Character Card]`,
+          `You must roleplay as the following character and stay consistent with this card throughout the conversation.`,
+          `Name: ${character.name || "Unnamed Character"}`,
+          replaceRpPromptPlaceholders(character.description || "", rpPlaceholders)
+        ].filter(Boolean).join("\n");
+      }
+
+      return [
+        `[RP World Card]`,
+        `You must roleplay as the world itself instead of a single fixed character. Simulate the setting, atmosphere, consequences, factions, and present characters in response to the user's actions.`,
+        `Prioritize the major characters from this world card whenever they fit the scene naturally. If none of them fit, create a suitable character that remains consistent with the world information.`,
+        `Keep each scene focused on a small cast when practical. As a soft guideline, usually keep only the most relevant 1 to 3 characters actively present unless the scene genuinely needs more.`,
+        `World name: ${character.name || "Unnamed World"}`,
+        character.description ? `[World Settings]\n${replaceRpPromptPlaceholders(character.description, rpPlaceholders)}` : "",
+        character.mainCharacterDescription
+          ? `[Major Characters]\n${replaceRpPromptPlaceholders(character.mainCharacterDescription, rpPlaceholders)}`
+          : ""
+      ].filter(Boolean).join("\n");
+    }
+
     function buildRpResponsePerspectiveInstruction(rpContext) {
       if (!rpContext) {
         return "";
@@ -12322,6 +12504,19 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const perspective = normalizeRpResponsePerspective(rpContext.responsePerspective);
       const characterName = rpContext.character?.name || "the character";
       const personaName = rpContext.persona?.name || "the persona";
+      if (isWorldRpCard(rpContext.character)) {
+        const worldInstructions = {
+          "character-first-person": `Prefer a close first-person viewpoint from the most relevant current-scene character when it fits naturally. You are still simulating the broader world, so choose the viewpoint that best serves the scene instead of locking to one permanent narrator.`,
+          "persona-first-person": `Write from ${personaName}'s first-person perspective while the world, NPCs, and scene developments react around ${personaName}.`,
+          "third-person": `Write from a third-person perspective, describing the current scene, the world's reactions, and the present characters without locking the narration to one permanent first-person speaker.`
+        };
+
+        return [
+          `[RP Response Perspective]`,
+          worldInstructions[perspective]
+        ].join("\n");
+      }
+
       const instructions = {
         "character-first-person": `Write the character's responses from ${characterName}'s first-person perspective. Use first-person pronouns for ${characterName}'s thoughts, actions, and narration.`,
         "persona-first-person": `Write the character's responses from ${personaName}'s first-person perspective. Frame narration around ${personaName}'s direct experience while keeping ${characterName}'s behavior consistent with the character card.`,
@@ -12873,67 +13068,127 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       element.setAttribute("aria-label", text);
     }
 
+    function setTextContentIfPresent(element, text) {
+      if (element) {
+        element.textContent = text;
+      }
+    }
+
+    function setPlaceholderIfPresent(element, text) {
+      if (element) {
+        element.placeholder = text;
+      }
+    }
+
+    function setAriaLabelIfPresent(element, text) {
+      if (element) {
+        element.setAttribute("aria-label", text);
+      }
+    }
+
+    function setSelectOptionTexts(select, keys) {
+      if (!select) {
+        return;
+      }
+
+      keys.forEach((key, index) => {
+        if (select.options[index]) {
+          select.options[index].textContent = t(key);
+        }
+      });
+    }
+
+    function applyTranslatedTextContent(entries) {
+      entries.forEach(([element, key]) => setTextContentIfPresent(element, t(key)));
+    }
+
+    function applyTranslatedPlaceholders(entries) {
+      entries.forEach(([element, key]) => setPlaceholderIfPresent(element, t(key)));
+    }
+
+    function applyTranslatedFieldLabels(entries) {
+      entries.forEach(([element, key]) => setFieldLabel(element, t(key)));
+    }
+
+    function applyTranslatedButtonTitles(entries) {
+      entries.forEach(([element, key]) => setButtonTitleAndAria(element, t(key)));
+    }
+
+    function applyTranslatedIndexedTextContent(elementsList, keys) {
+      keys.forEach((key, index) => setTextContentIfPresent(elementsList[index], t(key)));
+    }
+
+    function applyTranslatedRangeFieldLabels(entries) {
+      entries.forEach(([element, key]) => setRangeFieldLabel(element, t(key)));
+    }
+
     function applyStaticTranslations() {
       document.documentElement.lang = getUiLanguage();
 
       if (elements.modeToggle) {
         elements.modeToggle.setAttribute("aria-label", t("modeToggleLabel"));
       }
-      elements.chatModeButton.textContent = t("chatMode");
-      elements.rpModeButton.textContent = t("rpMode");
-      elements.openCharacterOverlayButton.textContent = t("character");
-      elements.openPersonaOverlayButton.textContent = t("persona");
-      elements.openSettingsOverlayButton.textContent = t("settings");
-      elements.openTabsOverlayButton.textContent = t("tabs");
-
-      if (elements.messageInputLabel) {
-        elements.messageInputLabel.textContent = t("messageSrOnly");
-      }
-      elements.messageInput.placeholder = t("messagePlaceholder");
+      applyTranslatedTextContent([
+        [elements.chatModeButton, "chatMode"],
+        [elements.rpModeButton, "rpMode"],
+        [elements.openCharacterOverlayButton, "character"],
+        [elements.openPersonaOverlayButton, "persona"],
+        [elements.openSettingsOverlayButton, "settings"],
+        [elements.openTabsOverlayButton, "tabs"],
+        [elements.messageInputLabel, "messageSrOnly"]
+      ]);
+      applyTranslatedPlaceholders([
+        [elements.messageInput, "messagePlaceholder"]
+      ]);
 
       if (elements.scrollJumpStack) {
         elements.scrollJumpStack.setAttribute("aria-label", t("floatingButtons"));
       }
-      setButtonTitleAndAria(elements.scrollTopButton, t("scrollTop"));
-      setButtonTitleAndAria(elements.scrollBottomButton, t("scrollBottom"));
-      setButtonTitleAndAria(elements.clearMessagesButton, t("clearMessages"));
+      applyTranslatedButtonTitles([
+        [elements.scrollTopButton, "scrollTop"],
+        [elements.scrollBottomButton, "scrollBottom"],
+        [elements.clearMessagesButton, "clearMessages"]
+      ]);
 
-      if (elements.authorsNoteOverlayTitle) {
-        elements.authorsNoteOverlayTitle.textContent = t("authorsNote");
-      }
-      elements.closeAuthorsNoteOverlayButton.textContent = t("close");
-      setFieldLabel(elements.authorsNoteInput, t("authorsNoteField"));
-      elements.authorsNoteInput.placeholder = t("authorsNotePlaceholder");
-      elements.clearAuthorsNoteButton.textContent = t("clear");
+      applyTranslatedTextContent([
+        [elements.authorsNoteOverlayTitle, "authorsNote"],
+        [elements.closeAuthorsNoteOverlayButton, "close"],
+        [elements.clearAuthorsNoteButton, "clear"]
+      ]);
+      applyTranslatedFieldLabels([
+        [elements.authorsNoteInput, "authorsNoteField"]
+      ]);
+      applyTranslatedPlaceholders([
+        [elements.authorsNoteInput, "authorsNotePlaceholder"]
+      ]);
 
-      if (elements.settingsOverlayTitle) {
-        elements.settingsOverlayTitle.textContent = t("settings");
-      }
-      elements.closeSettingsOverlayButton.textContent = t("close");
+      applyTranslatedTextContent([
+        [elements.settingsOverlayTitle, "settings"],
+        [elements.closeSettingsOverlayButton, "close"],
+        [elements.settingsGeneralTabButton, "settingsGeneral"],
+        [elements.settingsModelTabButton, "settingsModel"],
+        [elements.settingsIllustrationTabButton, "settingsIllustration"],
+        [elements.settingsGeneralSectionTitle, "connectionSettings"]
+      ]);
       if (elements.settingsTabStrip) {
         elements.settingsTabStrip.setAttribute("aria-label", t("settingsCategory"));
       }
-      elements.settingsGeneralTabButton.textContent = t("settingsGeneral");
-      elements.settingsModelTabButton.textContent = t("settingsModel");
-      elements.settingsIllustrationTabButton.textContent = t("settingsIllustration");
-      if (elements.settingsGeneralSectionTitle) {
-        elements.settingsGeneralSectionTitle.textContent = t("connectionSettings");
-      }
-      setFieldLabel(elements.apiBaseUrlInput, t("apiBaseUrl"));
-      elements.apiBaseUrlInput.placeholder = t("apiBaseUrlPlaceholder");
-      setFieldLabel(elements.apiKeyInput, t("apiKey"));
-      setFieldLabel(elements.imageApiBaseUrlInput, t("imageApiBaseUrl"));
-      elements.imageApiBaseUrlInput.placeholder = t("imageApiBaseUrlPlaceholder");
-      setFieldLabel(elements.imageApiKeyInput, t("imageApiKey"));
-      setFieldLabel(elements.userAliasInput, t("userAlias"));
-      setFieldLabel(elements.modelAliasInput, t("modelAlias"));
-      setFieldLabel(elements.themeModeSelect, t("themeMode"));
-      elements.themeModeSelect.options[0].textContent = t("themeSystem");
-      elements.themeModeSelect.options[1].textContent = t("themeDark");
-      elements.themeModeSelect.options[2].textContent = t("themeLight");
-      setFieldLabel(elements.languageSelect, t("language"));
-      elements.languageSelect.options[0].textContent = t("languageKo");
-      elements.languageSelect.options[1].textContent = t("languageEn");
+      applyTranslatedFieldLabels([
+        [elements.apiBaseUrlInput, "apiBaseUrl"],
+        [elements.apiKeyInput, "apiKey"],
+        [elements.imageApiBaseUrlInput, "imageApiBaseUrl"],
+        [elements.imageApiKeyInput, "imageApiKey"],
+        [elements.userAliasInput, "userAlias"],
+        [elements.modelAliasInput, "modelAlias"],
+        [elements.themeModeSelect, "themeMode"],
+        [elements.languageSelect, "language"]
+      ]);
+      applyTranslatedPlaceholders([
+        [elements.apiBaseUrlInput, "apiBaseUrlPlaceholder"],
+        [elements.imageApiBaseUrlInput, "imageApiBaseUrlPlaceholder"]
+      ]);
+      setSelectOptionTexts(elements.themeModeSelect, ["themeSystem", "themeDark", "themeLight"]);
+      setSelectOptionTexts(elements.languageSelect, ["languageKo", "languageEn"]);
       [
         [elements.smoothStreamingLabel, "smoothStreaming"],
         [elements.rpSummaryEnabledLabel, "rpSummaryEnabled"],
@@ -12943,145 +13198,153 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         [elements.chatT2iEnabledLabel, "chatT2iEnabled"],
         [elements.illustrationIgnorePeopleLabel, "illustrationIgnoreNonCharacterPeople"]
       ].forEach(([label, key]) => setLeadingLabelText(label, t(key)));
-      setFieldLabel(elements.rpResponsePerspectiveSelect, t("rpResponsePerspective"));
-      elements.rpResponsePerspectiveSelect.options[0].textContent = t("rpPerspectiveCharacter");
-      elements.rpResponsePerspectiveSelect.options[1].textContent = t("rpPerspectivePersona");
-      elements.rpResponsePerspectiveSelect.options[2].textContent = t("rpPerspectiveThird");
-      setFieldLabel(elements.rpSummaryTokenThresholdInput, t("rpSummaryTokenThreshold"));
-      elements.rpSummaryTokenThresholdInput.placeholder = t("rpSummaryTokenThresholdPlaceholder");
-      setFieldLabel(elements.rpSummaryMaxTokensInput, t("rpSummaryMaxTokens"));
-      elements.rpSummaryMaxTokensInput.placeholder = t("rpSummaryMaxTokensPlaceholder");
-      if (elements.settingsActionButtons[0]) {
-        elements.settingsActionButtons[0].textContent = t("saveSettings");
-      }
-      if (elements.settingsActionButtons[1]) {
-        elements.settingsActionButtons[1].textContent = t("restoreDefaults");
-      }
+      applyTranslatedFieldLabels([
+        [elements.rpResponsePerspectiveSelect, "rpResponsePerspective"],
+        [elements.rpSummaryTokenThresholdInput, "rpSummaryTokenThreshold"],
+        [elements.rpSummaryMaxTokensInput, "rpSummaryMaxTokens"]
+      ]);
+      applyTranslatedPlaceholders([
+        [elements.rpSummaryTokenThresholdInput, "rpSummaryTokenThresholdPlaceholder"],
+        [elements.rpSummaryMaxTokensInput, "rpSummaryMaxTokensPlaceholder"]
+      ]);
+      setSelectOptionTexts(elements.rpResponsePerspectiveSelect, ["rpPerspectiveCharacter", "rpPerspectivePersona", "rpPerspectiveThird"]);
+      applyTranslatedIndexedTextContent(elements.settingsActionButtons, ["saveSettings", "restoreDefaults"]);
+      applyTranslatedIndexedTextContent(elements.modelStatLabels, ["modelsCount", "lastSynced"]);
+      applyTranslatedTextContent([
+        [elements.settingsModelSectionTitle, "conversationSettings"],
+        [elements.settingsModelHint, "thinkingHint"],
+        [elements.openPromptPresetOverlayButton, "promptPresetsButton"],
+        [elements.saveModelSettingsButton, "saveSettings"],
+        [elements.refreshModelsButton, "refreshModels"]
+      ]);
+      applyTranslatedFieldLabels([
+        [elements.modelSelect, "modelSelect"],
+        [elements.auxiliaryModelSelect, "auxiliaryModelSelect"],
+        [elements.temperatureInput, "temperature"],
+        [elements.thinkingTokenLimitInput, "thinkingTokenLimit"],
+        [elements.systemPromptInput, "systemPrompt"]
+      ]);
+      applyTranslatedPlaceholders([
+        [elements.temperatureInput, "thinkingDefaultPlaceholder"],
+        [elements.thinkingTokenLimitInput, "serverDefaultPlaceholder"],
+        [elements.systemPromptInput, "systemPromptPlaceholder"]
+      ]);
 
-      if (elements.modelStatLabels[0]) {
-        elements.modelStatLabels[0].textContent = t("modelsCount");
-      }
-      if (elements.modelStatLabels[1]) {
-        elements.modelStatLabels[1].textContent = t("lastSynced");
-      }
-      if (elements.settingsModelSectionTitle) {
-        elements.settingsModelSectionTitle.textContent = t("conversationSettings");
-      }
-      setFieldLabel(elements.modelSelect, t("modelSelect"));
-      setFieldLabel(elements.auxiliaryModelSelect, t("auxiliaryModelSelect"));
-      setFieldLabel(elements.temperatureInput, t("temperature"));
-      elements.temperatureInput.placeholder = t("thinkingDefaultPlaceholder");
-      setFieldLabel(elements.thinkingTokenLimitInput, t("thinkingTokenLimit"));
-      elements.thinkingTokenLimitInput.placeholder = t("serverDefaultPlaceholder");
-      if (elements.settingsModelHint) {
-        elements.settingsModelHint.textContent = t("thinkingHint");
-      }
-      setFieldLabel(elements.systemPromptInput, t("systemPrompt"));
-      elements.systemPromptInput.placeholder = t("systemPromptPlaceholder");
-      elements.openPromptPresetOverlayButton.textContent = t("promptPresetsButton");
-      elements.saveModelSettingsButton.textContent = t("saveSettings");
-      elements.refreshModelsButton.textContent = t("refreshModels");
+      applyTranslatedTextContent([
+        [elements.settingsIllustrationSectionTitle, "illustrationGeneration"],
+        [elements.refreshImageModelsButton, "refreshImageModels"],
+        [elements.saveIllustrationSettingsButton, "saveSettings"]
+      ]);
+      applyTranslatedFieldLabels([
+        [elements.illustrationPromptStyleSelect, "illustrationPromptStyle"],
+        [elements.illustrationArtStyleSelect, "illustrationArtStyle"],
+        [elements.imageModelSelect, "imageModelSelect"]
+      ]);
+      setSelectOptionTexts(elements.illustrationPromptStyleSelect, ["illustrationPromptStyleTags", "illustrationPromptStyleNatural"]);
+      setSelectOptionTexts(elements.illustrationArtStyleSelect, ["illustrationArtStyleNone", "illustrationArtStyleAnime", "illustrationArtStylePhoto"]);
+      applyTranslatedRangeFieldLabels([
+        [elements.illustrationCfgScaleInput, "cfgScale"],
+        [elements.illustrationStepsInput, "steps"],
+        [elements.illustrationWidthInput, "imageWidth"],
+        [elements.illustrationHeightInput, "imageHeight"]
+      ]);
 
-      if (elements.settingsIllustrationSectionTitle) {
-        elements.settingsIllustrationSectionTitle.textContent = t("illustrationGeneration");
-      }
-      setFieldLabel(elements.illustrationPromptStyleSelect, t("illustrationPromptStyle"));
-      elements.illustrationPromptStyleSelect.options[0].textContent = t("illustrationPromptStyleTags");
-      elements.illustrationPromptStyleSelect.options[1].textContent = t("illustrationPromptStyleNatural");
-      setFieldLabel(elements.illustrationArtStyleSelect, t("illustrationArtStyle"));
-      elements.illustrationArtStyleSelect.options[0].textContent = t("illustrationArtStyleNone");
-      elements.illustrationArtStyleSelect.options[1].textContent = t("illustrationArtStyleAnime");
-      elements.illustrationArtStyleSelect.options[2].textContent = t("illustrationArtStylePhoto");
-      setFieldLabel(elements.imageModelSelect, t("imageModelSelect"));
-      elements.refreshImageModelsButton.textContent = t("refreshImageModels");
-      setRangeFieldLabel(elements.illustrationCfgScaleInput, t("cfgScale"));
-      setRangeFieldLabel(elements.illustrationStepsInput, t("steps"));
-      setRangeFieldLabel(elements.illustrationWidthInput, t("imageWidth"));
-      setRangeFieldLabel(elements.illustrationHeightInput, t("imageHeight"));
-      elements.saveIllustrationSettingsButton.textContent = t("saveSettings");
-
-      if (elements.promptPresetOverlayTitle) {
-        elements.promptPresetOverlayTitle.textContent = t("promptPresetOverlayTitle");
-      }
-      elements.closePromptPresetOverlayButton.textContent = t("close");
-      setFieldLabel(elements.promptPresetNameInput, t("promptPresetName"));
-      elements.promptPresetNameInput.placeholder = t("promptPresetNamePlaceholder");
-      elements.savePromptPresetButton.textContent = t("saveCurrentPromptPreset");
-      if (elements.promptPresetListTitle) {
-        elements.promptPresetListTitle.textContent = t("savedPromptPresets");
-      }
+      applyTranslatedTextContent([
+        [elements.promptPresetOverlayTitle, "promptPresetOverlayTitle"],
+        [elements.closePromptPresetOverlayButton, "close"],
+        [elements.savePromptPresetButton, "saveCurrentPromptPreset"],
+        [elements.promptPresetListTitle, "savedPromptPresets"]
+      ]);
+      applyTranslatedFieldLabels([
+        [elements.promptPresetNameInput, "promptPresetName"]
+      ]);
+      applyTranslatedPlaceholders([
+        [elements.promptPresetNameInput, "promptPresetNamePlaceholder"]
+      ]);
       renderPromptPresetList();
 
-      elements.closeTabsOverlayButton.textContent = t("close");
-      setButtonTitleAndAria(elements.newChatButton, t("newTab"));
-      setButtonTitleAndAria(elements.desktopNewChatButton, t("newTab"));
-      setButtonTitleAndAria(elements.importChatsButton, t("importJson"));
-      setButtonTitleAndAria(elements.desktopImportChatsButton, t("importJson"));
+      applyTranslatedTextContent([
+        [elements.closeTabsOverlayButton, "close"]
+      ]);
+      applyTranslatedButtonTitles([
+        [elements.newChatButton, "newTab"],
+        [elements.desktopNewChatButton, "newTab"],
+        [elements.importChatsButton, "importJson"],
+        [elements.desktopImportChatsButton, "importJson"]
+      ]);
 
-      if (elements.characterOverlayTitle) {
-        elements.characterOverlayTitle.textContent = t("characterCards");
-      }
-      elements.closeCharacterOverlayButton.textContent = t("close");
-      elements.characterNewButton.textContent = t("newCard");
-      elements.characterImportButton.textContent = t("import");
-      elements.characterCardList.setAttribute("aria-label", t("characterCardList"));
+      applyTranslatedTextContent([
+        [elements.characterOverlayTitle, "characterCards"],
+        [elements.closeCharacterOverlayButton, "close"],
+        [elements.characterNewButton, "newCard"],
+        [elements.characterImportButton, "import"],
+        [elements.characterCardDescriptionLabelText, "characterDescription"],
+        [elements.characterImageButton, "chooseImage"],
+        [elements.characterImageClearButton, "clearImage"]
+      ]);
+      setAriaLabelIfPresent(elements.characterCardList, t("characterCardList"));
       if (elements.characterSettingsPanel) {
         elements.characterSettingsPanel.setAttribute("aria-label", t("characterSettingsPanel"));
       }
-      setFieldLabel(elements.characterCardNameInput, t("characterName"));
-      setFieldLabel(elements.characterCardDescriptionInput, t("characterDescription"));
-      setFieldLabel(elements.characterCardFirstMessageInput, t("characterFirstMessage"));
-      elements.characterCardNameInput.placeholder = t("characterNamePlaceholder");
-      elements.characterCardDescriptionInput.placeholder = t("characterDescriptionPlaceholder");
-      elements.characterCardFirstMessageInput.placeholder = t("characterFirstMessagePlaceholder");
-      setButtonTitleAndAria(elements.characterSaveButton, t("save"));
-      setButtonTitleAndAria(elements.characterExportButton, t("export"));
-      setButtonTitleAndAria(elements.characterDeleteButton, t("delete"));
-      elements.characterImageButton.textContent = t("chooseImage");
-      elements.characterImageClearButton.textContent = t("clearImage");
+      applyTranslatedFieldLabels([
+        [elements.characterCardNameInput, "characterName"],
+        [elements.characterCardFirstMessageInput, "characterFirstMessage"]
+      ]);
+      setLeadingLabelText(elements.characterCardIsWorldCardInput.closest("label"), t("characterIsWorldCard"));
+      setAriaLabelIfPresent(elements.characterCardDescriptionModeSelect, t("worldCardDescription"));
+      setSelectOptionTexts(elements.characterCardDescriptionModeSelect, ["worldCardDescription", "worldCardMainCharacterDescription"]);
+      applyTranslatedPlaceholders([
+        [elements.characterCardNameInput, "characterNamePlaceholder"],
+        [elements.characterCardFirstMessageInput, "characterFirstMessagePlaceholder"]
+      ]);
+      syncCharacterCardEditorModeControls();
+      applyTranslatedButtonTitles([
+        [elements.characterSaveButton, "save"],
+        [elements.characterExportButton, "export"],
+        [elements.characterDeleteButton, "delete"]
+      ]);
 
-      if (elements.personaOverlayTitle) {
-        elements.personaOverlayTitle.textContent = t("personaCards");
-      }
-      elements.closePersonaOverlayButton.textContent = t("close");
-      elements.personaNewButton.textContent = t("newCard");
-      elements.personaImportButton.textContent = t("import");
-      elements.personaCardList.setAttribute("aria-label", t("personaCardList"));
+      applyTranslatedTextContent([
+        [elements.personaOverlayTitle, "personaCards"],
+        [elements.closePersonaOverlayButton, "close"],
+        [elements.personaNewButton, "newCard"],
+        [elements.personaImportButton, "import"],
+        [elements.personaImageButton, "chooseImage"],
+        [elements.personaImageClearButton, "clearImage"]
+      ]);
+      setAriaLabelIfPresent(elements.personaCardList, t("personaCardList"));
       if (elements.personaSettingsPanel) {
         elements.personaSettingsPanel.setAttribute("aria-label", t("personaSettingsPanel"));
       }
-      setFieldLabel(elements.personaCardNameInput, t("personaName"));
-      setFieldLabel(elements.personaCardDescriptionInput, t("personaDescription"));
-      elements.personaCardNameInput.placeholder = t("personaNamePlaceholder");
-      elements.personaCardDescriptionInput.placeholder = t("personaDescriptionPlaceholder");
-      setButtonTitleAndAria(elements.personaSaveButton, t("save"));
-      setButtonTitleAndAria(elements.personaExportButton, t("export"));
-      setButtonTitleAndAria(elements.personaDeleteButton, t("delete"));
-      elements.personaImageButton.textContent = t("chooseImage");
-      elements.personaImageClearButton.textContent = t("clearImage");
+      applyTranslatedFieldLabels([
+        [elements.personaCardNameInput, "personaName"],
+        [elements.personaCardDescriptionInput, "personaDescription"]
+      ]);
+      applyTranslatedPlaceholders([
+        [elements.personaCardNameInput, "personaNamePlaceholder"],
+        [elements.personaCardDescriptionInput, "personaDescriptionPlaceholder"]
+      ]);
+      applyTranslatedButtonTitles([
+        [elements.personaSaveButton, "save"],
+        [elements.personaExportButton, "export"],
+        [elements.personaDeleteButton, "delete"]
+      ]);
 
-      if (elements.imagePreviewTitle) {
-        elements.imagePreviewTitle.textContent = t("imagePreview");
-      }
-      elements.closeImagePreviewButton.textContent = t("close");
+      applyTranslatedTextContent([
+        [elements.imagePreviewTitle, "imagePreview"],
+        [elements.closeImagePreviewButton, "close"],
+        [elements.rpImageCropTitle, "cropTitle"],
+        [elements.closeRpImageCropButton, "close"],
+        [elements.rpImageCropHelp, "cropHelp"],
+        [elements.cancelRpImageCropButton, "cancel"],
+        [elements.applyRpImageCropButton, "apply"],
+        [elements.tabLockWarningTitle, "tabLockTitle"]
+      ]);
       elements.imagePreviewImage.alt = t("imagePreviewAlt");
 
-      if (elements.rpImageCropTitle) {
-        elements.rpImageCropTitle.textContent = t("cropTitle");
-      }
-      elements.closeRpImageCropButton.textContent = t("close");
-      elements.rpImageCropViewport.setAttribute("aria-label", t("cropViewport"));
+      setAriaLabelIfPresent(elements.rpImageCropViewport, t("cropViewport"));
       elements.rpImageCropImage.alt = t("cropPreviewAlt");
-      if (elements.rpImageCropHelp) {
-        elements.rpImageCropHelp.textContent = t("cropHelp");
-      }
       setFieldLabel(elements.rpImageCropZoomInput, t("zoom"));
-      elements.cancelRpImageCropButton.textContent = t("cancel");
-      elements.applyRpImageCropButton.textContent = t("apply");
-
-      if (elements.tabLockWarningTitle) {
-        elements.tabLockWarningTitle.textContent = t("tabLockTitle");
-      }
     }
 
     function buildResponseLanguageInstruction(language) {
