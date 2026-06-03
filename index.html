@@ -11471,6 +11471,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (!sceneState || message?.role !== "assistant") {
         return null;
       }
+      const displaySceneState = replaceRpPromptPlaceholders(sceneState, getMessageRpPlaceholders(message));
 
       const container = document.createElement("div");
       container.className = "message-rp-state";
@@ -11489,7 +11490,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       content.id = contentId;
       content.className = "message-rp-state-content";
       content.hidden = true;
-      content.textContent = `${t("rpSceneStateLabel")}\n${sceneState}`;
+      content.textContent = `${t("rpSceneStateLabel")}\n${displaySceneState}`;
 
       toggle.addEventListener("click", () => {
         const expanded = toggle.getAttribute("aria-expanded") === "true";
@@ -13027,16 +13028,19 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       });
     }
 
+    function getMessageRpPlaceholders(message) {
+      return createRpPromptPlaceholders({
+        character: getRpCardById("character", message?.characterCardId || state.rp.activeCharacterId),
+        persona: getRpCardById("persona", message?.personaCardId || state.rp.activePersonaId) || getActiveRpPersona()
+      });
+    }
+
     function getAssistantFirstMessageDisplayContent(message) {
       if (!message?.isFirstMessage) {
         return String(message?.content || "");
       }
 
-      const placeholders = createRpPromptPlaceholders({
-        character: getRpCardById("character", message.characterCardId || state.rp.activeCharacterId),
-        persona: getActiveRpPersona()
-      });
-      return replaceRpPromptPlaceholders(String(message.content || ""), placeholders);
+      return replaceRpPromptPlaceholders(String(message.content || ""), getMessageRpPlaceholders(message));
     }
 
     function getAssistantDisplayContent(message) {
