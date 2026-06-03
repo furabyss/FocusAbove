@@ -260,6 +260,21 @@
       gap: 10px;
     }
 
+    #settingsRpSectionGroup {
+      display: contents;
+    }
+
+    .settings-divider {
+      height: 1px;
+      border: 0;
+      margin: 4px 0;
+      background: rgba(88, 64, 38, 0.12);
+    }
+
+    :root[data-resolved-theme="dark"] .settings-divider {
+      background: rgba(239, 222, 205, 0.12);
+    }
+
     label {
       display: flex;
       flex-direction: column;
@@ -3049,7 +3064,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section class="brand">
               <div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="8" y="8" width="48" height="48" rx="14" fill="currentColor"></rect><circle cx="32" cy="32" r="13" fill="none" stroke="#fff7ee" stroke-width="6"></circle><circle cx="46" cy="18" r="3" fill="#fff7ee" fill-opacity="0.9"></circle></svg><span>FocusAbove</span></div>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.5.0, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.5.1, ⓒ 2026 Fur-Abyss</p>
             </section>
 
             <div class="settings-tab-strip" role="tablist" aria-label="">
@@ -3061,7 +3076,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section id="settingsGeneralPanel" class="settings-tab-panel" role="tabpanel" aria-labelledby="settingsGeneralTabButton">
               <section id="settingsSection" class="settings-section">
                 <form id="settingsForm" class="settings-form">
-                  <h2 class="section-title"></h2>
+                  <h2 id="settingsConnectionSectionTitle" class="section-title"></h2>
                   <label>
                     <input id="apiBaseUrlInput" name="apiBaseUrl" type="text" placeholder="" autocomplete="off">
                   </label>
@@ -3074,6 +3089,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                   <label>
                     <input id="imageApiKeyInput" name="imageApiKey" type="password" placeholder="API Key" autocomplete="off">
                   </label>
+                  <hr class="settings-divider" aria-hidden="true">
+                  <h2 id="settingsGeneralSectionTitle" class="section-title"></h2>
                   <div class="settings-inline-grid">
                     <label>
                       <input id="userAliasInput" name="userAlias" type="text" placeholder="사용자" autocomplete="off">
@@ -3095,30 +3112,34 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                       <option value="en"></option>
                     </select>
                   </label>
-                  <label id="rpResponsePerspectiveField" hidden>
-                    <select id="rpResponsePerspectiveSelect">
-                      <option value="character-first-person"></option>
-                      <option value="persona-first-person"></option>
-                      <option value="third-person"></option>
-                    </select>
-                  </label>
-                  <div id="rpAssistanceFields" class="rp-assistance-fields" hidden>
-                    <label class="inline-checkbox" for="rpSummaryEnabledInput">
-                      <input id="rpSummaryEnabledInput" name="rpSummaryEnabled" type="checkbox">
-                    </label>
-                    <label id="rpSummaryTokenThresholdField" hidden>
-                      <input id="rpSummaryTokenThresholdInput" name="rpSummaryTokenThreshold" type="number" min="1000" placeholder="12000">
-                    </label>
-                    <label id="rpSummaryMaxTokensField" hidden>
-                      <input id="rpSummaryMaxTokensInput" name="rpSummaryMaxTokens" type="number" min="128" placeholder="1000">
-                    </label>
-                    <label class="inline-checkbox" for="rpInputEnhancementEnabledInput">
-                      <input id="rpInputEnhancementEnabledInput" name="rpInputEnhancementEnabled" type="checkbox">
-                    </label>
-                  </div>
                   <label class="inline-checkbox" for="smoothStreamingInput">
                     <input id="smoothStreamingInput" name="smoothStreaming" type="checkbox">
                   </label>
+                  <div id="settingsRpSectionGroup" hidden>
+                    <hr class="settings-divider" aria-hidden="true">
+                    <h2 id="settingsRpSectionTitle" class="section-title"></h2>
+                    <label id="rpResponsePerspectiveField" hidden>
+                      <select id="rpResponsePerspectiveSelect">
+                        <option value="character-first-person"></option>
+                        <option value="persona-first-person"></option>
+                        <option value="third-person"></option>
+                      </select>
+                    </label>
+                    <div id="rpAssistanceFields" class="rp-assistance-fields" hidden>
+                      <label class="inline-checkbox" for="rpSummaryEnabledInput">
+                        <input id="rpSummaryEnabledInput" name="rpSummaryEnabled" type="checkbox">
+                      </label>
+                      <label id="rpSummaryTokenThresholdField" hidden>
+                        <input id="rpSummaryTokenThresholdInput" name="rpSummaryTokenThreshold" type="number" min="1000" placeholder="12000">
+                      </label>
+                      <label id="rpSummaryMaxTokensField" hidden>
+                        <input id="rpSummaryMaxTokensInput" name="rpSummaryMaxTokens" type="number" min="128" placeholder="1000">
+                      </label>
+                      <label class="inline-checkbox" for="rpInputEnhancementEnabledInput">
+                        <input id="rpInputEnhancementEnabledInput" name="rpInputEnhancementEnabled" type="checkbox">
+                      </label>
+                    </div>
+                  </div>
                   <div class="button-row settings-tab-actions">
                     <button type="submit"></button>
                     <button id="resetSettingsButton" type="button" class="ghost-button"></button>
@@ -3142,7 +3163,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
               </section>
 
               <section>
-                <h2 class="section-title"></h2>
                 <div class="model-controls">
                   <label>
                     <select id="modelSelect"></select>
@@ -3191,25 +3211,24 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                   <label class="inline-checkbox sub-option" for="illustrationIgnoreNonCharacterPeopleInput">
                     <input id="illustrationIgnoreNonCharacterPeopleInput" type="checkbox">
                   </label>
-                  <label>
-                    <select id="illustrationPromptStyleSelect">
-                      <option value="tag-list"></option>
-                      <option value="natural-language"></option>
-                    </select>
-                  </label>
-                  <label>
-                    <select id="illustrationArtStyleSelect">
-                      <option value=""></option>
-                      <option value="anime"></option>
-                      <option value="photo"></option>
-                    </select>
-                  </label>
+                  <div class="illustration-control-grid">
+                    <label>
+                      <select id="illustrationPromptStyleSelect">
+                        <option value="tag-list"></option>
+                        <option value="natural-language"></option>
+                      </select>
+                    </label>
+                    <label>
+                      <select id="illustrationArtStyleSelect">
+                        <option value=""></option>
+                        <option value="anime"></option>
+                        <option value="photo"></option>
+                      </select>
+                    </label>
+                  </div>
                   <label>
                     <select id="imageModelSelect"></select>
                   </label>
-                  <div class="button-row model-prompt-toolbar">
-                    <button id="refreshImageModelsButton" type="button" class="ghost-button"></button>
-                  </div>
                   <div id="illustrationGenerationControls" class="illustration-control-grid">
                     <label class="range-field">
                       <span><output id="illustrationCfgScaleValue">3</output></span>
@@ -3232,6 +3251,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
               </section>
               <div class="button-row settings-tab-actions">
                 <button id="saveIllustrationSettingsButton" type="button"></button>
+                <button id="refreshImageModelsButton" type="button" class="ghost-button"></button>
               </div>
             </section>
           </div>
@@ -3688,6 +3708,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         settingsModel: "모델",
         settingsIllustration: "이미지",
         connectionSettings: "연결 설정",
+        generalSettingsSection: "일반 설정",
         apiBaseUrl: "API 주소",
         apiBaseUrlPlaceholder: "예: http://127.0.0.1:1234/v1",
         apiKey: "API 키",
@@ -3704,6 +3725,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         languageKo: "한국어",
         languageEn: "English",
         smoothStreaming: "부드러운 응답 스트리밍(성능 영향 있음)",
+        rpSettingsSection: "RP 설정",
         rpResponsePerspective: "RP 응답 시점",
         rpPerspectiveCharacter: "캐릭터 1인칭 시점",
         rpPerspectivePersona: "페르소나 1인칭 시점",
@@ -3718,7 +3740,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         restoreDefaults: "기본값 복원",
         modelsCount: "모델 수",
         lastSynced: "마지막 동기화",
-        conversationSettings: "대화 설정",
         modelSelect: "모델 선택",
         auxiliaryModelSelect: "보조 모델",
         noAuxiliaryModel: "선택하지 않음",
@@ -3727,9 +3748,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         thinkingDefaultPlaceholder: "기본값 사용",
         serverDefaultPlaceholder: "서버 기본값 사용",
         unlimited: "무제한",
-        thinkingHint: "Thinking 토큰 제한은 서버가 reasoning.max_tokens를 지원할 때만 반영됩니다.",
+        thinkingHint: "Thinking 토큰 제한은 서버가 reasoning.max_tokens를 지원해야 적용됩니다.",
         systemPrompt: "시스템 프롬프트",
-        systemPromptPlaceholder: "모든 채팅에 전역으로 적용할 시스템 프롬프트를 입력하세요.",
+        systemPromptPlaceholder: "모든 채팅에 적용할 시스템 프롬프트를 입력하세요.",
         promptPresetsButton: "프리셋",
         promptPresetOverlayTitle: "프롬프트 프리셋",
         promptPresetName: "프리셋 이름",
@@ -3758,7 +3779,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         illustrationArtStylePhoto: "사진",
         imageModelSelect: "이미지 모델",
         autoImageModel: "자동 선택",
-        refreshImageModels: "이미지 모델 새로고침",
         imageModelsLoading: "이미지 API에서 모델 목록을 불러오는 중입니다.",
         imageModelsLoaded: ({ count }) => `이미지 모델 ${count}개를 불러왔습니다.`,
         imageModelsFailed: ({ error }) => `이미지 모델 조회 실패: ${error}`,
@@ -3814,7 +3834,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         cropTitle: "정사각형 이미지 자르기",
         cropViewport: "정사각형 자르기 영역",
         cropPreviewAlt: "자르기 미리보기",
-        cropHelp: "이미지를 끌어서 위치를 맞추고, 확대 슬라이더나 핀치 제스처로 정사각형 구도를 조정하세요.",
+        cropHelp: "이미지를 끌어서 위치를 맞추고, 슬라이더나 핀치 제스처로 정사각형 구도를 조정하세요.",
         zoom: "확대",
         cancel: "취소",
         apply: "적용",
@@ -3958,13 +3978,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         authorsNote: "Author's Note",
         authorsNoteActive: "Author's Note active",
         authorsNoteField: "Note",
-        authorsNotePlaceholder: "Write the details, staging, emotional beats, or constraints you want emphasized in the character's next reply.",
+        authorsNotePlaceholder: "Write details, staging, emotions, or constraints to emphasize in the character's next reply.",
         clear: "Clear",
         settingsCategory: "Settings categories",
         settingsGeneral: "General",
         settingsModel: "Model",
         settingsIllustration: "Image",
         connectionSettings: "Connection settings",
+        generalSettingsSection: "General settings",
         apiBaseUrl: "API base URL",
         apiBaseUrlPlaceholder: "e.g. http://127.0.0.1:1234/v1",
         apiKey: "API key",
@@ -3980,22 +4001,22 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         language: "Language",
         languageKo: "Korean",
         languageEn: "English",
-        smoothStreaming: "Smooth response streaming (may affect performance)",
+        smoothStreaming: "Smooth streaming (may affect performance)",
+        rpSettingsSection: "RP settings",
         rpResponsePerspective: "RP response perspective",
         rpPerspectiveCharacter: "Character first-person",
         rpPerspectivePersona: "Persona first-person",
         rpPerspectiveThird: "Third-person",
-        rpSummaryEnabled: "Use conversation summary [Aux. model]",
+        rpSummaryEnabled: "Conversation summary [Aux. model]",
         rpSummaryTokenThreshold: "Summary trigger context tokens",
         rpSummaryTokenThresholdPlaceholder: "e.g. 12000",
         rpSummaryMaxTokens: "Summary max tokens",
         rpSummaryMaxTokensPlaceholder: "e.g. 1000",
-        rpInputEnhancementEnabled: "Use input enhancement [Aux. model]",
+        rpInputEnhancementEnabled: "Input enhancement [Aux. model]",
         saveSettings: "Save settings",
         restoreDefaults: "Restore defaults",
         modelsCount: "Models",
         lastSynced: "Last synced",
-        conversationSettings: "Conversation settings",
         modelSelect: "Model",
         auxiliaryModelSelect: "Auxiliary model",
         noAuxiliaryModel: "None",
@@ -4004,9 +4025,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         thinkingDefaultPlaceholder: "Use default",
         serverDefaultPlaceholder: "Use server default",
         unlimited: "Unlimited",
-        thinkingHint: "Thinking token limits only apply when the server supports reasoning.max_tokens.",
+        thinkingHint: "Thinking token limits apply only if the server supports reasoning.max_tokens.",
         systemPrompt: "System prompt",
-        systemPromptPlaceholder: "Enter a global system prompt that applies to every chat.",
+        systemPromptPlaceholder: "Global system prompt for all chats.",
         promptPresetsButton: "Presets",
         promptPresetOverlayTitle: "Prompt Presets",
         promptPresetName: "Preset name",
@@ -4014,7 +4035,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         saveCurrentPromptPreset: "Save current prompt",
         savedPromptPresets: "Saved presets",
         loadPreset: "Load",
-        noPromptPresets: "No prompt presets have been saved yet.",
+        noPromptPresets: "No saved prompt presets.",
         promptPresetNameRequired: "Enter a preset name.",
         promptPresetNotFound: "Prompt preset not found.",
         promptPresetSaved: ({ name }) => `Saved the preset '${name}'.`,
@@ -4023,8 +4044,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         confirmDeletePromptPreset: ({ name }) => `Delete the preset '${name}'?`,
         refreshModels: "Refresh models",
         illustrationGeneration: "Image generation",
-        illustrationEnabled: "Generate illustrations in RP mode [Aux. model, Image API]",
-        chatT2iEnabled: "Use T2I image generation in chat mode [Aux. model, Image API]",
+        illustrationEnabled: "Auto illustrations in RP [Aux. model, Image API]",
+        chatT2iEnabled: "Chat T2I images [Aux. model, Image API]",
         illustrationIgnoreNonCharacterPeople: "Ignore persona and other people",
         illustrationPromptStyle: "Prompt style",
         illustrationPromptStyleTags: "Standard prompt",
@@ -4035,12 +4056,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         illustrationArtStylePhoto: "Photo",
         imageModelSelect: "Image model",
         autoImageModel: "Auto select",
-        refreshImageModels: "Refresh image models",
-        imageModelsLoading: "Loading image models from the image API.",
+        imageModelsLoading: "Loading image models.",
         imageModelsLoaded: ({ count }) => `Loaded ${count} image model${count === 1 ? "" : "s"}.`,
         imageModelsFailed: ({ error }) => `Failed to load image models: ${error}`,
-        illustrationAuxiliaryModelRequired: "Select an auxiliary model to use illustration generation.",
-        illustrationImageApiRequired: "Enter an image API base URL to use illustration generation.",
+        illustrationAuxiliaryModelRequired: "Select an auxiliary model for illustrations.",
+        illustrationImageApiRequired: "Enter an image API base URL for illustrations.",
         cfgScale: "CFG scale",
         steps: "Steps",
         imageWidth: "Width",
@@ -4075,12 +4095,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         personaDescription: "Persona profile",
         characterNamePlaceholder: "Character name",
         personaNamePlaceholder: "Persona name",
-        characterDescriptionPlaceholder: "Describe the character's personality, background, speaking style, constraints, and scenario.",
-        worldCardDescriptionPlaceholder: "Describe the world's rules, tone, factions, locations, technology level, taboos, and core conflicts.",
-        worldCardMainCharacterDescriptionPlaceholder: "Describe the major recurring characters for this world RP, including profiles, relationships, roles, voice, and visual traits.",
+        characterDescriptionPlaceholder: "Describe the character's personality, background, voice, constraints, and scenario.",
+        worldCardDescriptionPlaceholder: "Describe the world's rules, tone, factions, locations, tech level, taboos, and core conflicts.",
+        worldCardMainCharacterDescriptionPlaceholder: "Describe key recurring characters in this world RP: profiles, relationships, roles, voice, and visual traits.",
         characterFirstMessage: "First Message",
-        characterFirstMessagePlaceholder: "Write the character's opening message that should already appear at the start of a new RP chat.",
-        personaDescriptionPlaceholder: "Describe the user's roleplay identity, voice, background, and relationship setup.",
+        characterFirstMessagePlaceholder: "Opening message shown at the start of a new RP chat.",
+        personaDescriptionPlaceholder: "Describe the user's RP identity, voice, background, and relationships.",
         save: "Save",
         export: "Export",
         delete: "Delete",
@@ -4091,12 +4111,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         cropTitle: "Square image crop",
         cropViewport: "Square crop area",
         cropPreviewAlt: "Crop preview",
-        cropHelp: "Drag the image into place, then adjust the square framing with the zoom slider or pinch gesture.",
+        cropHelp: "Drag to position the image, then use the slider or pinch to frame the square crop.",
         zoom: "Zoom",
         cancel: "Cancel",
         apply: "Apply",
         tabLockTitle: "Already in use in another tab",
-        tabLockMessage: "FocusAbove only allows one active tab at a time to avoid localStorage conflicts. The first opened tab remains active.",
+        tabLockMessage: "Only one FocusAbove tab can stay active to avoid localStorage conflicts. The first tab opened stays active.",
         tabTitleInput: "Tab title input",
         tabNameDone: "Confirm tab title",
         tabNameEdit: "Rename tab",
@@ -4105,7 +4125,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         defaultMissingChat: "Chat not found.",
         defaultMissingChatHint: "Create a new tab.",
         modelMissing: "No model selected",
-        chooseOrRefreshModel: "Select a model or refresh the model list.",
+        chooseOrRefreshModel: "Select or refresh a model.",
         selectModelPlaceholder: "Select a model",
         loadModelsFirstPlaceholder: "Load models first",
         emptyState: "AI-generated content may be biased or inaccurate.",
@@ -4117,7 +4137,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         stop: "Stop",
         stopResponse: "Stop response",
         imageUpload: "Upload image",
-        imageUploadTitle: ({ dimension, bytes }) => `Upload image (resized to max ${dimension}px after upload, up to ${bytes} total).`,
+        imageUploadTitle: ({ dimension, bytes }) => `Upload image (${dimension}px max, ${bytes} total max).`,
         imageOnly: "Images only",
         imageLoading: "Loading image",
         olderMessagesLoading: "Loading earlier messages",
@@ -4148,43 +4168,43 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         switchedToRpMode: "Switched to RP mode.",
         switchedToChatMode: "Switched to chat mode.",
         settingsSaved: "Saved settings.",
-        generalSettingsRestored: "Restored general settings to defaults.",
+        generalSettingsRestored: "Restored default general settings.",
         authorsNoteCleared: "Cleared the Author's Note.",
         imageCropCanceled: "Canceled image cropping.",
-        rpImageApplied: ({ kind }) => `Applied the ${kind} image as a square. Save to confirm it.`,
+        rpImageApplied: ({ kind }) => `Applied the ${kind} image as a square. Save to confirm.`,
         imageCropFailed: ({ error }) => `Image crop failed: ${error}`,
         rpCardCreated: ({ kind }) => `Created the ${kind} card.`,
         rpCardNotFound: ({ kind }) => `Could not find the ${kind} card.`,
         rpCardSaved: ({ kind }) => `Saved the ${kind} card.`,
         rpCardDeleted: ({ kind }) => `Deleted the ${kind} card.`,
         imageSetFailed: ({ error }) => `Failed to set image: ${error}`,
-        activeTabOnlyExport: "You can only export from the active tab.",
-        zipExportLibraryFailed: "Failed to load the zip export library.",
+        activeTabOnlyExport: "Export works only in the active tab.",
+        zipExportLibraryFailed: "Failed to load the zip export lib.",
         rpCardMissing: ({ kind }) => `There is no ${kind} card.`,
         charcardExported: ({ name }) => `Exported ${name} as a .charcard.`,
-        activeTabOnlyImport: "You can only import from the active tab.",
+        activeTabOnlyImport: "Import works only in the active tab.",
         rpCardImported: ({ kind }) => `Imported the ${kind} card.`,
         importFailed: ({ error }) => `Import failed: ${error}`,
         selectChatTabFirst: "Select a chat tab first.",
         saveMessageEditsFirst: "Save your message edits first.",
         addMessageOrImage: "Add a message or image to send.",
         apiBaseUrlRequired: "API base URL is empty. Enter it in Settings.",
-        selectModelRequired: "Select a model to use. Refresh the model list first if needed.",
+        selectModelRequired: "Select a model. Refresh first if needed.",
         noResponseToReroll: "There is no response to reroll.",
         streamingResponseActive: "Streaming response.",
         responseReceivedToast: "Response received.",
         responseStopped: "Stopped response generation.",
         requestFailedWithError: ({ error }) => `Request failed: ${error}`,
-        secretStorageFailed: ({ error }) => `Failed to securely store API keys: ${error}`,
+        secretStorageFailed: ({ error }) => `Failed to store API keys securely: ${error}`,
         saveOpenMessageEditFirst: "Save the open message edit first.",
         emptyMessageCannotSave: "You cannot save an empty message.",
         messageUpdatedToast: "Updated the message.",
         imagesAttached: ({ count }) => `Attached ${count} image${count === 1 ? "" : "s"}.`,
         imageAttachFailed: ({ error }) => `Failed to attach images: ${error}`,
         tabRenamed: "Renamed the tab.",
-        newChatTabCreated: "Created a new chat tab.",
+        newChatTabCreated: "Created a chat tab.",
         chatTabDeleted: "Deleted the chat tab.",
-        exportChatNotFound: "Could not find the chat tab to export.",
+        exportChatNotFound: "Chat tab not found for export.",
         tabJsonExported: ({ title }) => `Exported '${title}' as JSON.`,
         tabsImported: ({ count }) => `Imported ${count} tab${count === 1 ? "" : "s"}.`,
         confirmDeleteCard: ({ name, kind }) => `Delete the ${kind} card '${name}'?`,
@@ -4347,8 +4367,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       settingsGeneralPanel: document.getElementById("settingsGeneralPanel"),
       settingsModelPanel: document.getElementById("settingsModelPanel"),
       settingsIllustrationPanel: document.getElementById("settingsIllustrationPanel"),
-      settingsGeneralSectionTitle: document.querySelector("#settingsGeneralPanel .section-title"),
-      settingsModelSectionTitle: document.querySelector("#settingsModelPanel .section-title"),
+      settingsConnectionSectionTitle: document.getElementById("settingsConnectionSectionTitle"),
+      settingsGeneralSectionTitle: document.getElementById("settingsGeneralSectionTitle"),
+      settingsRpSectionGroup: document.getElementById("settingsRpSectionGroup"),
+      settingsRpSectionTitle: document.getElementById("settingsRpSectionTitle"),
       settingsIllustrationSectionTitle: document.querySelector("#settingsIllustrationPanel .section-title"),
       smoothStreamingLabel: document.querySelector('label.inline-checkbox[for="smoothStreamingInput"]'),
       rpSummaryEnabledLabel: document.querySelector('label.inline-checkbox[for="rpSummaryEnabledInput"]'),
@@ -6655,6 +6677,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       elements.themeModeSelect.value = normalizeThemeMode(state.settings.themeMode);
       elements.languageSelect.value = normalizeAppLanguage(state.settings.language);
       elements.smoothStreamingInput.checked = state.settings.smoothStreaming !== false;
+      elements.settingsRpSectionGroup.hidden = !isRpModeActive();
       elements.rpResponsePerspectiveField.hidden = !isRpModeActive();
       elements.rpAssistanceFields.hidden = !isRpModeActive();
       elements.rpResponsePerspectiveSelect.value = normalizeRpResponsePerspective(state.rp?.responsePerspective);
@@ -10474,9 +10497,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             "Write one concise Stable Diffusion prompt in English only.",
             buildIllustrationPromptStyleInstruction(illustrationSettings.promptStyle),
             "Preserve stated gender and stable appearance from card details. Do not invent unstated gender.",
-            buildIllustrationPeopleScopeInstruction(illustrationSettings),
+            buildIllustrationPeopleScopeInstruction(illustrationSettings, { characterCard }),
             isWorldRpCard(characterCard)
-              ? "For world cards, depict only the character or small set of characters who are actually present in the current scene. Prioritize named major characters when the recent scene supports them. If solo-character mode is enabled, depict only the single most important current-scene character."
+              ? "For world cards, depict only the character or small set of characters who are actually present in the current scene. Prioritize named major characters from the world card when the recent scene supports them. Never choose the persona/user as the depicted person. If solo-character mode is enabled, depict only the single most important current-scene character other than the persona/user."
               : "",
             "For clothing, pose, location, lighting, temporary states, and injuries, prefer latest context over card defaults.",
             "No markdown, explanations, text overlays, watermarks, signatures, UI elements, or camera metadata."
@@ -10582,9 +10605,20 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       ].join("\n")];
     }
 
-    function buildIllustrationPeopleScopeInstruction(illustrationSettings) {
-      if (!normalizeRpIllustrationSettings(illustrationSettings).ignoreNonCharacterPeople) {
+    function buildIllustrationPeopleScopeInstruction(illustrationSettings, options = {}) {
+      const settings = normalizeRpIllustrationSettings(illustrationSettings);
+      if (!settings.ignoreNonCharacterPeople) {
         return "";
+      }
+
+      if (isWorldRpCard(options.characterCard)) {
+        return [
+          "Strict solo-character mode: the final image prompt must depict exactly one visible person/character.",
+          "That one person must be a non-persona character drawn from the world's named major characters or other clearly scene-relevant non-persona characters.",
+          "Never choose, describe, include, imply, or silhouette the persona/user, even if the recent conversation focuses on the persona/user viewpoint or actions.",
+          "Do not mention, include, imply, or silhouette companions, crowds, background people, second bodies, or another person's hands/arms.",
+          "If the scene emphasizes the persona/user, reinterpret it into the most important non-persona character's solo pose, expression, gaze, mood, and environmental context."
+        ].join("\n");
       }
 
       return [
@@ -13168,7 +13202,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         [elements.settingsGeneralTabButton, "settingsGeneral"],
         [elements.settingsModelTabButton, "settingsModel"],
         [elements.settingsIllustrationTabButton, "settingsIllustration"],
-        [elements.settingsGeneralSectionTitle, "connectionSettings"]
+        [elements.settingsConnectionSectionTitle, "connectionSettings"],
+        [elements.settingsGeneralSectionTitle, "generalSettingsSection"],
+        [elements.settingsRpSectionTitle, "rpSettingsSection"]
       ]);
       if (elements.settingsTabStrip) {
         elements.settingsTabStrip.setAttribute("aria-label", t("settingsCategory"));
@@ -13211,7 +13247,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       applyTranslatedIndexedTextContent(elements.settingsActionButtons, ["saveSettings", "restoreDefaults"]);
       applyTranslatedIndexedTextContent(elements.modelStatLabels, ["modelsCount", "lastSynced"]);
       applyTranslatedTextContent([
-        [elements.settingsModelSectionTitle, "conversationSettings"],
         [elements.settingsModelHint, "thinkingHint"],
         [elements.openPromptPresetOverlayButton, "promptPresetsButton"],
         [elements.saveModelSettingsButton, "saveSettings"],
@@ -13232,7 +13267,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
       applyTranslatedTextContent([
         [elements.settingsIllustrationSectionTitle, "illustrationGeneration"],
-        [elements.refreshImageModelsButton, "refreshImageModels"],
+        [elements.refreshImageModelsButton, "refreshModels"],
         [elements.saveIllustrationSettingsButton, "saveSettings"]
       ]);
       applyTranslatedFieldLabels([
