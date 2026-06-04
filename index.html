@@ -3064,7 +3064,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section class="brand">
               <div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="8" y="8" width="48" height="48" rx="14" fill="currentColor"></rect><circle cx="32" cy="32" r="13" fill="none" stroke="#fff7ee" stroke-width="6"></circle><circle cx="46" cy="18" r="3" fill="#fff7ee" fill-opacity="0.9"></circle></svg><span>FocusAbove</span></div>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.5.1, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.5.2, ⓒ 2026 Fur-Abyss</p>
             </section>
 
             <div class="settings-tab-strip" role="tablist" aria-label="">
@@ -3176,7 +3176,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                     </label>
                     <label class="model-tuning-field">
                       <div class="thinking-limit-row">
-                        <input id="thinkingTokenLimitInput" type="number" min="1" step="1" placeholder="">
+                        <input id="thinkingTokenLimitInput" type="number" min="0" step="1" placeholder="">
                         <label class="inline-checkbox" for="thinkingUnlimitedInput">
                           <input id="thinkingUnlimitedInput" type="checkbox">
                         </label>
@@ -3190,6 +3190,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                   <div class="button-row model-prompt-toolbar">
                     <button id="openPromptPresetOverlayButton" type="button" class="ghost-button"></button>
                   </div>
+                  <label>
+                    <textarea id="forbiddenWordsInput" placeholder=""></textarea>
+                  </label>
+                  <div id="forbiddenWordsHint" class="hint"></div>
                 </div>
               </section>
               <div class="button-row settings-tab-actions">
@@ -3748,9 +3752,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         thinkingDefaultPlaceholder: "기본값 사용",
         serverDefaultPlaceholder: "서버 기본값 사용",
         unlimited: "무제한",
-        thinkingHint: "Thinking 토큰 제한은 서버가 reasoning.max_tokens를 지원해야 적용됩니다.",
+        thinkingHint: "Thinking 제한은 서버가 지원해야 적용됩니다. (0 설정 시 사실상 추론 금지)",
         systemPrompt: "시스템 프롬프트",
         systemPromptPlaceholder: "모든 채팅에 적용할 시스템 프롬프트를 입력하세요.",
+        forbiddenWords: "금지어",
+        forbiddenWordsPlaceholder: "예: 태피스트리, 소유욕, 선언처럼...",
+        forbiddenWordsHint: "쉼표로 구분하세요. 프롬프트 지침이므로 지켜지지 않을 수 있습니다.",
         promptPresetsButton: "프리셋",
         promptPresetOverlayTitle: "프롬프트 프리셋",
         promptPresetName: "프리셋 이름",
@@ -3949,7 +3956,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         imageFilesOnly: "이미지 파일만 업로드할 수 있습니다.",
         resizeCanvasUnavailable: "이미지 리사이징을 위한 캔버스를 만들지 못했습니다.",
         cropCanvasUnavailable: "이미지 자르기를 위한 캔버스를 만들지 못했습니다.",
-        responseLanguageInstruction: ({ language }) => `[Response Language]\n- You must respond entirely in ${language} unless the user explicitly asks for a short quoted phrase or code snippet in another language.`
+        responseLanguageInstruction: ({ language }) => `[Response Language]\n- Reply entirely in ${language} unless the user explicitly requests a short quote or code in another language.`
       },
       en: {
         locale: "en-US",
@@ -3985,7 +3992,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         settingsModel: "Model",
         settingsIllustration: "Image",
         connectionSettings: "Connection settings",
-        generalSettingsSection: "General settings",
+        generalSettingsSection: "General",
         apiBaseUrl: "API base URL",
         apiBaseUrlPlaceholder: "e.g. http://127.0.0.1:1234/v1",
         apiKey: "API key",
@@ -4001,16 +4008,16 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         language: "Language",
         languageKo: "Korean",
         languageEn: "English",
-        smoothStreaming: "Smooth streaming (may affect performance)",
+        smoothStreaming: "Smooth streaming",
         rpSettingsSection: "RP settings",
         rpResponsePerspective: "RP response perspective",
         rpPerspectiveCharacter: "Character first-person",
         rpPerspectivePersona: "Persona first-person",
         rpPerspectiveThird: "Third-person",
-        rpSummaryEnabled: "Conversation summary [Aux. model]",
-        rpSummaryTokenThreshold: "Summary trigger context tokens",
+        rpSummaryEnabled: "Summary [Aux. model]",
+        rpSummaryTokenThreshold: "Summary trigger tokens",
         rpSummaryTokenThresholdPlaceholder: "e.g. 12000",
-        rpSummaryMaxTokens: "Summary max tokens",
+        rpSummaryMaxTokens: "Summary max",
         rpSummaryMaxTokensPlaceholder: "e.g. 1000",
         rpInputEnhancementEnabled: "Input enhancement [Aux. model]",
         saveSettings: "Save settings",
@@ -4018,24 +4025,27 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         modelsCount: "Models",
         lastSynced: "Last synced",
         modelSelect: "Model",
-        auxiliaryModelSelect: "Auxiliary model",
+        auxiliaryModelSelect: "Aux. model",
         noAuxiliaryModel: "None",
         temperature: "Temperature",
         thinkingTokenLimit: "Thinking token limit",
         thinkingDefaultPlaceholder: "Use default",
         serverDefaultPlaceholder: "Use server default",
         unlimited: "Unlimited",
-        thinkingHint: "Thinking token limits apply only if the server supports reasoning.max_tokens.",
+        thinkingHint: "Applies only if the server supports it. 0 effectively disables reasoning.",
         systemPrompt: "System prompt",
         systemPromptPlaceholder: "Global system prompt for all chats.",
+        forbiddenWords: "Forbidden words",
+        forbiddenWordsPlaceholder: "e.g. tapestry, possessiveness, declaration",
+        forbiddenWordsHint: "Comma-separated. Prompt-only, so it may be ignored.",
         promptPresetsButton: "Presets",
-        promptPresetOverlayTitle: "Prompt Presets",
+        promptPresetOverlayTitle: "Prompt presets",
         promptPresetName: "Preset name",
         promptPresetNamePlaceholder: "New preset name",
-        saveCurrentPromptPreset: "Save current prompt",
+        saveCurrentPromptPreset: "Save prompt",
         savedPromptPresets: "Saved presets",
         loadPreset: "Load",
-        noPromptPresets: "No saved prompt presets.",
+        noPromptPresets: "No prompt presets.",
         promptPresetNameRequired: "Enter a preset name.",
         promptPresetNotFound: "Prompt preset not found.",
         promptPresetSaved: ({ name }) => `Saved the preset '${name}'.`,
@@ -4259,6 +4269,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         selectedModel: "",
         auxiliaryModel: "",
         systemPrompt: "",
+        forbiddenWords: [],
         promptPresets: [],
         temperature: null,
         thinkingTokenLimit: 2000,
@@ -4430,6 +4441,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       rpResponsePerspectiveField: document.getElementById("rpResponsePerspectiveField"),
       rpResponsePerspectiveSelect: document.getElementById("rpResponsePerspectiveSelect"),
       systemPromptInput: document.getElementById("systemPromptInput"),
+      forbiddenWordsInput: document.getElementById("forbiddenWordsInput"),
+      forbiddenWordsHint: document.getElementById("forbiddenWordsHint"),
       openPromptPresetOverlayButton: document.getElementById("openPromptPresetOverlayButton"),
       promptPresetNameInput: document.getElementById("promptPresetNameInput"),
       savePromptPresetButton: document.getElementById("savePromptPresetButton"),
@@ -4686,6 +4699,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         [elements.temperatureInput, updateActiveTemperature],
         [elements.thinkingTokenLimitInput, updateActiveThinkingTokenLimit],
         [elements.systemPromptInput, updateActiveSystemPrompt],
+        [elements.forbiddenWordsInput, updateActiveForbiddenWords],
         [elements.authorsNoteInput, updateAuthorsNote]
       ]);
       bindInputActions([
@@ -4900,8 +4914,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           : null;
       const settingsTemperature = normalizeOptionalNumber(parsed?.settings?.temperature, { min: 0, max: 2 });
       const legacyTemperature = normalizeOptionalNumber(legacyChat?.temperature, { min: 0, max: 2 });
-      const settingsThinkingLimit = normalizeOptionalInteger(parsed?.settings?.thinkingTokenLimit, { min: 1 });
-      const legacyThinkingLimit = normalizeOptionalInteger(legacyChat?.thinkingTokenLimit, { min: 1 });
+      const settingsThinkingLimit = normalizeOptionalInteger(parsed?.settings?.thinkingTokenLimit, { min: 0 });
+      const legacyThinkingLimit = normalizeOptionalInteger(legacyChat?.thinkingTokenLimit, { min: 0 });
       const thinkingUnlimited = typeof parsed?.settings?.thinkingUnlimited === "boolean"
         ? parsed.settings.thinkingUnlimited
         : typeof legacyChat?.thinkingUnlimited === "boolean"
@@ -4937,6 +4951,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           ? parsed.settings.auxiliaryModel
           : DEFAULT_SETTINGS.auxiliaryModel,
         systemPrompt: deriveGlobalSystemPrompt(parsed, chats, rp, activeMode),
+        forbiddenWords: normalizeForbiddenWords(parsed?.settings?.forbiddenWords),
         promptPresets: normalizePromptPresets(parsed?.settings?.promptPresets),
         temperature: settingsTemperature ?? legacyTemperature ?? DEFAULT_SETTINGS.temperature,
         thinkingTokenLimit: thinkingUnlimited
@@ -5007,6 +5022,40 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return Array.isArray(value)
         ? value.map(normalizePromptPreset).filter(Boolean)
         : [];
+    }
+
+    function normalizeForbiddenWords(value) {
+      if (Array.isArray(value)) {
+        return value
+          .map((entry) => String(entry || "").trim())
+          .filter(Boolean);
+      }
+
+      if (typeof value !== "string") {
+        return [];
+      }
+
+      return value
+        .split(",")
+        .map((entry) => entry.trim())
+        .filter(Boolean);
+    }
+
+    function formatForbiddenWords(value) {
+      return normalizeForbiddenWords(value).join(", ");
+    }
+
+    function buildForbiddenWordsInstruction(forbiddenWords) {
+      const normalizedForbiddenWords = normalizeForbiddenWords(forbiddenWords);
+      if (!normalizedForbiddenWords.length) {
+        return "";
+      }
+
+      return [
+        `[Forbidden Words]`,
+        `- Never use: ${normalizedForbiddenWords.join(", ")}`,
+        `- If needed, choose different wording before answering.`
+      ].join("\n");
     }
 
     function bindClickActions(bindings) {
@@ -6403,7 +6452,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         thinkingTokenLimit: state.settings.thinkingTokenLimit,
         thinkingUnlimited: state.settings.thinkingUnlimited !== false,
         rpResponsePerspective: normalizeRpResponsePerspective(state.rp?.responsePerspective),
-        systemPrompt: state.settings.systemPrompt || ""
+        systemPrompt: state.settings.systemPrompt || "",
+        forbiddenWords: normalizeForbiddenWords(state.settings.forbiddenWords)
       };
     }
 
@@ -6688,6 +6738,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       elements.rpInputEnhancementEnabledInput.checked = rpAssistance.inputEnhancementEnabled;
       syncRpAssistanceControls();
       populateIllustrationSettingsForm();
+      elements.forbiddenWordsInput.value = formatForbiddenWords(state.settings.forbiddenWords);
     }
 
     function syncRpAssistanceControls() {
@@ -7307,6 +7358,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       elements.temperatureInput.value = modelSettingsDraft.temperature ?? "";
       elements.thinkingTokenLimitInput.value = modelSettingsDraft.thinkingTokenLimit ?? "";
       elements.systemPromptInput.value = modelSettingsDraft.systemPrompt || "";
+      elements.forbiddenWordsInput.value = formatForbiddenWords(modelSettingsDraft.forbiddenWords);
       syncThinkingTokenLimitControls(modelSettingsDraft);
     }
 
@@ -7903,6 +7955,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       state.settings.selectedModel = modelSettingsDraft.selectedModel || "";
       state.settings.auxiliaryModel = modelSettingsDraft.auxiliaryModel || "";
       state.settings.systemPrompt = modelSettingsDraft.systemPrompt || "";
+      state.settings.forbiddenWords = normalizeForbiddenWords(modelSettingsDraft.forbiddenWords);
       state.settings.temperature = modelSettingsDraft.temperature;
       state.settings.thinkingUnlimited = modelSettingsDraft.thinkingUnlimited !== false;
       state.settings.thinkingTokenLimit = state.settings.thinkingUnlimited ? null : modelSettingsDraft.thinkingTokenLimit;
@@ -9146,7 +9199,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         resetModelSettingsDraft();
       }
 
-      modelSettingsDraft.thinkingTokenLimit = normalizeOptionalInteger(elements.thinkingTokenLimitInput.value, { min: 1 });
+      modelSettingsDraft.thinkingTokenLimit = normalizeOptionalInteger(elements.thinkingTokenLimitInput.value, { min: 0 });
       modelSettingsDraft.thinkingUnlimited = false;
       syncThinkingTokenLimitControls(modelSettingsDraft);
     }
@@ -9180,6 +9233,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
 
       modelSettingsDraft.systemPrompt = elements.systemPromptInput.value;
+    }
+
+    function updateActiveForbiddenWords() {
+      if (!modelSettingsDraft) {
+        resetModelSettingsDraft();
+      }
+
+      modelSettingsDraft.forbiddenWords = normalizeForbiddenWords(elements.forbiddenWordsInput.value);
     }
 
     function canRerollLatestAssistant(chat) {
@@ -12404,6 +12465,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         `- Do not repeat yourself. Ensure that every sentence contains new information and advances the topic. Avoid using the same words or phrases consecutively.`
       ].join("\n"));
 
+      const forbiddenWordsInstruction = buildForbiddenWordsInstruction(state.settings.forbiddenWords);
+      if (forbiddenWordsInstruction) {
+        systemInstructions.push(forbiddenWordsInstruction);
+      }
+
       if (normalizedPrompt) {
         systemInstructions.push([
           `[User Custom System Prompt]`,
@@ -13252,6 +13318,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       applyTranslatedIndexedTextContent(elements.modelStatLabels, ["modelsCount", "lastSynced"]);
       applyTranslatedTextContent([
         [elements.settingsModelHint, "thinkingHint"],
+        [elements.forbiddenWordsHint, "forbiddenWordsHint"],
         [elements.openPromptPresetOverlayButton, "promptPresetsButton"],
         [elements.saveModelSettingsButton, "saveSettings"],
         [elements.refreshModelsButton, "refreshModels"]
@@ -13261,12 +13328,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         [elements.auxiliaryModelSelect, "auxiliaryModelSelect"],
         [elements.temperatureInput, "temperature"],
         [elements.thinkingTokenLimitInput, "thinkingTokenLimit"],
-        [elements.systemPromptInput, "systemPrompt"]
+        [elements.systemPromptInput, "systemPrompt"],
+        [elements.forbiddenWordsInput, "forbiddenWords"]
       ]);
       applyTranslatedPlaceholders([
         [elements.temperatureInput, "thinkingDefaultPlaceholder"],
         [elements.thinkingTokenLimitInput, "serverDefaultPlaceholder"],
-        [elements.systemPromptInput, "systemPromptPlaceholder"]
+        [elements.systemPromptInput, "systemPromptPlaceholder"],
+        [elements.forbiddenWordsInput, "forbiddenWordsPlaceholder"]
       ]);
 
       applyTranslatedTextContent([
