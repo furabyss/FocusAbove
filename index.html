@@ -240,7 +240,9 @@
     .message-user-stack,
     .model-controls,
     .prompt-preset-form,
-    .authors-note-form {
+    .authors-note-form,
+    .card-pane,
+    .card-fields {
       display: flex;
       flex-direction: column;
       gap: 12px;
@@ -366,10 +368,16 @@
       flex: 1 1 0;
     }
 
-    .tab-utility-row {
+    .tab-utility-row,
+    .card-editor-actions,
+    .card-editor-action-row,
+    .scroll-jump-stack {
       display: flex;
       align-items: center;
       gap: 8px;
+    }
+
+    .tab-utility-row {
       flex-wrap: wrap;
     }
 
@@ -417,9 +425,9 @@
     .chat-list,
     .message-stream,
     .overlay-content,
-    .card-browser-list,
-    .card-editor-settings-pane,
-    .card-editor-fields {
+    .card-list,
+    .card-pane,
+    .card-fields {
       scrollbar-width: thin;
       scrollbar-color: rgba(163, 75, 31, 0.34) rgba(239, 226, 207, 0.42);
     }
@@ -427,9 +435,9 @@
     .chat-list::-webkit-scrollbar,
     .message-stream::-webkit-scrollbar,
     .overlay-content::-webkit-scrollbar,
-    .card-browser-list::-webkit-scrollbar,
-    .card-editor-settings-pane::-webkit-scrollbar,
-    .card-editor-fields::-webkit-scrollbar {
+    .card-list::-webkit-scrollbar,
+    .card-pane::-webkit-scrollbar,
+    .card-fields::-webkit-scrollbar {
       width: 7px;
       height: 7px;
     }
@@ -437,9 +445,9 @@
     .chat-list::-webkit-scrollbar-track,
     .message-stream::-webkit-scrollbar-track,
     .overlay-content::-webkit-scrollbar-track,
-    .card-browser-list::-webkit-scrollbar-track,
-    .card-editor-settings-pane::-webkit-scrollbar-track,
-    .card-editor-fields::-webkit-scrollbar-track {
+    .card-list::-webkit-scrollbar-track,
+    .card-pane::-webkit-scrollbar-track,
+    .card-fields::-webkit-scrollbar-track {
       background: rgba(239, 226, 207, 0.32);
       border-radius: 999px;
     }
@@ -447,9 +455,9 @@
     .chat-list::-webkit-scrollbar-thumb,
     .message-stream::-webkit-scrollbar-thumb,
     .overlay-content::-webkit-scrollbar-thumb,
-    .card-browser-list::-webkit-scrollbar-thumb,
-    .card-editor-settings-pane::-webkit-scrollbar-thumb,
-    .card-editor-fields::-webkit-scrollbar-thumb {
+    .card-list::-webkit-scrollbar-thumb,
+    .card-pane::-webkit-scrollbar-thumb,
+    .card-fields::-webkit-scrollbar-thumb {
       background: rgba(163, 75, 31, 0.34);
       border-radius: 999px;
       border: 1px solid rgba(255, 251, 245, 0.35);
@@ -458,36 +466,36 @@
     .chat-list::-webkit-scrollbar-thumb:hover,
     .message-stream::-webkit-scrollbar-thumb:hover,
     .overlay-content::-webkit-scrollbar-thumb:hover,
-    .card-browser-list::-webkit-scrollbar-thumb:hover,
-    .card-editor-settings-pane::-webkit-scrollbar-thumb:hover,
-    .card-editor-fields::-webkit-scrollbar-thumb:hover {
+    .card-list::-webkit-scrollbar-thumb:hover,
+    .card-pane::-webkit-scrollbar-thumb:hover,
+    .card-fields::-webkit-scrollbar-thumb:hover {
       background: rgba(127, 54, 21, 0.46);
     }
 
     :root[data-resolved-theme="dark"] .chat-list,
     :root[data-resolved-theme="dark"] .message-stream,
     :root[data-resolved-theme="dark"] .overlay-content,
-    :root[data-resolved-theme="dark"] .card-browser-list,
-    :root[data-resolved-theme="dark"] .card-editor-settings-pane,
-    :root[data-resolved-theme="dark"] .card-editor-fields {
+    :root[data-resolved-theme="dark"] .card-list,
+    :root[data-resolved-theme="dark"] .card-pane,
+    :root[data-resolved-theme="dark"] .card-fields {
       scrollbar-color: rgba(235, 161, 112, 0.4) rgba(37, 29, 23, 0.5);
     }
 
     :root[data-resolved-theme="dark"] .chat-list::-webkit-scrollbar-track,
     :root[data-resolved-theme="dark"] .message-stream::-webkit-scrollbar-track,
     :root[data-resolved-theme="dark"] .overlay-content::-webkit-scrollbar-track,
-    :root[data-resolved-theme="dark"] .card-browser-list::-webkit-scrollbar-track,
-    :root[data-resolved-theme="dark"] .card-editor-settings-pane::-webkit-scrollbar-track,
-    :root[data-resolved-theme="dark"] .card-editor-fields::-webkit-scrollbar-track {
+    :root[data-resolved-theme="dark"] .card-list::-webkit-scrollbar-track,
+    :root[data-resolved-theme="dark"] .card-pane::-webkit-scrollbar-track,
+    :root[data-resolved-theme="dark"] .card-fields::-webkit-scrollbar-track {
       background: rgba(37, 29, 23, 0.5);
     }
 
     :root[data-resolved-theme="dark"] .chat-list::-webkit-scrollbar-thumb,
     :root[data-resolved-theme="dark"] .message-stream::-webkit-scrollbar-thumb,
     :root[data-resolved-theme="dark"] .overlay-content::-webkit-scrollbar-thumb,
-    :root[data-resolved-theme="dark"] .card-browser-list::-webkit-scrollbar-thumb,
-    :root[data-resolved-theme="dark"] .card-editor-settings-pane::-webkit-scrollbar-thumb,
-    :root[data-resolved-theme="dark"] .card-editor-fields::-webkit-scrollbar-thumb {
+    :root[data-resolved-theme="dark"] .card-list::-webkit-scrollbar-thumb,
+    :root[data-resolved-theme="dark"] .card-pane::-webkit-scrollbar-thumb,
+    :root[data-resolved-theme="dark"] .card-fields::-webkit-scrollbar-thumb {
       background: rgba(235, 161, 112, 0.36);
       border-color: rgba(27, 21, 17, 0.5);
     }
@@ -495,9 +503,9 @@
     :root[data-resolved-theme="dark"] .chat-list::-webkit-scrollbar-thumb:hover,
     :root[data-resolved-theme="dark"] .message-stream::-webkit-scrollbar-thumb:hover,
     :root[data-resolved-theme="dark"] .overlay-content::-webkit-scrollbar-thumb:hover,
-    :root[data-resolved-theme="dark"] .card-browser-list::-webkit-scrollbar-thumb:hover,
-    :root[data-resolved-theme="dark"] .card-editor-settings-pane::-webkit-scrollbar-thumb:hover,
-    :root[data-resolved-theme="dark"] .card-editor-fields::-webkit-scrollbar-thumb:hover {
+    :root[data-resolved-theme="dark"] .card-list::-webkit-scrollbar-thumb:hover,
+    :root[data-resolved-theme="dark"] .card-pane::-webkit-scrollbar-thumb:hover,
+    :root[data-resolved-theme="dark"] .card-fields::-webkit-scrollbar-thumb:hover {
       background: rgba(235, 161, 112, 0.48);
     }
 
@@ -1641,21 +1649,26 @@
       gap: 14px;
     }
 
-    .image-preview-body {
+    .image-preview-body,
+    .image-crop-stage-shell {
       display: flex;
-      flex: 1 1 auto;
       align-items: center;
       justify-content: center;
       min-height: 0;
-      min-width: 0;
-      overflow: hidden;
-      padding: 8px;
-      border-radius: 20px;
       background: #fff8f1;
       border: 1px solid rgba(88, 64, 38, 0.08);
     }
 
-    :root[data-resolved-theme="dark"] .image-preview-body {
+    .image-preview-body {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      padding: 8px;
+      border-radius: 20px;
+    }
+
+    :root[data-resolved-theme="dark"] .image-preview-body,
+    :root[data-resolved-theme="dark"] .image-crop-stage-shell {
       background: #120f0c;
       border-color: rgba(239, 222, 205, 0.08);
     }
@@ -1707,20 +1720,9 @@
     }
 
     .image-crop-stage-shell {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 0;
       padding: 12px;
       border-radius: 22px;
-      background: #fff8f1;
-      border: 1px solid rgba(88, 64, 38, 0.08);
       overflow: auto;
-    }
-
-    :root[data-resolved-theme="dark"] .image-crop-stage-shell {
-      background: #120f0c;
-      border-color: rgba(239, 222, 205, 0.08);
     }
 
     .image-crop-viewport {
@@ -1807,7 +1809,7 @@
       flex: 1 1 0;
     }
 
-    .card-browser-layout {
+    .card-layout {
       display: grid;
       grid-template-columns: 84px minmax(0, 1fr);
       gap: 14px;
@@ -1818,7 +1820,7 @@
       align-items: stretch;
     }
 
-    .card-browser-sidebar {
+    .card-side {
       display: flex;
       flex-direction: column;
       min-height: 0;
@@ -1826,35 +1828,36 @@
       gap: 10px;
     }
 
-    .card-browser-toolbar {
+    .card-tools {
       display: flex;
       flex-direction: column;
       gap: 6px;
       flex: 0 0 auto;
     }
 
-    .card-browser-toolbar button {
+    .card-tools button {
       width: 100%;
       min-height: 34px;
       padding: 8px 6px;
       font-size: 12px;
     }
 
-    .card-browser-list {
+    .card-list {
       display: flex;
       flex: 1 1 auto;
       flex-direction: column;
       align-items: center;
       gap: 8px;
       min-height: 0;
-      overflow-y: auto;
-      overflow-x: hidden;
-      padding-top: 4px;
-      padding-bottom: 4px;
-      padding-right: 2px;
+      overflow: hidden auto;
+      padding: 4px 2px 4px 0;
     }
 
-    .card-browser-item {
+    .card-list.dragging {
+      user-select: none;
+    }
+
+    .card-item {
       display: block;
       width: 72px;
       aspect-ratio: 1;
@@ -1870,23 +1873,28 @@
       box-shadow: 0 10px 24px rgba(77, 44, 20, 0.08);
     }
 
-    .card-browser-item.active {
+    .card-item.dragging {
+      opacity: 0.72;
+      transform: scale(0.96);
+    }
+
+    .card-item.active {
       border-color: rgba(163, 75, 31, 0.86);
       box-shadow: 0 0 0 3px rgba(163, 75, 31, 0.18), 0 14px 28px rgba(163, 75, 31, 0.16);
     }
 
-    :root[data-resolved-theme="dark"] .card-browser-item {
+    :root[data-resolved-theme="dark"] .card-item {
       border-color: rgba(239, 222, 205, 0.1);
       background: rgba(31, 24, 19, 0.86);
       box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
     }
 
-    :root[data-resolved-theme="dark"] .card-browser-item.active {
+    :root[data-resolved-theme="dark"] .card-item.active {
       border-color: rgba(235, 161, 112, 0.86);
       box-shadow: 0 0 0 3px rgba(235, 161, 112, 0.18), 0 14px 28px rgba(0, 0, 0, 0.28);
     }
 
-    .card-browser-thumb {
+    .card-thumb {
       width: 100%;
       height: 100%;
       aspect-ratio: 1;
@@ -1900,32 +1908,29 @@
       font-size: 24px;
       font-weight: 800;
       letter-spacing: -0.04em;
+      touch-action: none;
+      cursor: grab;
     }
 
-    :root[data-resolved-theme="dark"] .card-browser-thumb {
+    :root[data-resolved-theme="dark"] .card-thumb {
       background: linear-gradient(180deg, rgba(202, 108, 60, 0.2), rgba(37, 29, 24, 0.92));
       color: #ffd8be;
     }
 
-    .card-browser-thumb img {
+    .card-thumb img {
       display: block;
       width: 100%;
       height: 100%;
       object-fit: cover;
+      pointer-events: none;
     }
 
-    .card-browser-editor {
-      display: flex;
-      flex-direction: column;
+    .card-edit {
       min-width: 0;
-      min-height: 0;
       overflow: hidden;
     }
 
-    .card-editor-settings-pane {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+    .card-pane {
       flex: 1 1 auto;
       min-width: 0;
       min-height: 0;
@@ -1947,9 +1952,6 @@
 
     .card-editor-actions,
     .card-editor-action-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
       flex-wrap: nowrap;
     }
 
@@ -1959,23 +1961,20 @@
       border-radius: 12px;
     }
 
-    .card-editor-media-actions {
+    .card-media-actions {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
       justify-content: flex-end;
     }
 
-    .card-editor-media-actions button {
+    .card-media-actions button {
       min-height: 36px;
       padding: 8px 11px;
       flex: 0 0 auto;
     }
 
-    .card-editor-fields {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+    .card-fields {
       min-height: 0;
       flex: 1 1 auto;
       overflow-y: auto;
@@ -1985,11 +1984,11 @@
       padding-bottom: 12px;
     }
 
-    .card-editor-fields label {
+    .card-fields label {
       min-width: 0;
     }
 
-    .card-editor-fields textarea {
+    .card-fields textarea {
       min-height: 220px;
       resize: vertical;
       flex: 1 1 auto;
@@ -2028,9 +2027,6 @@
       position: fixed;
       right: var(--scroll-jump-stack-right);
       bottom: var(--scroll-jump-stack-bottom);
-      display: flex;
-      align-items: center;
-      gap: 8px;
       z-index: 13;
     }
 
@@ -2422,12 +2418,17 @@
       color: #fff9f4;
     }
 
-    .settings-tab-panel {
+    .overlay-content,
+    .settings-tab-panel,
+    .card-edit {
       display: flex;
       flex-direction: column;
-      gap: 18px;
       flex: 1 1 auto;
       min-height: 0;
+    }
+
+    .settings-tab-panel {
+      gap: 18px;
       overflow: auto;
       padding-right: 2px;
       background: var(--panel-solid);
@@ -2480,16 +2481,12 @@
     }
 
     .overlay-content {
-      display: flex;
-      flex-direction: column;
-      flex: 1 1 auto;
       gap: 18px;
-      min-height: 0;
       overflow: auto;
       padding-right: 2px;
     }
 
-    .overlay-content.card-browser-layout {
+    .overlay-content.card-layout {
       display: grid;
       grid-template-columns: 84px minmax(0, 1fr);
       gap: 14px;
@@ -2497,13 +2494,13 @@
       padding-right: 0;
     }
 
-    .overlay-content.card-browser-layout .card-browser-sidebar {
+    .overlay-content.card-layout .card-side {
       grid-column: 1;
       grid-row: 1;
       min-height: 0;
     }
 
-    .overlay-content.card-browser-layout .card-browser-editor {
+    .overlay-content.card-layout .card-edit {
       grid-column: 2;
       grid-row: 1;
       min-height: 0;
@@ -2662,48 +2659,24 @@
         --scroll-jump-stack-gap: 12px;
       }
 
-      .card-browser-layout {
+      .card-layout {
         display: grid;
         grid-template-columns: 92px minmax(0, 1fr);
         gap: 12px;
         overflow: hidden;
       }
 
-      .card-browser-sidebar {
+      .card-side {
         min-height: 0;
         max-width: 92px;
       }
 
-      .card-browser-toolbar {
+      .card-tools {
         flex-direction: column;
         flex-wrap: nowrap;
       }
 
-      .card-browser-list {
-        flex-direction: column;
-        overflow-x: hidden;
-        overflow-y: auto;
-        padding-right: 2px;
-        padding-top: 4px;
-        padding-bottom: 4px;
-      }
-
-      .card-browser-item {
-        flex: 0 0 72px;
-        width: 72px;
-        height: 72px;
-        min-height: 72px;
-      }
-
-      .card-browser-editor {
-        display: flex;
-      }
-
-      .card-editor-settings-pane {
-        overflow: hidden;
-      }
-
-      .card-editor-fields {
+      .card-fields {
         padding-right: 0;
       }
 
@@ -3045,7 +3018,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           <div class="overlay-content">
             <section class="authors-note-form">
               <label>
-                <textarea id="authorsNoteInput" placeholder=""></textarea>
+                <textarea id="authorsNoteInput"></textarea>
               </label>
               <div class="button-row">
                 <button id="clearAuthorsNoteButton" type="button" class="ghost-button"></button>
@@ -3064,10 +3037,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section class="brand">
               <div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="8" y="8" width="48" height="48" rx="14" fill="currentColor"></rect><circle cx="32" cy="32" r="13" fill="none" stroke="#fff7ee" stroke-width="6"></circle><circle cx="46" cy="18" r="3" fill="#fff7ee" fill-opacity="0.9"></circle></svg><span>FocusAbove</span></div>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.5.2, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.5.3, ⓒ 2026 Fur-Abyss</p>
             </section>
 
-            <div class="settings-tab-strip" role="tablist" aria-label="">
+            <div class="settings-tab-strip" role="tablist">
               <button id="settingsGeneralTabButton" type="button" class="settings-tab-button active" role="tab" aria-selected="true" aria-controls="settingsGeneralPanel"></button>
               <button id="settingsModelTabButton" type="button" class="settings-tab-button" role="tab" aria-selected="false" aria-controls="settingsModelPanel"></button>
               <button id="settingsIllustrationTabButton" type="button" class="settings-tab-button" role="tab" aria-selected="false" aria-controls="settingsIllustrationPanel" hidden></button>
@@ -3078,13 +3051,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                 <form id="settingsForm" class="settings-form">
                   <h2 id="settingsConnectionSectionTitle" class="section-title"></h2>
                   <label>
-                    <input id="apiBaseUrlInput" name="apiBaseUrl" type="text" placeholder="" autocomplete="off">
+                    <input id="apiBaseUrlInput" name="apiBaseUrl" type="text" autocomplete="off">
                   </label>
                   <label>
                     <input id="apiKeyInput" name="apiKey" type="password" placeholder="API Key" autocomplete="off">
                   </label>
                   <label>
-                    <input id="imageApiBaseUrlInput" name="imageApiBaseUrl" type="text" placeholder="" autocomplete="off">
+                    <input id="imageApiBaseUrlInput" name="imageApiBaseUrl" type="text" autocomplete="off">
                   </label>
                   <label>
                     <input id="imageApiKeyInput" name="imageApiKey" type="password" placeholder="API Key" autocomplete="off">
@@ -3172,11 +3145,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                   </label>
                   <div class="model-tuning-grid">
                     <label class="model-tuning-field">
-                      <input id="temperatureInput" type="number" min="0" max="2" step="0.1" placeholder="">
+                      <input id="temperatureInput" type="number" min="0" max="2" step="0.1">
                     </label>
                     <label class="model-tuning-field">
                       <div class="thinking-limit-row">
-                        <input id="thinkingTokenLimitInput" type="number" min="0" step="1" placeholder="">
+                        <input id="thinkingTokenLimitInput" type="number" min="0" step="1">
                         <label class="inline-checkbox" for="thinkingUnlimitedInput">
                           <input id="thinkingUnlimitedInput" type="checkbox">
                         </label>
@@ -3185,13 +3158,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                   </div>
                   <div class="hint"></div>
                   <label>
-                    <textarea id="systemPromptInput" placeholder=""></textarea>
+                    <textarea id="systemPromptInput"></textarea>
                   </label>
                   <div class="button-row model-prompt-toolbar">
                     <button id="openPromptPresetOverlayButton" type="button" class="ghost-button"></button>
                   </div>
                   <label>
-                    <textarea id="forbiddenWordsInput" placeholder=""></textarea>
+                    <textarea id="forbiddenWordsInput"></textarea>
                   </label>
                   <div id="forbiddenWordsHint" class="hint"></div>
                 </div>
@@ -3270,7 +3243,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           <div class="overlay-content">
             <section class="prompt-preset-form">
               <label>
-                <input id="promptPresetNameInput" type="text" placeholder="" autocomplete="off">
+                <input id="promptPresetNameInput" type="text" autocomplete="off">
               </label>
               <div class="button-row">
                 <button id="savePromptPresetButton" type="button"></button>
@@ -3308,38 +3281,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       <aside class="panel overlay-panel" role="dialog" aria-modal="true" aria-labelledby="characterOverlayTitle">
         <div class="panel-inner">
           <div class="overlay-header" data-overlay-title-id="characterOverlayTitle" data-overlay-close-id="closeCharacterOverlayButton"></div>
-          <div class="overlay-content card-browser-layout">
-            <aside class="card-browser-sidebar">
-              <div class="card-browser-toolbar" data-rp-card-toolbar="character"></div>
-              <div id="characterCardList" class="card-browser-list" aria-label=""></div>
+          <div class="overlay-content card-layout">
+            <aside class="card-side">
+              <div class="card-tools" data-rp-card-toolbar="character"></div>
+              <div id="characterCardList" class="card-list"></div>
             </aside>
-            <section class="card-browser-editor">
-              <section class="card-editor-settings-pane" aria-label="">
-                <div class="card-editor-fields">
-                  <label>
-                    <input id="characterCardNameInput" type="text" placeholder="">
-                  </label>
-                  <label class="inline-checkbox">
-                    <input id="characterCardIsWorldCardInput" type="checkbox">
-                  </label>
-                  <label>
-                    <span id="characterCardDescriptionLabelText"></span>
-                    <select id="characterCardDescriptionModeSelect" hidden>
-                      <option value="world"></option>
-                      <option value="main-character"></option>
-                    </select>
-                    <textarea id="characterCardDescriptionInput" placeholder=""></textarea>
-                  </label>
-                  <label>
-                    <textarea id="characterCardFirstMessageInput" placeholder=""></textarea>
-                  </label>
-                </div>
-                <div class="card-editor-toolbar">
-                  <div class="card-editor-actions card-editor-action-row" data-rp-card-action-row="character"></div>
-                  <div class="card-editor-media-actions" data-rp-card-media-actions="character"></div>
-                </div>
-              </section>
-            </section>
+            <section class="card-edit" data-rp-card-editor="character"></section>
           </div>
         </div>
       </aside>
@@ -3349,27 +3296,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       <aside class="panel overlay-panel" role="dialog" aria-modal="true" aria-labelledby="personaOverlayTitle">
         <div class="panel-inner">
           <div class="overlay-header" data-overlay-title-id="personaOverlayTitle" data-overlay-close-id="closePersonaOverlayButton"></div>
-          <div class="overlay-content card-browser-layout">
-            <aside class="card-browser-sidebar">
-              <div class="card-browser-toolbar" data-rp-card-toolbar="persona"></div>
-              <div id="personaCardList" class="card-browser-list" aria-label=""></div>
+          <div class="overlay-content card-layout">
+            <aside class="card-side">
+              <div class="card-tools" data-rp-card-toolbar="persona"></div>
+              <div id="personaCardList" class="card-list"></div>
             </aside>
-            <section class="card-browser-editor">
-              <section class="card-editor-settings-pane" aria-label="">
-                <div class="card-editor-fields">
-                  <label>
-                    <input id="personaCardNameInput" type="text" placeholder="">
-                  </label>
-                  <label>
-                    <textarea id="personaCardDescriptionInput" placeholder=""></textarea>
-                  </label>
-                </div>
-                <div class="card-editor-toolbar">
-                  <div class="card-editor-actions card-editor-action-row" data-rp-card-action-row="persona"></div>
-                  <div class="card-editor-media-actions" data-rp-card-media-actions="persona"></div>
-                </div>
-              </section>
-            </section>
+            <section class="card-edit" data-rp-card-editor="persona"></section>
           </div>
         </div>
       </aside>
@@ -3380,7 +3312,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         <div class="panel-inner">
           <div class="overlay-header" data-overlay-title-id="imagePreviewTitle" data-overlay-close-id="closeImagePreviewButton"></div>
           <div class="image-preview-body">
-            <img id="imagePreviewImage" alt="">
+            <img id="imagePreviewImage">
           </div>
           <p id="imagePreviewCaption" class="image-preview-caption"></p>
         </div>
@@ -3393,8 +3325,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           <div class="overlay-header" data-overlay-title-id="rpImageCropTitle" data-overlay-close-id="closeRpImageCropButton"></div>
           <div class="image-crop-body">
             <div class="image-crop-stage-shell">
-              <div id="rpImageCropViewport" class="image-crop-viewport" aria-label="">
-                <img id="rpImageCropImage" alt="" draggable="false">
+              <div id="rpImageCropViewport" class="image-crop-viewport">
+                <img id="rpImageCropImage" draggable="false">
                 <div class="image-crop-grid" aria-hidden="true"></div>
               </div>
             </div>
@@ -3441,6 +3373,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     const APP_SECRET_KEY_RING_SIZE = 13;
     const APP_SECRET_PROBE_TEXT = "focusabove-secret-probe-v1";
     const APP_SPLIT_CHAT_STORAGE_VERSION = 2;
+    const RP_CARD_DRAG_THRESHOLD_PX = 6;
+    const RP_CARD_TOUCH_DRAG_THRESHOLD_PX = 10;
+    const RP_CARD_TOUCH_HOLD_MS = 180;
     function iconSvg(iconName, viewBox = "0 0 24 24") {
       return `<svg viewBox="${viewBox}" aria-hidden="true"><use href="#icon-${iconName}"></use></svg>`;
     }
@@ -3506,6 +3441,42 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return createElementWithClass("div", "empty-state", text);
     }
 
+    function getRpCardControlButtonId(kind, action) {
+      const suffixByAction = {
+        new: "New",
+        import: "Import",
+        save: "Save",
+        export: "Export",
+        delete: "Delete",
+        image: "Image",
+        imageClear: "ImageClear"
+      };
+      return `${kind}${suffixByAction[action]}Button`;
+    }
+
+    function appendSelectOption(selectElement, value, textContent) {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = textContent;
+      selectElement.appendChild(option);
+      return option;
+    }
+
+    function createRpCardThumb(card, kind) {
+      const thumb = document.createElement("div");
+      thumb.className = "card-thumb";
+      if (card.profileImage?.dataUrl || card.profileImage?.mediaId) {
+        const image = document.createElement("img");
+        image.alt = card.name;
+        image.draggable = false;
+        queueImageElementSource(image, card.profileImage);
+        thumb.appendChild(image);
+      } else {
+        thumb.textContent = getCardInitial(card.name, kind === "character" ? "C" : "P");
+      }
+      return thumb;
+    }
+
     function createIconButton(options = {}) {
       const {
         className = "",
@@ -3531,34 +3502,30 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       });
     }
 
-    function appendRpCardControlButton(container, options) {
+    function appendGeneratedButton(container, options, defaults = {}) {
       if (!container) {
         return;
       }
 
-      if (options.variant === "icon") {
-        container.appendChild(createIconButton(options));
-        return;
-      }
+      const mergedOptions = {
+        ...defaults,
+        ...options,
+        className: [defaults.className || "", options.className || ""].filter(Boolean).join(" "),
+        attributes: {
+          ...(defaults.attributes || {}),
+          ...(options.attributes || {})
+        }
+      };
 
-      container.appendChild(createButton(options));
+      container.appendChild((mergedOptions.variant === "icon" ? createIconButton : createButton)(mergedOptions));
     }
 
-    function appendTabUtilityButton(container, options) {
-      if (!container) {
+    function populateGeneratedButtons(container, specs, defaults = {}) {
+      if (!container || container.childElementCount) {
         return;
       }
 
-      container.appendChild(createIconButton({
-        className: "tab-utility-button",
-        iconName: options.iconName,
-        tone: options.tone || "default",
-        label: options.label,
-        title: options.title,
-        attributes: {
-          id: options.id
-        }
-      }));
+      specs.forEach((spec) => appendGeneratedButton(container, spec, defaults));
     }
 
     function populateOverlayHeaderMarkup() {
@@ -3586,70 +3553,78 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const toolbar = document.querySelector(`[data-rp-card-toolbar="${kind}"]`);
       const actionRow = document.querySelector(`[data-rp-card-action-row="${kind}"]`);
       const mediaActions = document.querySelector(`[data-rp-card-media-actions="${kind}"]`);
-      if (toolbar && !toolbar.childElementCount) {
-        appendRpCardControlButton(toolbar, {
-          attributes: { id: `${kind}NewButton` }
-        });
-        appendRpCardControlButton(toolbar, {
-          className: "ghost-button",
-          attributes: { id: `${kind}ImportButton` }
-        });
-      }
-      if (actionRow && !actionRow.childElementCount) {
+
+      populateGeneratedButtons(toolbar, [
+        ["new", ""],
+        ["import", "ghost-button"]
+      ].map(([action, className]) => ({
+        className,
+        attributes: { id: getRpCardControlButtonId(kind, action) }
+      })));
+
+      populateGeneratedButtons(actionRow,
         [
-          ["save", "default"],
-          ["export", "default"],
-          ["trash", "danger"]
-        ].forEach(([iconName, tone]) => {
-          appendRpCardControlButton(actionRow, {
-            variant: "icon",
-            className: "chat-item-icon-button card-action-icon-button",
-            iconName,
-            tone,
-            attributes: {
-              id: `${kind}${iconName === "trash" ? "Delete" : `${iconName.charAt(0).toUpperCase()}${iconName.slice(1)}`}Button`
-            }
-          });
-        });
+          ["save", "save", "default"],
+          ["export", "export", "default"],
+          ["trash", "delete", "danger"]
+        ].map(([iconName, action, tone]) => ({
+          iconName,
+          tone,
+          attributes: {
+            id: getRpCardControlButtonId(kind, action)
+          }
+        })),
+        {
+          variant: "icon",
+          className: "chat-item-icon-button card-action-icon-button"
+        }
+      );
+
+      populateGeneratedButtons(mediaActions, ["image", "imageClear"].map((action) => ({
+        className: "ghost-button",
+        attributes: { id: getRpCardControlButtonId(kind, action) }
+      })));
+    }
+
+    function getRpCardEditorFieldsMarkup(kind) {
+      if (kind === "character") {
+        return '<label><input id="characterCardNameInput" type="text"></label><label class="inline-checkbox"><input id="characterCardIsWorldCardInput" type="checkbox"></label><label><span id="characterCardDescriptionLabelText"></span><select id="characterCardDescriptionModeSelect" hidden><option value="world"></option><option value="main-character"></option></select><textarea id="characterCardDescriptionInput"></textarea></label><label><textarea id="characterCardFirstMessageInput"></textarea></label>';
       }
-      if (mediaActions && !mediaActions.childElementCount) {
-        appendRpCardControlButton(mediaActions, {
-          className: "ghost-button",
-          attributes: { id: `${kind}ImageButton` }
-        });
-        appendRpCardControlButton(mediaActions, {
-          className: "ghost-button",
-          attributes: { id: `${kind}ImageClearButton` }
-        });
+
+        return '<label><input id="personaCardNameInput" type="text"></label><label><textarea id="personaCardDescriptionInput"></textarea></label>';
+    }
+
+    function populateRpCardEditorMarkup(kind) {
+      const editor = document.querySelector(`[data-rp-card-editor="${kind}"]`);
+      if (!editor || editor.childElementCount) {
+        return;
       }
+
+      editor.innerHTML = `<section class="card-pane"><div class="card-fields">${getRpCardEditorFieldsMarkup(kind)}</div><div class="card-editor-toolbar"><div class="card-editor-actions card-editor-action-row" data-rp-card-action-row="${kind}"></div><div class="card-media-actions" data-rp-card-media-actions="${kind}"></div></div></section>`;
     }
 
     function populateTabUtilityMarkup() {
-      const rows = {
-        desktop: document.querySelector('[data-tab-utility-row="desktop"]'),
-        overlay: document.querySelector('[data-tab-utility-row="overlay"]')
-      };
-      const specs = {
-        desktop: [
-          { id: "desktopNewChatButton", iconName: "plus", label: "새 탭", title: "새 탭" },
-          { id: "desktopImportChatsButton", iconName: "import", tone: "secondary", label: "JSON 임포트", title: "JSON 임포트" }
-        ],
-        overlay: [
-          { id: "newChatButton", iconName: "plus", label: "새 탭", title: "새 탭" },
-          { id: "importChatsButton", iconName: "import", tone: "secondary", label: "JSON 임포트", title: "JSON 임포트" }
-        ]
-      };
-
-      Object.entries(rows).forEach(([key, row]) => {
-        if (!row || row.childElementCount) {
-          return;
-        }
-        specs[key].forEach((spec) => appendTabUtilityButton(row, spec));
+      [
+        ["desktop", "desktopNewChatButton", "desktopImportChatsButton"],
+        ["overlay", "newChatButton", "importChatsButton"]
+      ].forEach(([row, newId, importId]) => {
+        populateGeneratedButtons(
+          document.querySelector(`[data-tab-utility-row="${row}"]`),
+          [
+            { iconName: "plus", label: "새 탭", attributes: { id: newId } },
+            { iconName: "import", tone: "secondary", label: "JSON 임포트", attributes: { id: importId } }
+          ],
+          {
+            variant: "icon",
+            className: "tab-utility-button"
+          }
+        );
       });
     }
 
     populateOverlayHeaderMarkup();
     populateTabUtilityMarkup();
+    ["character", "persona"].forEach(populateRpCardEditorMarkup);
     ["character", "persona"].forEach(populateRpCardControlMarkup);
 
     const TAB_LOCK_KEY = "focusabove.active-tab.v1";
@@ -3752,12 +3727,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         thinkingDefaultPlaceholder: "기본값 사용",
         serverDefaultPlaceholder: "서버 기본값 사용",
         unlimited: "무제한",
-        thinkingHint: "Thinking 제한은 서버가 지원해야 적용됩니다. (0 설정 시 사실상 추론 금지)",
+        thinkingHint: "서버 지원 시 적용됩니다. 0은 추론 금지입니다.",
         systemPrompt: "시스템 프롬프트",
         systemPromptPlaceholder: "모든 채팅에 적용할 시스템 프롬프트를 입력하세요.",
         forbiddenWords: "금지어",
         forbiddenWordsPlaceholder: "예: 태피스트리, 소유욕, 선언처럼...",
-        forbiddenWordsHint: "쉼표로 구분하세요. 프롬프트 지침이므로 지켜지지 않을 수 있습니다.",
+        forbiddenWordsHint: "쉼표 구분 프롬프트 지침입니다.",
         promptPresetsButton: "프리셋",
         promptPresetOverlayTitle: "프롬프트 프리셋",
         promptPresetName: "프리셋 이름",
@@ -3841,7 +3816,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         cropTitle: "정사각형 이미지 자르기",
         cropViewport: "정사각형 자르기 영역",
         cropPreviewAlt: "자르기 미리보기",
-        cropHelp: "이미지를 끌어서 위치를 맞추고, 슬라이더나 핀치 제스처로 정사각형 구도를 조정하세요.",
+        cropHelp: "드래그로 위치를 맞추고 슬라이더나 핀치로 구도를 조정하세요.",
         zoom: "확대",
         cancel: "취소",
         apply: "적용",
@@ -3938,7 +3913,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         tabJsonExported: ({ title }) => `'${title}' 탭을 JSON으로 내보냈습니다.`,
         tabsImported: ({ count }) => `${count}개 탭을 가져왔습니다.`,
         confirmDeleteCard: ({ name, kind }) => `'${name}' ${kind} 카드를 삭제할까요?`,
-        confirmDeleteChat: ({ title }) => `'${title}' 탭을 삭제할까요? 메시지도 함께 제거됩니다.`,
+        confirmDeleteChat: ({ title }) => `'${title}' 탭과 메시지를 삭제할까요?`,
         confirmClearMessages: ({ title }) => `'${title}' 탭의 메시지를 모두 비울까요?`,
         zipImportLibraryFailed: "압축 가져오기 라이브러리를 불러오지 못했습니다.",
         missingManifestJson: "manifest.json이 없는 카드 파일입니다.",
@@ -3951,7 +3926,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         importedImageSizeLimitExceeded: ({ bytes }) => `가져온 이미지 용량은 ${bytes}까지입니다.`,
         unsupportedImportedImageFormat: "PNG, JPEG, WebP 형식 이미지만 지원합니다.",
         missingResponseContent: "응답 본문에 content가 없습니다.",
-        missingStreamingResponseContent: "스트리밍 응답 본문에 표시할 content가 없습니다.",
+        missingStreamingResponseContent: "스트리밍 응답에 표시할 content가 없습니다.",
         imageSizeLimitExceeded: ({ bytes }) => `한 번에 첨부할 수 있는 전체 이미지 용량은 ${bytes}까지입니다.`,
         imageFilesOnly: "이미지 파일만 업로드할 수 있습니다.",
         resizeCanvasUnavailable: "이미지 리사이징을 위한 캔버스를 만들지 못했습니다.",
@@ -4032,12 +4007,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         thinkingDefaultPlaceholder: "Use default",
         serverDefaultPlaceholder: "Use server default",
         unlimited: "Unlimited",
-        thinkingHint: "Applies only if the server supports it. 0 effectively disables reasoning.",
+        thinkingHint: "Requires server support. 0 disables reasoning.",
         systemPrompt: "System prompt",
         systemPromptPlaceholder: "Global system prompt for all chats.",
         forbiddenWords: "Forbidden words",
         forbiddenWordsPlaceholder: "e.g. tapestry, possessiveness, declaration",
-        forbiddenWordsHint: "Comma-separated. Prompt-only, so it may be ignored.",
+        forbiddenWordsHint: "Comma-separated prompt guidance.",
         promptPresetsButton: "Presets",
         promptPresetOverlayTitle: "Prompt presets",
         promptPresetName: "Preset name",
@@ -4121,7 +4096,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         cropTitle: "Square image crop",
         cropViewport: "Square crop area",
         cropPreviewAlt: "Crop preview",
-        cropHelp: "Drag to position the image, then use the slider or pinch to frame the square crop.",
+        cropHelp: "Drag to position, then use the slider or pinch to frame the square.",
         zoom: "Zoom",
         cancel: "Cancel",
         apply: "Apply",
@@ -4218,7 +4193,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         tabJsonExported: ({ title }) => `Exported '${title}' as JSON.`,
         tabsImported: ({ count }) => `Imported ${count} tab${count === 1 ? "" : "s"}.`,
         confirmDeleteCard: ({ name, kind }) => `Delete the ${kind} card '${name}'?`,
-        confirmDeleteChat: ({ title }) => `Delete the tab '${title}'? Its messages will also be removed.`,
+        confirmDeleteChat: ({ title }) => `Delete '${title}' and its messages?`,
         confirmClearMessages: ({ title }) => `Clear all messages in '${title}'?`,
         zipImportLibraryFailed: "Failed to load the zip import library.",
         missingManifestJson: "This card file does not include manifest.json.",
@@ -4230,8 +4205,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         importFileSizeLimitExceeded: ({ bytes }) => `You can import files up to ${bytes}.`,
         importedImageSizeLimitExceeded: ({ bytes }) => `Imported images can be up to ${bytes}.`,
         unsupportedImportedImageFormat: "Imported images must be PNG, JPEG, or WebP.",
-        missingResponseContent: "The response body does not contain content.",
-        missingStreamingResponseContent: "The streaming response body does not contain displayable content.",
+        missingResponseContent: "Response body has no content.",
+        missingStreamingResponseContent: "Streaming response has no displayable content.",
         imageSizeLimitExceeded: ({ bytes }) => `You can attach up to ${bytes} of images at once.`,
         imageFilesOnly: "Only image files can be uploaded.",
         resizeCanvasUnavailable: "Could not create a canvas for image resizing.",
@@ -4480,7 +4455,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       cancelRpImageCropButton: document.getElementById("cancelRpImageCropButton"),
       applyRpImageCropButton: document.getElementById("applyRpImageCropButton"),
       characterCardList: document.getElementById("characterCardList"),
-      characterSettingsPanel: document.querySelector("#characterOverlay .card-editor-settings-pane"),
+      characterSettingsPanel: document.querySelector("#characterOverlay .card-pane"),
       characterCardNameInput: document.getElementById("characterCardNameInput"),
       characterCardIsWorldCardInput: document.getElementById("characterCardIsWorldCardInput"),
       characterCardDescriptionLabelText: document.getElementById("characterCardDescriptionLabelText"),
@@ -4497,7 +4472,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       characterProfileImageInput: document.getElementById("characterProfileImageInput"),
       characterCardImportInput: document.getElementById("characterCardImportInput"),
       personaCardList: document.getElementById("personaCardList"),
-      personaSettingsPanel: document.querySelector("#personaOverlay .card-editor-settings-pane"),
+      personaSettingsPanel: document.querySelector("#personaOverlay .card-pane"),
       personaCardNameInput: document.getElementById("personaCardNameInput"),
       personaCardDescriptionInput: document.getElementById("personaCardDescriptionInput"),
       personaNewButton: document.getElementById("personaNewButton"),
@@ -4547,6 +4522,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       character: null,
       persona: null
     };
+    let rpCardDragState = null;
+    let suppressRpCardListClick = false;
     const chatTitleDrafts = new Map();
     const assistantMessageHtmlCache = new WeakMap();
     const messageArticleElementCache = new Map();
@@ -4628,6 +4605,37 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       bindInputActions(config.fields.map(([field, input]) => [input, () => updateRpCardDraftField(kind, field, input.value)]));
       config.imageInput.addEventListener("change", (event) => handleRpCardProfileImageSelection(kind, event));
       config.importInput.addEventListener("change", (event) => handleRpCardImport(kind, event));
+    }
+
+    function getRpCardEditorEventConfig(kind) {
+      const isCharacter = kind === "character";
+      const prefix = isCharacter ? "character" : "persona";
+      return {
+        newButton: elements[getRpCardControlButtonId(prefix, "new")],
+        importButton: elements[getRpCardControlButtonId(prefix, "import")],
+        saveButton: elements[getRpCardControlButtonId(prefix, "save")],
+        exportButton: elements[getRpCardControlButtonId(prefix, "export")],
+        imageButton: elements[getRpCardControlButtonId(prefix, "image")],
+        imageClearButton: elements[getRpCardControlButtonId(prefix, "imageClear")],
+        deleteButton: elements[getRpCardControlButtonId(prefix, "delete")],
+        imageInput: elements[`${prefix}ProfileImageInput`],
+        importInput: elements[`${prefix}CardImportInput`],
+        fields: isCharacter
+          ? [
+            ["name", elements.characterCardNameInput],
+            ["firstMessage", elements.characterCardFirstMessageInput]
+          ]
+          : [
+            ["name", elements.personaCardNameInput],
+            ["description", elements.personaCardDescriptionInput]
+          ]
+      };
+    }
+
+    function bindRpCardReorderEvents(kind, listElement) {
+      listElement.dataset.rpCardKind = kind;
+      listElement.addEventListener("pointerdown", handleRpCardReorderPointerDown);
+      listElement.addEventListener("click", handleRpCardListClickCapture, true);
     }
 
     function bindEvents() {
@@ -4719,21 +4727,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       ].forEach((input) => input.addEventListener("input", syncIllustrationControls));
       elements.messageInput.addEventListener("keydown", handleComposerKeydown);
       elements.imageUploadInput.addEventListener("change", handleImageUploadSelection);
-      bindRpCardEditorEvents("character", {
-        newButton: elements.characterNewButton,
-        importButton: elements.characterImportButton,
-        saveButton: elements.characterSaveButton,
-        exportButton: elements.characterExportButton,
-        imageButton: elements.characterImageButton,
-        imageClearButton: elements.characterImageClearButton,
-        deleteButton: elements.characterDeleteButton,
-        imageInput: elements.characterProfileImageInput,
-        importInput: elements.characterCardImportInput,
-        fields: [
-          ["name", elements.characterCardNameInput],
-          ["firstMessage", elements.characterCardFirstMessageInput]
-        ]
-      });
+      bindRpCardEditorEvents("character", getRpCardEditorEventConfig("character"));
       bindInputActions([
         [elements.characterCardDescriptionInput, updateCharacterCardDescriptionDraft]
       ]);
@@ -4741,23 +4735,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         [elements.characterCardIsWorldCardInput, updateCharacterCardWorldCardDraft],
         [elements.characterCardDescriptionModeSelect, updateCharacterCardDescriptionModeDraft]
       ], "change");
-      bindRpCardEditorEvents("persona", {
-        newButton: elements.personaNewButton,
-        importButton: elements.personaImportButton,
-        saveButton: elements.personaSaveButton,
-        exportButton: elements.personaExportButton,
-        imageButton: elements.personaImageButton,
-        imageClearButton: elements.personaImageClearButton,
-        deleteButton: elements.personaDeleteButton,
-        imageInput: elements.personaProfileImageInput,
-        importInput: elements.personaCardImportInput,
-        fields: [
-          ["name", elements.personaCardNameInput],
-          ["description", elements.personaCardDescriptionInput]
-        ]
-      });
+      bindRpCardEditorEvents("persona", getRpCardEditorEventConfig("persona"));
+      bindRpCardReorderEvents("character", elements.characterCardList);
+      bindRpCardReorderEvents("persona", elements.personaCardList);
       elements.rpImageCropZoomInput.addEventListener("input", handleRpImageCropZoomInput);
       elements.rpImageCropViewport.addEventListener("pointerdown", handleRpImageCropPointerDown);
+      window.addEventListener("pointermove", handleRpCardReorderPointerMove);
+      window.addEventListener("pointerup", handleRpCardReorderPointerUp);
+      window.addEventListener("pointercancel", handleRpCardReorderPointerUp);
       window.addEventListener("pointermove", handleRpImageCropPointerMove);
       window.addEventListener("pointerup", handleRpImageCropPointerUp);
       window.addEventListener("pointercancel", handleRpImageCropPointerUp);
@@ -6486,6 +6471,23 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return getActiveRpCard("persona");
     }
 
+    function moveRpCard(kind, fromCardId, toCardId) {
+      if (!fromCardId || !toCardId || fromCardId === toCardId) {
+        return false;
+      }
+
+      const cards = getRpCardCollection(kind);
+      const fromIndex = cards.findIndex((card) => card.id === fromCardId);
+      const toIndex = cards.findIndex((card) => card.id === toCardId);
+      if (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex) {
+        return false;
+      }
+
+      const [movedCard] = cards.splice(fromIndex, 1);
+      cards.splice(toIndex, 0, movedCard);
+      return true;
+    }
+
     function getRpChatsForCharacterId(characterId) {
       if (!characterId) {
         return [];
@@ -6769,23 +6771,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const models = normalizeImageModelList(state.imageModels);
       elements.imageModelSelect.innerHTML = "";
 
-      const autoOption = document.createElement("option");
-      autoOption.value = "";
-      autoOption.textContent = t("autoImageModel");
-      elements.imageModelSelect.appendChild(autoOption);
+      appendSelectOption(elements.imageModelSelect, "", t("autoImageModel"));
 
       models.forEach((model) => {
-        const option = document.createElement("option");
-        option.value = model.id;
-        option.textContent = model.label;
-        elements.imageModelSelect.appendChild(option);
+        appendSelectOption(elements.imageModelSelect, model.id, model.label);
       });
 
       if (selectedModel && !models.some((model) => model.id === selectedModel)) {
-        const savedOption = document.createElement("option");
-        savedOption.value = selectedModel;
-        savedOption.textContent = selectedModel;
-        elements.imageModelSelect.appendChild(savedOption);
+        appendSelectOption(elements.imageModelSelect, selectedModel, selectedModel);
       }
 
       elements.imageModelSelect.value = selectedModel || "";
@@ -6904,48 +6897,37 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
     function renderRpCardPanel(kind) {
       const draft = getRpCardDraft(kind);
-      const listElement = kind === "character" ? elements.characterCardList : elements.personaCardList;
-      const nameInput = kind === "character" ? elements.characterCardNameInput : elements.personaCardNameInput;
-      const descriptionInput = kind === "character" ? elements.characterCardDescriptionInput : elements.personaCardDescriptionInput;
-      const firstMessageInput = kind === "character" ? elements.characterCardFirstMessageInput : null;
+      const isCharacter = kind === "character";
+      const listElement = isCharacter ? elements.characterCardList : elements.personaCardList;
+      const nameInput = isCharacter ? elements.characterCardNameInput : elements.personaCardNameInput;
+      const descriptionInput = isCharacter ? elements.characterCardDescriptionInput : elements.personaCardDescriptionInput;
+      const firstMessageInput = isCharacter ? elements.characterCardFirstMessageInput : null;
 
       const listSignature = getRpCardPanelListSignature(kind, draft);
       if (rpCardListRenderSignatures[kind] !== listSignature) {
         listElement.innerHTML = "";
         getRpCardCollection(kind).forEach((card) => {
           const button = createButton({
-            className: `card-browser-item${card.id === draft.cardId ? " active" : ""}`,
+            className: `card-item${card.id === draft.cardId ? " active" : ""}`,
             label: t("cardSelect", { name: card.name }),
             title: card.name,
+            attributes: {
+              "data-card-id": card.id,
+              "data-rp-card-kind": kind
+            },
             onClick: () => {
               void selectRpCard(kind, card.id);
             }
           });
 
-          const thumb = document.createElement("div");
-          thumb.className = "card-browser-thumb";
-          if (card.profileImage?.dataUrl) {
-            const image = document.createElement("img");
-            image.alt = card.name;
-            queueImageElementSource(image, card.profileImage);
-            thumb.appendChild(image);
-          } else if (card.profileImage?.mediaId) {
-            const image = document.createElement("img");
-            image.alt = card.name;
-            thumb.appendChild(image);
-            queueImageElementSource(image, card.profileImage);
-          } else {
-            thumb.textContent = getCardInitial(card.name, kind === "character" ? "C" : "P");
-          }
-
-          button.appendChild(thumb);
+          button.appendChild(createRpCardThumb(card, kind));
           listElement.appendChild(button);
         });
         rpCardListRenderSignatures[kind] = listSignature;
       }
 
       nameInput.value = draft.name || "";
-      if (kind === "character") {
+      if (isCharacter) {
         syncCharacterCardEditorModeControls();
       } else {
         descriptionInput.value = draft.description || "";
@@ -6958,6 +6940,141 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     function getCardInitial(name, fallback = "?") {
       const value = String(name || "").trim();
       return value ? value.slice(0, 1).toUpperCase() : fallback;
+    }
+
+    function handleRpCardListClickCapture(event) {
+      if (!suppressRpCardListClick) {
+        return;
+      }
+      suppressRpCardListClick = false;
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    function handleRpCardReorderPointerDown(event) {
+      if (event.pointerType === "mouse" && event.button !== 0) {
+        return;
+      }
+
+      const thumb = event.target.closest(".card-thumb");
+      const button = thumb?.closest(".card-item");
+      const listElement = event.currentTarget;
+      const kind = listElement?.dataset?.rpCardKind;
+      const cardId = button?.dataset?.cardId;
+      if (!thumb || !button || !kind || !cardId || button.parentElement !== listElement) {
+        return;
+      }
+
+      rpCardDragState = {
+        kind,
+        cardId,
+        pointerId: event.pointerId,
+        pointerType: event.pointerType || "mouse",
+        listElement,
+        startClientX: event.clientX,
+        startClientY: event.clientY,
+        lastClientY: event.clientY,
+        dragging: false,
+        touchReady: event.pointerType !== "touch",
+        touchCanceled: false,
+        holdTimerId: 0
+      };
+      if (rpCardDragState.pointerType === "touch") {
+        rpCardDragState.holdTimerId = window.setTimeout(() => {
+          if (rpCardDragState && rpCardDragState.pointerId === event.pointerId) {
+            rpCardDragState.touchReady = true;
+          }
+        }, RP_CARD_TOUCH_HOLD_MS);
+      }
+    }
+
+    function handleRpCardReorderPointerMove(event) {
+      if (!rpCardDragState || rpCardDragState.pointerId !== event.pointerId) {
+        return;
+      }
+
+      const deltaX = event.clientX - rpCardDragState.startClientX;
+      const deltaY = event.clientY - rpCardDragState.startClientY;
+      if (!rpCardDragState.dragging) {
+        const distance = Math.hypot(deltaX, deltaY);
+        if (rpCardDragState.pointerType === "touch" && !rpCardDragState.touchReady) {
+          const listElement = rpCardDragState.listElement;
+          if (listElement) {
+            listElement.scrollTop -= event.clientY - rpCardDragState.lastClientY;
+          }
+          rpCardDragState.lastClientY = event.clientY;
+          if (distance >= RP_CARD_TOUCH_DRAG_THRESHOLD_PX) {
+            if (rpCardDragState.holdTimerId) {
+              window.clearTimeout(rpCardDragState.holdTimerId);
+            }
+            rpCardDragState.touchCanceled = true;
+          }
+          return;
+        }
+        if (rpCardDragState.pointerType === "touch" && rpCardDragState.touchCanceled) {
+          return;
+        }
+        if (distance < RP_CARD_DRAG_THRESHOLD_PX) {
+          return;
+        }
+        rpCardDragState.dragging = true;
+      }
+
+      const listElement = rpCardDragState.kind === "character" ? elements.characterCardList : elements.personaCardList;
+      const currentButton = listElement.querySelector(`[data-card-id="${rpCardDragState.cardId}"]`);
+      if (currentButton?.setPointerCapture) {
+        try {
+          currentButton.setPointerCapture(event.pointerId);
+        } catch (_error) {
+        }
+      }
+      listElement.classList.add("dragging");
+      if (currentButton) {
+        currentButton.classList.add("dragging");
+      }
+
+      const hoverButton = document.elementFromPoint(event.clientX, event.clientY)?.closest(".card-item");
+      const targetCardId = hoverButton?.dataset?.cardId;
+      if (!targetCardId || targetCardId === rpCardDragState.cardId || hoverButton.parentElement !== listElement) {
+        event.preventDefault();
+        return;
+      }
+
+      if (moveRpCard(rpCardDragState.kind, rpCardDragState.cardId, targetCardId)) {
+        renderAppSections({ rpCards: true });
+      }
+      event.preventDefault();
+    }
+
+    function handleRpCardReorderPointerUp(event) {
+      if (!rpCardDragState || rpCardDragState.pointerId !== event.pointerId) {
+        return;
+      }
+
+      const { kind, cardId, dragging, holdTimerId } = rpCardDragState;
+      if (holdTimerId) {
+        window.clearTimeout(holdTimerId);
+      }
+      const listElement = kind === "character" ? elements.characterCardList : elements.personaCardList;
+      const currentButton = listElement.querySelector(`[data-card-id="${cardId}"]`);
+      listElement.classList.remove("dragging");
+      if (currentButton) {
+        currentButton.classList.remove("dragging");
+        if (currentButton.releasePointerCapture) {
+          try {
+            currentButton.releasePointerCapture(event.pointerId);
+          } catch (_error) {
+          }
+        }
+      }
+      if (dragging) {
+        suppressRpCardListClick = true;
+        window.setTimeout(() => {
+          suppressRpCardListClick = false;
+        }, 0);
+        event.preventDefault();
+      }
+      rpCardDragState = null;
     }
 
     async function selectRpCard(kind, cardId) {
@@ -7327,16 +7444,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
       selectElement.innerHTML = "";
 
-      const placeholder = document.createElement("option");
-      placeholder.value = "";
-      placeholder.textContent = placeholderText;
-      selectElement.appendChild(placeholder);
+      appendSelectOption(selectElement, "", placeholderText);
 
       models.forEach((model) => {
-        const option = document.createElement("option");
-        option.value = model.id;
-        option.textContent = model.id;
-        selectElement.appendChild(option);
+        appendSelectOption(selectElement, model.id, model.id);
       });
 
       selectElement.value = currentValue && models.some((model) => model.id === currentValue)
@@ -8086,7 +8197,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
     function resetOverlayScroll(overlay) {
       overlay.scrollTop = 0;
-      overlay.querySelectorAll(".panel-inner, .overlay-content, .settings-tab-panel, .card-browser-sidebar, .card-browser-list, .card-browser-editor, .card-editor-settings-pane, .card-editor-fields, .panel-list").forEach((element) => {
+      overlay.querySelectorAll(".panel-inner, .overlay-content, .settings-tab-panel, .card-side, .card-list, .card-edit, .card-pane, .card-fields, .panel-list").forEach((element) => {
         element.scrollTop = 0;
         element.scrollLeft = 0;
       });
@@ -13226,6 +13337,62 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       entries.forEach(([element, key]) => setRangeFieldLabel(element, t(key)));
     }
 
+    function applyRpCardPanelTranslations(kind) {
+      const isCharacter = kind === "character";
+      const prefix = isCharacter ? "character" : "persona";
+      const titlePrefix = isCharacter ? "Character" : "Persona";
+      const nameInput = elements[`${prefix}CardNameInput`];
+      const descriptionInput = elements[`${prefix}CardDescriptionInput`];
+
+      applyTranslatedTextContent([
+        [elements[`${prefix}OverlayTitle`], `${prefix}Cards`],
+        [elements[`close${titlePrefix}OverlayButton`], "close"],
+        [elements[`${prefix}NewButton`], "newCard"],
+        [elements[`${prefix}ImportButton`], "import"],
+        [elements[`${prefix}ImageButton`], "chooseImage"],
+        [elements[`${prefix}ImageClearButton`], "clearImage"]
+      ]);
+      setAriaLabelIfPresent(elements[`${prefix}CardList`], t(`${prefix}CardList`));
+
+      const settingsPanel = elements[`${prefix}SettingsPanel`];
+      if (settingsPanel) {
+        settingsPanel.setAttribute("aria-label", t(`${prefix}SettingsPanel`));
+      }
+
+      if (isCharacter) {
+        applyTranslatedTextContent([
+          [elements.characterCardDescriptionLabelText, "characterDescription"]
+        ]);
+        applyTranslatedFieldLabels([
+          [nameInput, "characterName"],
+          [elements.characterCardFirstMessageInput, "characterFirstMessage"]
+        ]);
+        setLeadingLabelText(elements.characterCardIsWorldCardInput.closest("label"), t("characterIsWorldCard"));
+        setAriaLabelIfPresent(elements.characterCardDescriptionModeSelect, t("worldCardDescription"));
+        setSelectOptionTexts(elements.characterCardDescriptionModeSelect, ["worldCardDescription", "worldCardMainCharacterDescription"]);
+        applyTranslatedPlaceholders([
+          [nameInput, "characterNamePlaceholder"],
+          [elements.characterCardFirstMessageInput, "characterFirstMessagePlaceholder"]
+        ]);
+        syncCharacterCardEditorModeControls();
+      } else {
+        applyTranslatedFieldLabels([
+          [nameInput, "personaName"],
+          [descriptionInput, "personaDescription"]
+        ]);
+        applyTranslatedPlaceholders([
+          [nameInput, "personaNamePlaceholder"],
+          [descriptionInput, "personaDescriptionPlaceholder"]
+        ]);
+      }
+
+      applyTranslatedButtonTitles([
+        [elements[`${prefix}SaveButton`], "save"],
+        [elements[`${prefix}ExportButton`], "export"],
+        [elements[`${prefix}DeleteButton`], "delete"]
+      ]);
+    }
+
     function applyStaticTranslations() {
       document.documentElement.lang = getUiLanguage();
 
@@ -13381,62 +13548,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         [elements.desktopImportChatsButton, "importJson"]
       ]);
 
-      applyTranslatedTextContent([
-        [elements.characterOverlayTitle, "characterCards"],
-        [elements.closeCharacterOverlayButton, "close"],
-        [elements.characterNewButton, "newCard"],
-        [elements.characterImportButton, "import"],
-        [elements.characterCardDescriptionLabelText, "characterDescription"],
-        [elements.characterImageButton, "chooseImage"],
-        [elements.characterImageClearButton, "clearImage"]
-      ]);
-      setAriaLabelIfPresent(elements.characterCardList, t("characterCardList"));
-      if (elements.characterSettingsPanel) {
-        elements.characterSettingsPanel.setAttribute("aria-label", t("characterSettingsPanel"));
-      }
-      applyTranslatedFieldLabels([
-        [elements.characterCardNameInput, "characterName"],
-        [elements.characterCardFirstMessageInput, "characterFirstMessage"]
-      ]);
-      setLeadingLabelText(elements.characterCardIsWorldCardInput.closest("label"), t("characterIsWorldCard"));
-      setAriaLabelIfPresent(elements.characterCardDescriptionModeSelect, t("worldCardDescription"));
-      setSelectOptionTexts(elements.characterCardDescriptionModeSelect, ["worldCardDescription", "worldCardMainCharacterDescription"]);
-      applyTranslatedPlaceholders([
-        [elements.characterCardNameInput, "characterNamePlaceholder"],
-        [elements.characterCardFirstMessageInput, "characterFirstMessagePlaceholder"]
-      ]);
-      syncCharacterCardEditorModeControls();
-      applyTranslatedButtonTitles([
-        [elements.characterSaveButton, "save"],
-        [elements.characterExportButton, "export"],
-        [elements.characterDeleteButton, "delete"]
-      ]);
-
-      applyTranslatedTextContent([
-        [elements.personaOverlayTitle, "personaCards"],
-        [elements.closePersonaOverlayButton, "close"],
-        [elements.personaNewButton, "newCard"],
-        [elements.personaImportButton, "import"],
-        [elements.personaImageButton, "chooseImage"],
-        [elements.personaImageClearButton, "clearImage"]
-      ]);
-      setAriaLabelIfPresent(elements.personaCardList, t("personaCardList"));
-      if (elements.personaSettingsPanel) {
-        elements.personaSettingsPanel.setAttribute("aria-label", t("personaSettingsPanel"));
-      }
-      applyTranslatedFieldLabels([
-        [elements.personaCardNameInput, "personaName"],
-        [elements.personaCardDescriptionInput, "personaDescription"]
-      ]);
-      applyTranslatedPlaceholders([
-        [elements.personaCardNameInput, "personaNamePlaceholder"],
-        [elements.personaCardDescriptionInput, "personaDescriptionPlaceholder"]
-      ]);
-      applyTranslatedButtonTitles([
-        [elements.personaSaveButton, "save"],
-        [elements.personaExportButton, "export"],
-        [elements.personaDeleteButton, "delete"]
-      ]);
+      applyRpCardPanelTranslations("character");
+      applyRpCardPanelTranslations("persona");
 
       applyTranslatedTextContent([
         [elements.imagePreviewTitle, "imagePreview"],
