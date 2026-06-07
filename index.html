@@ -3037,7 +3037,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section class="brand">
               <div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="8" y="8" width="48" height="48" rx="14" fill="currentColor"></rect><circle cx="32" cy="32" r="13" fill="none" stroke="#fff7ee" stroke-width="6"></circle><circle cx="46" cy="18" r="3" fill="#fff7ee" fill-opacity="0.9"></circle></svg><span>FocusAbove</span></div>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.5.4, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.5.5, ⓒ 2026 Fur-Abyss</p>
             </section>
 
             <div class="settings-tab-strip" role="tablist">
@@ -3096,6 +3096,18 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                         <option value="character-first-person"></option>
                         <option value="persona-first-person"></option>
                         <option value="third-person"></option>
+                      </select>
+                    </label>
+                    <label id="rpResponseLengthField" hidden>
+                      <select id="rpResponseLengthSelect">
+                        <option value=""></option>
+                        <option value="up-to-300"></option>
+                        <option value="300-500"></option>
+                        <option value="500-700"></option>
+                        <option value="700-1000"></option>
+                        <option value="1000-1500"></option>
+                        <option value="1500-2000"></option>
+                        <option value="2000-3000"></option>
                       </select>
                     </label>
                     <div id="rpAssistanceFields" class="rp-assistance-fields" hidden>
@@ -3706,9 +3718,18 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         smoothStreaming: "부드러운 응답 스트리밍(성능 영향 있음)",
         rpSettingsSection: "RP 설정",
         rpResponsePerspective: "RP 응답 시점",
+        rpResponseLength: "응답 길이",
         rpPerspectiveCharacter: "캐릭터 1인칭 시점",
         rpPerspectivePersona: "페르소나 1인칭 시점",
         rpPerspectiveThird: "3인칭 시점",
+        rpResponseLengthUnset: "설정하지 않음",
+        rpResponseLengthUpTo300: "300단어 이내",
+        rpResponseLength300To500: "300~500단어",
+        rpResponseLength500To700: "500~700단어",
+        rpResponseLength700To1000: "700~1000단어",
+        rpResponseLength1000To1500: "1000~1500단어",
+        rpResponseLength1500To2000: "1500~2000단어",
+        rpResponseLength2000To3000: "2000~3000단어",
         rpSummaryEnabled: "대화 요약 사용 [보조 모델]",
         rpSummaryTokenThreshold: "요약 시작 컨텍스트 토큰",
         rpSummaryTokenThresholdPlaceholder: "예: 12000",
@@ -3986,9 +4007,18 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         smoothStreaming: "Smooth streaming",
         rpSettingsSection: "RP settings",
         rpResponsePerspective: "RP response perspective",
+        rpResponseLength: "Response length",
         rpPerspectiveCharacter: "Character first-person",
         rpPerspectivePersona: "Persona first-person",
         rpPerspectiveThird: "Third-person",
+        rpResponseLengthUnset: "Not set",
+        rpResponseLengthUpTo300: "Up to 300 words",
+        rpResponseLength300To500: "300 to 500 words",
+        rpResponseLength500To700: "500 to 700 words",
+        rpResponseLength700To1000: "700 to 1000 words",
+        rpResponseLength1000To1500: "1000 to 1500 words",
+        rpResponseLength1500To2000: "1500 to 2000 words",
+        rpResponseLength2000To3000: "2000 to 3000 words",
         rpSummaryEnabled: "Summary [Aux. model]",
         rpSummaryTokenThreshold: "Summary trigger tokens",
         rpSummaryTokenThresholdPlaceholder: "e.g. 12000",
@@ -4255,6 +4285,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     const DEFAULT_SETTINGS = createDefaultSettings(DEFAULT_APP_LANGUAGE);
 
     const DEFAULT_RP_RESPONSE_PERSPECTIVE = "character-first-person";
+    const DEFAULT_RP_RESPONSE_LENGTH = "";
     const DEFAULT_RP_ILLUSTRATION_SETTINGS = {
       enabled: false,
       promptStyle: "tag-list",
@@ -4279,6 +4310,17 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       "third-person": "3인칭 시점"
     };
 
+    const RP_RESPONSE_LENGTH_OPTIONS = [
+      DEFAULT_RP_RESPONSE_LENGTH,
+      "up-to-300",
+      "300-500",
+      "500-700",
+      "700-1000",
+      "1000-1500",
+      "1500-2000",
+      "2000-3000"
+    ];
+
     const DEFAULT_APP_STATE = {
       settings: { ...DEFAULT_SETTINGS },
       models: [],
@@ -4294,6 +4336,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         personaCards: [],
         activePersonaId: "",
         responsePerspective: DEFAULT_RP_RESPONSE_PERSPECTIVE,
+        responseLength: DEFAULT_RP_RESPONSE_LENGTH,
         illustration: { ...DEFAULT_RP_ILLUSTRATION_SETTINGS },
         assistance: { ...DEFAULT_RP_ASSISTANCE_SETTINGS },
         chatsByCharacterId: {},
@@ -4415,6 +4458,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       thinkingUnlimitedInput: document.getElementById("thinkingUnlimitedInput"),
       rpResponsePerspectiveField: document.getElementById("rpResponsePerspectiveField"),
       rpResponsePerspectiveSelect: document.getElementById("rpResponsePerspectiveSelect"),
+      rpResponseLengthField: document.getElementById("rpResponseLengthField"),
+      rpResponseLengthSelect: document.getElementById("rpResponseLengthSelect"),
       systemPromptInput: document.getElementById("systemPromptInput"),
       forbiddenWordsInput: document.getElementById("forbiddenWordsInput"),
       forbiddenWordsHint: document.getElementById("forbiddenWordsHint"),
@@ -4717,7 +4762,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         [elements.rpSummaryEnabledInput, syncRpAssistanceControls],
         [elements.illustrationEnabledInput, syncIllustrationControls],
         [elements.chatT2iEnabledInput, syncIllustrationControls],
-        [elements.rpResponsePerspectiveSelect, updateActiveRpResponsePerspective]
+        [elements.rpResponsePerspectiveSelect, updateActiveRpResponsePerspective],
+        [elements.rpResponseLengthSelect, updateActiveRpResponseLength]
       ], "change");
       [
         elements.illustrationCfgScaleInput,
@@ -5039,7 +5085,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return [
         `[Forbidden Words]`,
         `- Never use: ${normalizedForbiddenWords.join(", ")}`,
-        `- If needed, choose different wording before answering.`
+        `- Rephrase before answering if needed.`
       ].join("\n");
     }
 
@@ -5092,6 +5138,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         personaCards: [],
         activePersonaId: "",
         responsePerspective: DEFAULT_RP_RESPONSE_PERSPECTIVE,
+        responseLength: DEFAULT_RP_RESPONSE_LENGTH,
         illustration: { ...DEFAULT_RP_ILLUSTRATION_SETTINGS },
         assistance: { ...DEFAULT_RP_ASSISTANCE_SETTINGS },
         chatsByCharacterId: {},
@@ -5218,6 +5265,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         personaCards,
         activePersonaId: personaCards.some((card) => card.id === rpState?.activePersonaId) ? rpState.activePersonaId : (personaCards[0]?.id || ""),
         responsePerspective: normalizeRpResponsePerspective(rpState?.responsePerspective),
+        responseLength: normalizeRpResponseLength(rpState?.responseLength),
         illustration: normalizeRpIllustrationSettings(rpState?.illustration),
         assistance: normalizeRpAssistanceSettings(rpState?.assistance),
         chatsByCharacterId,
@@ -6437,6 +6485,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         thinkingTokenLimit: state.settings.thinkingTokenLimit,
         thinkingUnlimited: state.settings.thinkingUnlimited !== false,
         rpResponsePerspective: normalizeRpResponsePerspective(state.rp?.responsePerspective),
+        rpResponseLength: normalizeRpResponseLength(state.rp?.responseLength),
         systemPrompt: state.settings.systemPrompt || "",
         forbiddenWords: normalizeForbiddenWords(state.settings.forbiddenWords)
       };
@@ -6731,8 +6780,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       elements.smoothStreamingInput.checked = state.settings.smoothStreaming !== false;
       elements.settingsRpSectionGroup.hidden = !isRpModeActive();
       elements.rpResponsePerspectiveField.hidden = !isRpModeActive();
+      elements.rpResponseLengthField.hidden = !isRpModeActive();
       elements.rpAssistanceFields.hidden = !isRpModeActive();
       elements.rpResponsePerspectiveSelect.value = normalizeRpResponsePerspective(state.rp?.responsePerspective);
+      elements.rpResponseLengthSelect.value = normalizeRpResponseLength(state.rp?.responseLength);
       const rpAssistance = normalizeRpAssistanceSettings(state.rp?.assistance);
       elements.rpSummaryEnabledInput.checked = rpAssistance.summaryEnabled;
       elements.rpSummaryTokenThresholdInput.value = rpAssistance.summaryTokenThreshold;
@@ -7972,6 +8023,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       state.settings.smoothStreaming = elements.smoothStreamingInput.checked;
       if (isRpModeActive()) {
         state.rp.responsePerspective = normalizeRpResponsePerspective(elements.rpResponsePerspectiveSelect.value);
+        state.rp.responseLength = normalizeRpResponseLength(elements.rpResponseLengthSelect.value);
         state.rp.assistance = {
           summaryEnabled: elements.rpSummaryEnabledInput.checked,
           summaryTokenThreshold: normalizeRpSummaryTokenThreshold(elements.rpSummaryTokenThresholdInput.value),
@@ -8008,6 +8060,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       state.settings.chatT2iEnabled = nextDefaultSettings.chatT2iEnabled;
       if (isRpModeActive() && state.rp) {
         state.rp.responsePerspective = DEFAULT_RP_RESPONSE_PERSPECTIVE;
+        state.rp.responseLength = DEFAULT_RP_RESPONSE_LENGTH;
         state.rp.illustration = { ...DEFAULT_RP_ILLUSTRATION_SETTINGS };
         state.rp.assistance = { ...DEFAULT_RP_ASSISTANCE_SETTINGS };
       }
@@ -9332,6 +9385,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       modelSettingsDraft.rpResponsePerspective = normalizeRpResponsePerspective(elements.rpResponsePerspectiveSelect.value);
     }
 
+    function updateActiveRpResponseLength() {
+      if (!modelSettingsDraft) {
+        resetModelSettingsDraft();
+      }
+
+      modelSettingsDraft.rpResponseLength = normalizeRpResponseLength(elements.rpResponseLengthSelect.value);
+    }
+
     function syncThinkingTokenLimitControls(settings) {
       const isUnlimited = !settings || settings.thinkingUnlimited !== false;
       elements.thinkingUnlimitedInput.checked = isUnlimited;
@@ -10337,10 +10398,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         {
           role: "system",
           content: [
-            "Rewrite roleplay user input before it is sent to the main RP model.",
+            "Rewrite RP user input before it is sent to the main model.",
             `Return only the rewritten user input in ${t("promptLanguageName")}.`,
             "Preserve intent. Do not add outcomes, control the assistant character, or narrate future results.",
-            wasEmptyInput ? "The user submitted an empty input. Use the opening message and recent context to write a natural concise continuation instruction; do not return only '계속' or 'continue'." : "Polish only the provided input for clarity and flow. Preserve its meaning, perspective, tense, and length as much as possible; do not add context from previous messages.",
+            wasEmptyInput ? "The user submitted empty input. Use the opening message and recent context to write a natural concise continuation instruction; do not return only '계속' or 'continue'." : "Polish only the provided input for clarity and flow. Preserve meaning, perspective, tense, and length as much as possible; do not add prior-message context.",
             "No markdown, labels, explanations, or quotation marks."
           ].filter(Boolean).join("\n")
         },
@@ -10419,10 +10480,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         {
           role: "system",
           content: [
-            "Extract the current mutable state of a roleplay scene.",
+            "Extract the current mutable state of the RP scene.",
             `Return concise plain text in ${t("promptLanguageName")} using short bullet-like lines.`,
-            "Track only current location, time, participants, clothing, items, injuries, posture, emotions, relationship shifts, and immediate goals.",
-            "Use latest messages as highest priority. Do not invent unknown facts or include headings/explanations."
+            "Track only location, time, participants, clothing, items, injuries, posture, emotions, relationship shifts, and immediate goals.",
+            "Prioritize the latest messages. Do not invent facts or add headings/explanations."
           ].join("\n")
         },
         {
@@ -10446,10 +10507,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         {
           role: "system",
           content: [
-            "Maintain a compact long-term summary for an ongoing roleplay chat.",
+            "Maintain a compact long-term summary for this RP chat.",
             `Return the updated summary in ${t("promptLanguageName")}.`,
             `Keep the summary within roughly ${summaryMaxTokens} tokens.`,
-            "Preserve established facts, relationship changes, promises, key events, emotions, mysteries, goals, and constraints.",
+            "Preserve facts, relationship changes, promises, key events, emotions, mysteries, goals, and constraints.",
             "Be concise and specific. No scene prose, markdown headings, or explanations."
           ].join("\n")
         },
@@ -10520,7 +10581,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           content: [
             "FocusAbove RP auxiliary request.",
             "Use stable participant names as baseline context.",
-            "Follow the later task instructions and return only the requested output."
+            "Follow later task instructions and return only the requested output."
           ].join("\n")
         },
         {
@@ -10529,7 +10590,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             "[Stable RP Context]",
             character?.name ? `Character: ${character.name}` : "Character: Unnamed Character",
             persona?.name ? `Persona: ${persona.name}` : "Persona: Unnamed Persona",
-            "Full card text is omitted unless the task needs visual/card details."
+            "Full card text is omitted unless needed."
           ].filter(Boolean).join("\n")
         }
       ];
@@ -10668,10 +10729,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           content: [
             "Write one concise Stable Diffusion prompt in English only.",
             buildIllustrationPromptStyleInstruction(illustrationSettings.promptStyle),
-            "Preserve stated gender and stable appearance from card details. Do not invent unstated gender.",
+            "Preserve stated gender and stable appearance from card details. Do not invent gender.",
             buildIllustrationPeopleScopeInstruction(illustrationSettings, { characterCard }),
             isWorldRpCard(characterCard)
-              ? "For world cards, depict only the character or small set of characters who are actually present in the current scene. Prioritize named major characters from the world card when the recent scene supports them. Never choose the persona/user as the depicted person. If solo-character mode is enabled, depict only the single most important current-scene character other than the persona/user."
+              ? "For world cards, depict only the character or small set of characters actually present in the current scene. Prefer named major characters when recent context supports them. Never choose the persona/user. If solo-character mode is enabled, depict only the single most important current-scene character other than the persona/user."
               : "",
             "For clothing, pose, location, lighting, temporary states, and injuries, prefer latest context over card defaults.",
             "No markdown, explanations, text overlays, watermarks, signatures, UI elements, or camera metadata."
@@ -10707,11 +10768,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         {
           role: "system",
           content: [
-            "You classify whether the latest user message asks to create, draw, or generate an image.",
+            "Classify whether the latest user message asks to create, draw, or generate an image.",
             `If it does not, output exactly ${CHAT_T2I_SKIP_TOKEN}.`,
             "If it does, output one concise Stable Diffusion prompt in English only.",
             buildIllustrationPromptStyleInstruction(illustrationSettings.promptStyle),
-            avoidPrompt ? "If an earlier image prompt is provided, create a meaningfully different composition and details while preserving the user's request." : "",
+            avoidPrompt ? "If an earlier image prompt is provided, create meaningfully different composition and details while preserving the user's request." : "",
             "Use the latest user request as the primary source. No markdown, explanations, quotes, watermarks, signatures, or camera metadata."
           ].filter(Boolean).join("\n")
         },
@@ -10757,9 +10818,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         if (options.chat && !isRpChat(options.chat)) {
           return [[
             "[Image Generation Availability]",
-            "FocusAbove has not scheduled image generation for this response and does not provide DALL-E, dalle.text2im, or any other image-generation tool to the main chat model in this turn.",
-            "Do not output tool-call JSON, action/action_input objects, function calls, or claims that an image was generated.",
-            "If the user asks for an image, respond in normal prose that image generation is disabled or unavailable here, and offer a text prompt or description instead."
+            "No image generation is scheduled for this turn, and the main chat model has no image tool such as DALL-E or dalle.text2im.",
+            "Do not output tool-call JSON, action/action_input, function calls, or claim an image was generated.",
+            "If asked for an image, reply in normal prose that image generation is unavailable here and offer a text prompt or description instead."
           ].join("\n")];
         }
 
@@ -10769,11 +10830,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return [[
         "[Planned Image Generation]",
         "The latest user message includes an image generation request.",
-        "FocusAbove will handle the actual image generation after your text response. The main chat model does not have DALL-E, dalle.text2im, or any callable image-generation tool available inside this response.",
-        "Do not output tool-call JSON, action/action_input objects, function calls, XML tool tags, or code blocks that imitate image-generation tool usage or results.",
+        "FocusAbove will generate the image after your text response. The main chat model has no callable image tool in this turn.",
+        "Do not output tool-call JSON, action/action_input, function calls, XML tool tags, or fake image-tool code blocks/results.",
         "After your response, FocusAbove will generate an image with the image API using this prompt:",
         cleanPrompt,
-        "Respond in normal prose only, with awareness that image generation is being handled, but do not claim that pixels have already been displayed inside the text response."
+        "Respond in normal prose only. Acknowledge that image generation is being handled, but do not claim the image already exists in the text response."
       ].join("\n")];
     }
 
@@ -10786,26 +10847,26 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (isWorldRpCard(options.characterCard)) {
         return [
           "Strict solo-character mode: the final image prompt must depict exactly one visible person/character.",
-          "That one person must be a non-persona character drawn from the world's named major characters or other clearly scene-relevant non-persona characters.",
-          "Never choose, describe, include, imply, or silhouette the persona/user, even if the recent conversation focuses on the persona/user viewpoint or actions.",
-          "Do not mention, include, imply, or silhouette companions, crowds, background people, second bodies, or another person's hands/arms.",
-          "If the scene emphasizes the persona/user, reinterpret it into the most important non-persona character's solo pose, expression, gaze, mood, and environmental context."
+          "That person must be a non-persona character from the world's major cast or another clearly scene-relevant non-persona character.",
+          "Never choose, describe, include, imply, or silhouette the persona/user, even if recent context centers on them.",
+          "Do not include companions, crowds, background people, second bodies, or another person's hands/arms.",
+          "If the scene centers on the persona/user, reinterpret it as the most important non-persona character's solo pose, expression, mood, and environment."
         ].join("\n");
       }
 
       return [
         "Strict solo-character mode: the final image prompt must depict exactly one visible person/character, the active character only.",
         "Do not mention, include, imply, or silhouette the persona, user, companions, crowds, background people, second bodies, or another person's hands/arms.",
-        "If the scene involves interaction with another person, convert it into the active character's solo pose, expression, gaze, mood, and environmental context."
+        "If the scene involves another person, convert it into the active character's solo pose, expression, gaze, mood, and environment."
       ].join("\n");
     }
 
     function buildIllustrationPromptStyleInstruction(promptStyle) {
       if (normalizeIllustrationPromptStyle(promptStyle) === "natural-language") {
-        return "Write a natural-language English prompt as one vivid sentence or short paragraph describing the current scene, characters, composition, mood, lighting, clothing, environment, and visual style.";
+        return "Write a natural-language English prompt as one vivid sentence or short paragraph covering scene, characters, composition, mood, lighting, clothing, environment, and visual style.";
       }
 
-      return "Write a standard Stable Diffusion tag-list prompt: concise English tags and short phrases separated by commas, ordered from subject and composition to mood, lighting, clothing, environment, and visual style.";
+      return "Write a standard Stable Diffusion tag-list prompt: concise English tags and short comma-separated phrases ordered from subject and composition to mood, lighting, clothing, environment, and visual style.";
     }
 
     function cleanIllustrationPrompt(value) {
@@ -12556,24 +12617,24 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       systemInstructions.push(buildResponseLanguageInstruction(appLanguage));
 
       if (normalizedUserAlias) {
-        systemInstructions.push(`이 대화에서 사용자의 이름은 "${normalizedUserAlias}"입니다. 사용자를 지칭하거나 부를 때 이 이름을 사용하세요.`);
+        systemInstructions.push(`이 대화에서 사용자의 이름은 "${normalizedUserAlias}"입니다. 사용자를 부르거나 지칭할 때 이 이름을 사용하세요.`);
       }
 
       if (normalizedModelAlias) {
-        systemInstructions.push(`이 대화에서 당신의 이름은 "${normalizedModelAlias}"입니다. 자신을 소개하거나 자신을 지칭할 때 이 이름을 사용하세요.`);
+        systemInstructions.push(`이 대화에서 당신의 이름은 "${normalizedModelAlias}"입니다. 자신을 소개하거나 지칭할 때 이 이름을 사용하세요.`);
       }
 
       if (appLanguage === "ko" && /(qwen|minimax)/i.test(selectedModel)) {
         systemInstructions.push(`[Language & Character Rules]
-- You must write the response strictly and entirely in modern Korean (Hangul).
-- Do not use any Chinese characters (hanja) under any circumstances, even inside parentheses or for technical/historical terms.
-- All Hanja idioms or Sino-Korean words must be fully spelled out or translated into pure Hangul.
-- Never wrap words with Chinese character annotations.`);
+- Write entirely in modern Korean (Hangul).
+- Never use Chinese characters (hanja), even in parentheses or technical/historical terms.
+- Spell out or translate Hanja idioms and Sino-Korean words into Hangul.
+- Never add Chinese-character annotations.`);
       }
 
       systemInstructions.push([
         `[Avoiding Repetition Rules]`,
-        `- Do not repeat yourself. Ensure that every sentence contains new information and advances the topic. Avoid using the same words or phrases consecutively.`
+        `- Do not repeat yourself. Keep each sentence adding new information and moving the scene forward.`
       ].join("\n"));
 
       const forbiddenWordsInstruction = buildForbiddenWordsInstruction(state.settings.forbiddenWords);
@@ -12599,7 +12660,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (rpContext?.persona && (rpContext.persona.name || rpContext.persona.description)) {
         systemInstructions.push([
           `[RP Persona Card]`,
-          `The user is roleplaying with the following persona context. Interpret the user's messages under this persona unless they explicitly change it.`,
+          `Interpret the user's messages through this persona unless they explicitly change it.`,
           `Name: ${rpContext.persona.name || "Unnamed Persona"}`,
           replaceRpPromptPlaceholders(rpContext.persona.description || "", rpPlaceholders)
         ].filter(Boolean).join("\n"));
@@ -12618,6 +12679,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const rpNarrativeStyleInstruction = buildRpNarrativeStyleInstruction(rpContext);
       if (rpNarrativeStyleInstruction) {
         systemInstructions.push(rpNarrativeStyleInstruction);
+      }
+
+      const rpResponseLengthInstruction = buildRpResponseLengthInstruction(rpContext);
+      if (rpResponseLengthInstruction) {
+        systemInstructions.push(rpResponseLengthInstruction);
       }
 
       const rpPerspectiveInstruction = buildRpResponsePerspectiveInstruction(rpContext);
@@ -12674,9 +12740,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
       return [
         `[RP Narrative Style]`,
-        `Write each roleplay response like a scene from a novel, blending character action, body language, atmosphere, and spoken dialogue.`,
-        `Do not answer as a dry assistant or summary. Keep the response immersive and in-character, and include both narration and dialogue whenever the scene naturally allows it.`,
-        `Use dialogue for spoken words and prose narration for gestures, expressions, movement, setting details, and emotional beats.`
+        `Write each reply like a novel scene, blending action, body language, atmosphere, and dialogue.`,
+        `Stay immersive and in-character, not like a dry assistant or summary.`,
+        `Use dialogue for speech and prose for gestures, expressions, movement, setting, and emotion.`
       ].join("\n");
     }
 
@@ -12689,7 +12755,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (!isWorldRpCard(character)) {
         return [
           `[RP Character Card]`,
-          `You must roleplay as the following character and stay consistent with this card throughout the conversation.`,
+          `Roleplay as this character and stay consistent with the card.`,
           `Name: ${character.name || "Unnamed Character"}`,
           replaceRpPromptPlaceholders(character.description || "", rpPlaceholders)
         ].filter(Boolean).join("\n");
@@ -12697,9 +12763,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
       return [
         `[RP World Card]`,
-        `You must roleplay as the world itself instead of a single fixed character. Simulate the setting, atmosphere, consequences, factions, and present characters in response to the user's actions.`,
-        `Prioritize the major characters from this world card whenever they fit the scene naturally. If none of them fit, create a suitable character that remains consistent with the world information.`,
-        `Keep each scene focused on a small cast when practical. As a soft guideline, usually keep only the most relevant 1 to 3 characters actively present unless the scene genuinely needs more.`,
+        `Roleplay as the world rather than one fixed character. Simulate the setting, atmosphere, consequences, factions, and present characters in response to the user's actions.`,
+        `Prefer the major characters from this card when they fit. If none fit, create a suitable character consistent with the world.`,
+        `Keep scenes focused on a small cast when practical, usually the most relevant 1 to 3 characters.`,
         `World name: ${character.name || "Unnamed World"}`,
         character.description ? `[World Settings]\n${replaceRpPromptPlaceholders(character.description, rpPlaceholders)}` : "",
         character.mainCharacterDescription
@@ -12718,9 +12784,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const personaName = rpContext.persona?.name || "the persona";
       if (isWorldRpCard(rpContext.character)) {
         const worldInstructions = {
-          "character-first-person": `Prefer a close first-person viewpoint from the most relevant current-scene character when it fits naturally. You are still simulating the broader world, so choose the viewpoint that best serves the scene instead of locking to one permanent narrator.`,
+          "character-first-person": `Prefer a close first-person viewpoint from the most relevant current-scene character when it fits naturally. Still simulate the broader world instead of locking to one permanent narrator.`,
           "persona-first-person": `Write from ${personaName}'s first-person perspective while the world, NPCs, and scene developments react around ${personaName}.`,
-          "third-person": `Write from a third-person perspective, describing the current scene, the world's reactions, and the present characters without locking the narration to one permanent first-person speaker.`
+          "third-person": `Write in third person, describing the scene, the world's reactions, and the present characters without locking narration to one permanent first-person speaker.`
         };
 
         return [
@@ -12730,14 +12796,41 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
 
       const instructions = {
-        "character-first-person": `Write the character's responses from ${characterName}'s first-person perspective. Use first-person pronouns for ${characterName}'s thoughts, actions, and narration.`,
-        "persona-first-person": `Write the character's responses from ${personaName}'s first-person perspective. Frame narration around ${personaName}'s direct experience while keeping ${characterName}'s behavior consistent with the character card.`,
-        "third-person": `Write the character's responses from a third-person perspective. Describe ${characterName}, ${personaName}, actions, and narration without using first-person narration for either role unless dialogue explicitly requires it.`
+        "character-first-person": `Write from ${characterName}'s first-person perspective. Use first-person pronouns for ${characterName}'s thoughts, actions, and narration.`,
+        "persona-first-person": `Write from ${personaName}'s first-person perspective while keeping ${characterName}'s behavior consistent with the character card.`,
+        "third-person": `Write in third person. Describe ${characterName}, ${personaName}, actions, and narration without first-person narration for either role unless dialogue clearly requires it.`
       };
 
       return [
         `[RP Response Perspective]`,
         instructions[perspective]
+      ].join("\n");
+    }
+
+    function buildRpResponseLengthInstruction(rpContext) {
+      if (!rpContext) {
+        return "";
+      }
+
+      const responseLength = normalizeRpResponseLength(rpContext.responseLength);
+      if (!responseLength) {
+        return "";
+      }
+
+      const targets = {
+        "up-to-300": "300 words or less",
+        "300-500": "300 to 500 words",
+        "500-700": "500 to 700 words",
+        "700-1000": "700 to 1000 words",
+        "1000-1500": "1000 to 1500 words",
+        "1500-2000": "1500 to 2000 words",
+        "2000-3000": "2000 to 3000 words"
+      };
+
+      return [
+        `[RP Response Length]`,
+        `Use this as a soft target, not a hard quota. Do not pad with filler or cut off a natural scene just to match it.`,
+        `Aim for about ${targets[responseLength]} unless the user's latest request clearly calls for a different length.`
       ].join("\n");
     }
 
@@ -12749,7 +12842,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
       return [
         `[RP Conversation Summary]`,
-        `The following summary condenses earlier RP turns that may not appear in the recent message window. Preserve established facts, relationship changes, promises, unresolved events, and continuity from it.`,
+        `This condenses earlier RP turns that may not appear in the recent message window. Preserve its facts, relationship changes, promises, unresolved events, and continuity.`,
         replaceRpPromptPlaceholders(summary, rpPlaceholders)
       ].join("\n");
     }
@@ -12762,7 +12855,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
       return [
         `[RP Scene State]`,
-        `Use this latest extracted scene state for current location, time, clothing, items, emotional state, injuries, posture, and other mutable scene details. If it conflicts with older messages or card defaults, treat this state as the newer continuity unless the user's latest message clearly changes it.`,
+        `Use this latest extracted scene state for location, time, clothing, items, emotions, injuries, posture, and other mutable details. If it conflicts with older context or card defaults, treat it as newer continuity unless the user's latest message clearly changes it.`,
         replaceRpPromptPlaceholders(sceneState, rpPlaceholders)
       ].join("\n");
     }
@@ -12779,7 +12872,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
       return [
         `[Author's Note - Highest Priority]`,
-        `The following author note is a high-priority RP direction for the next response. It is appended at the end of the full context so it stays near the completion target. Treat it as a strong steering instruction for tone, action, emotion, pacing, and scene detail.`,
+        `This author note is a high-priority direction for the next response. It is appended near the completion target, so treat it as strong guidance for tone, action, emotion, pacing, and scene detail.`,
         authorsNote
       ].join("\n");
     }
@@ -12795,6 +12888,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         character: getRpCardById("character", chat?.characterCardId || state.rp.activeCharacterId),
         persona: getActiveRpPersona(),
         responsePerspective: normalizeRpResponsePerspective(state.rp.responsePerspective),
+        responseLength: normalizeRpResponseLength(state.rp.responseLength),
         authorsNote: chat?.authorsNote || "",
         summary: shouldIncludeSummary ? (chat?.rpSummary || "") : "",
         sceneState: ""
@@ -13148,6 +13242,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         : DEFAULT_RP_RESPONSE_PERSPECTIVE;
     }
 
+    function normalizeRpResponseLength(value) {
+      return RP_RESPONSE_LENGTH_OPTIONS.includes(value)
+        ? value
+        : DEFAULT_RP_RESPONSE_LENGTH;
+    }
+
     function getUiLanguage() {
       return normalizeAppLanguage(state?.settings?.language);
     }
@@ -13473,6 +13573,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       ].forEach(([label, key]) => setLeadingLabelText(label, t(key)));
       applyTranslatedFieldLabels([
         [elements.rpResponsePerspectiveSelect, "rpResponsePerspective"],
+        [elements.rpResponseLengthSelect, "rpResponseLength"],
         [elements.rpSummaryTokenThresholdInput, "rpSummaryTokenThreshold"],
         [elements.rpSummaryMaxTokensInput, "rpSummaryMaxTokens"]
       ]);
@@ -13481,6 +13582,16 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         [elements.rpSummaryMaxTokensInput, "rpSummaryMaxTokensPlaceholder"]
       ]);
       setSelectOptionTexts(elements.rpResponsePerspectiveSelect, ["rpPerspectiveCharacter", "rpPerspectivePersona", "rpPerspectiveThird"]);
+      setSelectOptionTexts(elements.rpResponseLengthSelect, [
+        "rpResponseLengthUnset",
+        "rpResponseLengthUpTo300",
+        "rpResponseLength300To500",
+        "rpResponseLength500To700",
+        "rpResponseLength700To1000",
+        "rpResponseLength1000To1500",
+        "rpResponseLength1500To2000",
+        "rpResponseLength2000To3000"
+      ]);
       applyTranslatedIndexedTextContent(elements.settingsActionButtons, ["saveSettings", "restoreDefaults"]);
       applyTranslatedIndexedTextContent(elements.modelStatLabels, ["modelsCount", "lastSynced"]);
       applyTranslatedTextContent([
