@@ -3037,7 +3037,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section class="brand">
               <div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="8" y="8" width="48" height="48" rx="14" fill="currentColor"></rect><circle cx="32" cy="32" r="13" fill="none" stroke="#fff7ee" stroke-width="6"></circle><circle cx="46" cy="18" r="3" fill="#fff7ee" fill-opacity="0.9"></circle></svg><span>FocusAbove</span></div>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.5.5, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.5.6, ⓒ 2026 Fur-Abyss</p>
             </section>
 
             <div class="settings-tab-strip" role="tablist">
@@ -4545,6 +4545,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     let pendingImageAttachments = [];
     let storageDbPromise = null;
     let pendingStatePersistRequested = false;
+    let pendingIndexedDbMediaGcCandidateIds = new Set();
     let persistStateTimerId = 0;
     let persistStateInFlight = Promise.resolve();
     let isStatePersistWriteInFlight = false;
@@ -4612,6 +4613,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
       claimPrimaryTab({ skipActivation: true });
       if (isPrimaryTab) {
+        void garbageCollectIndexedDbMedia().catch((error) => {
+          console.error("Failed to run startup media sweep", error);
+        });
         ensureInitialChat();
       }
       resetModelSettingsDraft();
@@ -4898,8 +4902,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         if (storedState) {
           const normalizedState = normalizeStoredAppState(storedState);
           const secretHydration = await hydrateSettingsSecrets(normalizedState);
-          const mediaMigrated = await migrateStateMediaToIndexedDb(normalizedState);
-          if (secretHydration.hadPlaintextSecrets || mediaMigrated || !isSplitChatStorageState(storedState)) {
+          if (secretHydration.hadPlaintextSecrets || !isSplitChatStorageState(storedState)) {
             await writeStoredState(cloneStateForPersistence(normalizedState));
           }
           localStorage.removeItem(APP_STORAGE_KEY);
@@ -4908,7 +4911,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
         if (legacyState) {
           await hydrateSettingsSecrets(legacyState);
-          await migrateStateMediaToIndexedDb(legacyState);
           await writeStoredState(cloneStateForPersistence(legacyState));
           localStorage.removeItem(APP_STORAGE_KEY);
           return legacyState;
@@ -4940,18 +4942,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function normalizeStoredAppState(parsed) {
-      const legacyChat = Array.isArray(parsed?.chats)
-          ? parsed.chats.find((chat) => chat?.id === parsed?.activeChatId) || parsed.chats[0] || null
-          : null;
       const settingsTemperature = normalizeOptionalNumber(parsed?.settings?.temperature, { min: 0, max: 2 });
-      const legacyTemperature = normalizeOptionalNumber(legacyChat?.temperature, { min: 0, max: 2 });
       const settingsThinkingLimit = normalizeOptionalInteger(parsed?.settings?.thinkingTokenLimit, { min: 0 });
-      const legacyThinkingLimit = normalizeOptionalInteger(legacyChat?.thinkingTokenLimit, { min: 0 });
       const thinkingUnlimited = typeof parsed?.settings?.thinkingUnlimited === "boolean"
         ? parsed.settings.thinkingUnlimited
-        : typeof legacyChat?.thinkingUnlimited === "boolean"
-          ? legacyChat.thinkingUnlimited
-          : DEFAULT_SETTINGS.thinkingUnlimited;
+        : DEFAULT_SETTINGS.thinkingUnlimited;
       const smoothStreaming = typeof parsed?.settings?.smoothStreaming === "boolean"
         ? parsed.settings.smoothStreaming
         : DEFAULT_SETTINGS.smoothStreaming;
@@ -4959,7 +4954,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const chats = Array.isArray(parsed?.chats) ? parsed.chats.map(normalizeChat).filter(Boolean) : [];
       const rp = normalizeRpState(parsed?.rp);
       const activeMode = normalizeAppMode(parsed?.activeMode);
-      migrateLegacyAuthorsNoteToActiveChat(parsed, chats, rp, activeMode);
       const settings = {
         apiBaseUrl: parsed?.settings?.apiBaseUrl || DEFAULT_SETTINGS.apiBaseUrl,
         apiKey: parsed?.settings?.apiKey || DEFAULT_SETTINGS.apiKey,
@@ -4975,19 +4969,17 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           : DEFAULT_SETTINGS.chatT2iEnabled,
         selectedModel: typeof parsed?.settings?.selectedModel === "string"
           ? parsed.settings.selectedModel
-          : typeof legacyChat?.model === "string"
-            ? legacyChat.model
             : DEFAULT_SETTINGS.selectedModel,
         auxiliaryModel: typeof parsed?.settings?.auxiliaryModel === "string"
           ? parsed.settings.auxiliaryModel
           : DEFAULT_SETTINGS.auxiliaryModel,
-        systemPrompt: deriveGlobalSystemPrompt(parsed, chats, rp, activeMode),
+        systemPrompt: typeof parsed?.settings?.systemPrompt === "string" ? parsed.settings.systemPrompt : DEFAULT_SETTINGS.systemPrompt,
         forbiddenWords: normalizeForbiddenWords(parsed?.settings?.forbiddenWords),
         promptPresets: normalizePromptPresets(parsed?.settings?.promptPresets),
-        temperature: settingsTemperature ?? legacyTemperature ?? DEFAULT_SETTINGS.temperature,
+        temperature: settingsTemperature ?? DEFAULT_SETTINGS.temperature,
         thinkingTokenLimit: thinkingUnlimited
           ? null
-          : settingsThinkingLimit ?? legacyThinkingLimit ?? DEFAULT_SETTINGS.thinkingTokenLimit,
+          : settingsThinkingLimit ?? DEFAULT_SETTINGS.thinkingTokenLimit,
         thinkingUnlimited
       };
 
@@ -5009,46 +5001,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return parsed?.chatStorage === "split" || Number(parsed?.storageVersion || 0) >= APP_SPLIT_CHAT_STORAGE_VERSION;
     }
 
-    function migrateLegacyAuthorsNoteToActiveChat(parsed, chats, rp, activeMode) {
-      const legacyAuthorsNote = typeof parsed?.authorsNote === "string" ? parsed.authorsNote : "";
-      if (!legacyAuthorsNote.trim()) {
-        return;
-      }
-
-      const targetChat = activeMode === "rp"
-        ? getLegacyActiveRpChat(parsed, rp)
-        : chats.find((chat) => chat.id === parsed?.activeChatId) || chats[0] || null;
-      if (targetChat && !String(targetChat.authorsNote || "").trim()) {
-        targetChat.authorsNote = legacyAuthorsNote;
-      }
-    }
-
-    function getLegacyActiveRpChat(parsed, rp) {
-      const activeCharacterId = rp?.activeCharacterId || "";
-      const activeChatId = rp?.activeChatIdsByCharacterId?.[activeCharacterId] || parsed?.activeChatId || "";
-      const chats = Array.isArray(rp?.chatsByCharacterId?.[activeCharacterId]) ? rp.chatsByCharacterId[activeCharacterId] : [];
-      return chats.find((chat) => chat.id === activeChatId) || chats[0] || null;
-    }
-
-    function deriveGlobalSystemPrompt(parsed, chats, rpState, activeMode) {
-      if (typeof parsed?.settings?.systemPrompt === "string") {
-        return parsed.settings.systemPrompt;
-      }
-
-      if (activeMode === "rp") {
-        const activeCharacterId = rpState?.activeCharacterId || "";
-        const activeChatId = rpState?.activeChatIdsByCharacterId?.[activeCharacterId] || "";
-        const activeChats = Array.isArray(rpState?.chatsByCharacterId?.[activeCharacterId])
-          ? rpState.chatsByCharacterId[activeCharacterId]
-          : [];
-        const activeRpChat = activeChats.find((chat) => chat.id === activeChatId) || activeChats[0] || null;
-        return activeRpChat?.systemPrompt || "";
-      }
-
-      const activeChat = chats.find((chat) => chat.id === parsed?.activeChatId) || chats[0] || null;
-      return activeChat?.systemPrompt || "";
-    }
-
     function normalizePromptPresets(value) {
       return Array.isArray(value)
         ? value.map(normalizePromptPreset).filter(Boolean)
@@ -5058,7 +5010,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     function normalizeForbiddenWords(value) {
       if (Array.isArray(value)) {
         return value
-          .map((entry) => String(entry || "").trim())
+          .map(trimmed)
           .filter(Boolean);
       }
 
@@ -5212,7 +5164,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return null;
       }
 
-      const id = String(model.id || model.title || model.model_name || model.name || model.filename || "").trim();
+      const id = trimmed(model.id || model.title || model.model_name || model.name || model.filename);
       if (!id) {
         return null;
       }
@@ -5288,7 +5240,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         firstMessage: kind === "character" && typeof card.firstMessage === "string" ? card.firstMessage : "",
         isWorldCard,
         mainCharacterDescription: isWorldCard && typeof card.mainCharacterDescription === "string" ? card.mainCharacterDescription : "",
-        profileImage: normalizeCardProfileImage(card.profileImage || card.image || card.avatar),
+        profileImage: normalizeCardProfileImage(card.profileImage),
         createdAt: typeof card.createdAt === "string" ? card.createdAt : new Date().toISOString(),
         updatedAt: typeof card.updatedAt === "string" ? card.updatedAt : new Date().toISOString()
       };
@@ -5641,30 +5593,104 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       });
     }
 
-    async function migrateStateMediaToIndexedDb(targetState) {
-      if (!supportsIndexedDb()) {
-        return false;
-      }
+    function collectReferencedMediaIdsFromMessages(messages, mediaIds = new Set(), filterSet = null) {
+      (Array.isArray(messages) ? messages : []).forEach((message) => {
+        normalizeImageAttachments(message?.attachments).forEach((attachment) => {
+          const mediaId = trimmed(attachment?.mediaId);
+          if (mediaId && (!filterSet || filterSet.has(mediaId))) {
+            mediaIds.add(mediaId);
+          }
+        });
 
-      const attachments = [];
-      forEachStateImageAttachment(targetState, (attachment) => {
-        if (attachment?.dataUrl) {
-          attachments.push(attachment);
+        const illustrationMediaId = trimmed(message?.illustration?.image?.mediaId);
+        if (illustrationMediaId && (!filterSet || filterSet.has(illustrationMediaId))) {
+          mediaIds.add(illustrationMediaId);
         }
       });
+      return mediaIds;
+    }
 
-      if (!attachments.length) {
-        return false;
+    function requestIndexedDbMediaGc(mediaIds) {
+      if (!supportsIndexedDb()) {
+        return;
       }
 
-      for (const attachment of attachments) {
-        const mediaId = attachment.mediaId || createId("media");
-        await writeMediaRecord(mediaId, attachment, { cache: false });
-        attachment.mediaId = mediaId;
-        attachment.dataUrl = "";
+      (mediaIds instanceof Set ? [...mediaIds] : Array.isArray(mediaIds) ? mediaIds : [mediaIds]).forEach((mediaId) => {
+        const normalizedMediaId = trimmed(mediaId);
+        if (normalizedMediaId) {
+          pendingIndexedDbMediaGcCandidateIds.add(normalizedMediaId);
+        }
+      });
+    }
+
+    async function collectReferencedMediaIdsForStoredChat(chatOrId, mediaIds = new Set()) {
+      const chat = typeof chatOrId === "string" ? findChatById(chatOrId) : chatOrId;
+      const chatId = chat?.id || (typeof chatOrId === "string" ? chatOrId : "");
+      if (chat?.messagesLoaded !== false || !supportsIndexedDb() || !chatId) {
+        return collectReferencedMediaIdsFromMessages(chat?.messages, mediaIds);
       }
 
-      return true;
+      try {
+        const record = await readChatMessagesFromIndexedDb(chatId);
+        return collectReferencedMediaIdsFromMessages(record?.messages, mediaIds);
+      } catch (error) {
+        console.error("Failed to inspect chat media references", error);
+      }
+
+      return mediaIds;
+    }
+
+    async function garbageCollectIndexedDbMedia(candidateMediaIds) {
+      if (!supportsIndexedDb()) {
+        return 0;
+      }
+
+      const normalizedCandidateIds = candidateMediaIds
+        ? [...(candidateMediaIds instanceof Set ? candidateMediaIds : new Set(candidateMediaIds || []))]
+          .map(trimmed)
+          .filter(Boolean)
+        : null;
+      if (candidateMediaIds && !normalizedCandidateIds.length) {
+        return 0;
+      }
+
+      const candidateIdSet = normalizedCandidateIds ? new Set(normalizedCandidateIds) : null;
+      const [metadataState, chatRecords, mediaRecords] = await Promise.all([
+        readStateFromIndexedDb(),
+        readIndexedDbRecordsByKeyPrefix(APP_CHAT_RECORD_PREFIX),
+        candidateIdSet ? [] : readIndexedDbRecordsByKeyPrefix(APP_MEDIA_RECORD_PREFIX)
+      ]);
+
+      if (!candidateIdSet && !mediaRecords.length) {
+        return 0;
+      }
+
+      const referencedMediaIds = new Set();
+      forEachStateImageAttachment(metadataState, (attachment) => {
+        const mediaId = trimmed(attachment?.mediaId);
+        if (mediaId && (!candidateIdSet || candidateIdSet.has(mediaId))) {
+          referencedMediaIds.add(mediaId);
+        }
+      });
+      chatRecords.forEach((record) => {
+        collectReferencedMediaIdsFromMessages(record?.value?.messages, referencedMediaIds, candidateIdSet);
+      });
+
+      const staleRecordKeys = candidateIdSet
+        ? normalizedCandidateIds.filter((mediaId) => !referencedMediaIds.has(mediaId)).map((mediaId) => `${APP_MEDIA_RECORD_PREFIX}${mediaId}`)
+        : mediaRecords
+          .map((record) => String(record?.id || ""))
+          .filter((recordKey) => recordKey.startsWith(APP_MEDIA_RECORD_PREFIX))
+          .filter((recordKey) => !referencedMediaIds.has(recordKey.slice(APP_MEDIA_RECORD_PREFIX.length)));
+      if (!staleRecordKeys.length) {
+        return 0;
+      }
+
+      await Promise.all(staleRecordKeys.map((recordKey) => deleteIndexedDbRecord(recordKey)));
+      staleRecordKeys.forEach((recordKey) => {
+        mediaDataUrlCache.delete(recordKey.slice(APP_MEDIA_RECORD_PREFIX.length));
+      });
+      return staleRecordKeys.length;
     }
 
     async function hydrateSettingsSecrets(nextState) {
@@ -5973,7 +5999,16 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         .catch(() => {})
         .then(async () => {
           isStatePersistWriteInFlight = true;
+          const indexedDbMediaGcCandidateIds = new Set(pendingIndexedDbMediaGcCandidateIds);
+          pendingIndexedDbMediaGcCandidateIds.clear();
           await writeStoredState(snapshot);
+          if (indexedDbMediaGcCandidateIds.size) {
+            try {
+              await garbageCollectIndexedDbMedia(indexedDbMediaGcCandidateIds);
+            } catch (error) {
+              console.error("Failed to garbage collect unused media records", error);
+            }
+          }
           signalStateSync();
         })
         .catch((error) => {
@@ -6010,7 +6045,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return {
         id: typeof chat.id === "string" && chat.id ? chat.id : createId("chat"),
         title: typeof chat.title === "string" && chat.title.trim() ? chat.title.trim() : suggestChatTitle(messages),
-        systemPrompt: typeof chat.systemPrompt === "string" ? chat.systemPrompt : "",
         authorsNote: typeof chat.authorsNote === "string" ? chat.authorsNote : "",
         rpSummary: typeof chat.rpSummary === "string" ? chat.rpSummary : "",
         rpSummaryUpdatedMessageCount: normalizeOptionalInteger(chat.rpSummaryUpdatedMessageCount, { min: 0 }) ?? 0,
@@ -6383,12 +6417,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         ? (Array.isArray(existingRpChats) ? existingRpChats.length + 1 : 1)
         : state.chats.length + 1;
       const characterCard = characterCardId ? getRpCardById("character", characterCardId) : null;
-      const firstMessage = String(characterCard?.firstMessage || "").trim();
+      const firstMessage = trimmed(characterCard?.firstMessage);
       const messages = firstMessage ? [createRpFirstMessageMessage(characterCardId, firstMessage, createdAt)] : [];
       return {
         id: createId("chat"),
         title: t("newChatTitle", { count: titleNumber }),
-        systemPrompt: "",
         authorsNote: "",
         rpSummary: "",
         rpSummaryUpdatedMessageCount: 0,
@@ -6424,7 +6457,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return false;
       }
 
-      const firstMessage = String(characterCard.firstMessage || "").trim();
+      const firstMessage = trimmed(characterCard.firstMessage);
       if (!firstMessage) {
         return false;
       }
@@ -6989,7 +7022,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function getCardInitial(name, fallback = "?") {
-      const value = String(name || "").trim();
+      const value = trimmed(name);
       return value ? value.slice(0, 1).toUpperCase() : fallback;
     }
 
@@ -7330,7 +7363,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         chat.title = nextTitle;
         chat.titleManuallyEdited = true;
         chat.updatedAt = new Date().toISOString();
-        setTabsStatus(t("tabRenamed"), "success");
+        setChatStatus(t("tabRenamed"), "success");
       }
 
       editingChatId = "";
@@ -7557,7 +7590,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         const item = createElementWithClass("article", "prompt-preset-item");
         const main = createElementWithClass("div", "prompt-preset-item-main");
         const name = createElementWithClass("div", "prompt-preset-item-name", preset.name);
-        const preview = createElementWithClass("p", "prompt-preset-item-preview", String(preset.prompt || "").trim() || "...");
+        const preview = createElementWithClass("p", "prompt-preset-item-preview", trimmed(preset.prompt) || "...");
 
         main.append(name, preview);
 
@@ -8108,7 +8141,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function getActiveChatAuthorsNote() {
-      return String(getActiveChat()?.authorsNote || "").trim();
+      return trimmed(getActiveChat()?.authorsNote);
     }
 
     function handleModelSettingsSave() {
@@ -8763,7 +8796,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return;
       }
 
-      card.name = String(draft.name || "").trim() || card.name;
+      const previousProfileMediaId = trimmed(card.profileImage?.mediaId);
+      const nextProfileMediaId = trimmed(draft.profileImage?.mediaId);
+      if (previousProfileMediaId && previousProfileMediaId !== nextProfileMediaId) {
+        requestIndexedDbMediaGc(previousProfileMediaId);
+      }
+
+      card.name = trimmed(draft.name) || card.name;
       card.description = String(draft.description || "");
       if (kind === "character") {
         card.isWorldCard = Boolean(draft.isWorldCard);
@@ -8818,7 +8857,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
     }
 
-    function deleteRpCard(kind) {
+    async function deleteRpCard(kind) {
       const activeCard = getActiveRpCard(kind);
       if (!activeCard) {
         return;
@@ -8828,6 +8867,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (!shouldDelete) {
         return;
       }
+
+      const removedMediaIds = new Set();
+      if (activeCard.profileImage?.mediaId) {
+        removedMediaIds.add(activeCard.profileImage.mediaId);
+      }
+      if (kind === "character") {
+        await Promise.all(getRpChatsForCharacterId(activeCard.id).map((chat) => collectReferencedMediaIdsForStoredChat(chat, removedMediaIds)));
+      }
+      requestIndexedDbMediaGc(removedMediaIds);
 
       const cards = getRpCardCollection(kind);
       if (cards.length === 1) {
@@ -8982,7 +9030,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
 
       let profileImage = null;
-      const imageFileName = String(manifest?.card?.imageFileName || "").trim();
+      const imageFileName = trimmed(manifest?.card?.imageFileName);
       if (imageFileName) {
         const imageEntry = zip.file(imageFileName);
         if (!imageEntry) {
@@ -9003,7 +9051,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return {
         id: createId(`${expectedKind}-card`),
         kind: expectedKind,
-        name: String(manifest?.card?.name || "").trim() || t("newKindName", { kind: getRpCardKindLabel(expectedKind) }),
+        name: trimmed(manifest?.card?.name) || t("newKindName", { kind: getRpCardKindLabel(expectedKind) }),
         description: String(manifest?.card?.description || ""),
         isWorldCard: expectedKind === "character" ? normalizeWorldCardFlag(manifest?.card?.IsWorldCard) : false,
         mainCharacterDescription: expectedKind === "character" && normalizeWorldCardFlag(manifest?.card?.IsWorldCard)
@@ -9055,7 +9103,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         header: true
       });
       requestInactiveChatUnload();
-      setTabsStatus(t("newChatTabCreated"), "success");
+      setChatStatus(t("newChatTabCreated"), "success");
     }
 
     async function deleteChatById(chatId) {
@@ -9069,6 +9117,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (!shouldDelete) {
         return;
       }
+
+      requestIndexedDbMediaGc(await collectReferencedMediaIdsForStoredChat(chat));
 
       if (isRpModeActive()) {
         state.rp.chatsByCharacterId[state.rp.activeCharacterId] = chats.filter((item) => item.id !== chat.id);
@@ -9088,7 +9138,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         composerControls: true,
         header: true
       });
-      setTabsStatus(t("chatTabDeleted"), "success");
+      setChatStatus(t("chatTabDeleted"), "success");
     }
 
     function renameActiveChat() {
@@ -9102,13 +9152,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
     async function exportChatToJson(chatId) {
       if (!isPrimaryTab) {
-        setTabsStatus(t("activeTabOnlyExport"), "error");
+        setChatStatus(t("activeTabOnlyExport"), "error");
         return;
       }
 
       const chat = await ensureChatMessagesLoaded(chatId);
       if (!chat) {
-        setTabsStatus(t("exportChatNotFound"), "error");
+        setChatStatus(t("exportChatNotFound"), "error");
         return;
       }
 
@@ -9130,7 +9180,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       URL.revokeObjectURL(downloadUrl);
 
       requestInactiveChatUnload();
-      setTabsStatus(t("tabJsonExported", { title: chat.title }), "success");
+      setChatStatus(t("tabJsonExported", { title: chat.title }), "success");
     }
 
     async function hydrateImageAttachmentForExport(attachment) {
@@ -9154,7 +9204,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
     function triggerImportChats() {
       if (!isPrimaryTab) {
-        setTabsStatus(t("activeTabOnlyImport"), "error");
+        setChatStatus(t("activeTabOnlyImport"), "error");
         return;
       }
 
@@ -9170,7 +9220,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
 
       if (!isPrimaryTab) {
-        setTabsStatus(t("activeTabOnlyImport"), "error");
+        setChatStatus(t("activeTabOnlyImport"), "error");
         return;
       }
 
@@ -9195,10 +9245,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           header: true
         });
         requestInactiveChatUnload();
-        setTabsStatus(t("tabsImported", { count: importedChats.length }), "success");
+        setChatStatus(t("tabsImported", { count: importedChats.length }), "success");
       } catch (error) {
         console.error("Failed to import chats", error);
-        setTabsStatus(t("importFailed", { error: error.message }), "error");
+        setChatStatus(t("importFailed", { error: error.message }), "error");
       }
     }
 
@@ -9293,6 +9343,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return;
       }
 
+      requestIndexedDbMediaGc(collectReferencedMediaIdsFromMessages(activeChat.messages));
+
       editingMessageId = "";
       activeChat.messages = [];
       activeChat.updatedAt = new Date().toISOString();
@@ -9317,6 +9369,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         editingMessageId = "";
       }
 
+      const targetMessage = chat.messages.find((message) => message.id === messageId);
+      requestIndexedDbMediaGc(collectReferencedMediaIdsFromMessages(targetMessage ? [targetMessage] : []));
       chat.messages = chat.messages.filter((message) => message.id !== messageId);
       chat.updatedAt = new Date().toISOString();
       renderAppSections({
@@ -9704,7 +9758,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         && hasAuxiliaryModel()
         && normalizeImageApiBase(state.settings.imageApiBaseUrl)
         && userMessage?.role === "user"
-        && String(userMessage.content || "").trim();
+        && hasText(userMessage.content);
     }
 
     async function prepareChatT2iPrompt(chat, userMessage, options = {}) {
@@ -9731,18 +9785,18 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     function shouldNotifyMissingAuxiliaryIllustrationModel() {
       return isRpModeActive()
         && normalizeRpIllustrationSettings(state.rp?.illustration).enabled
-        && !String(state.settings.auxiliaryModel || "").trim();
+        && !hasText(state.settings.auxiliaryModel);
     }
 
     function shouldNotifyMissingIllustrationImageApi() {
       return isRpModeActive()
         && normalizeRpIllustrationSettings(state.rp?.illustration).enabled
-        && String(state.settings.auxiliaryModel || "").trim()
+        && hasText(state.settings.auxiliaryModel)
         && !normalizeImageApiBase(state.settings.imageApiBaseUrl);
     }
 
     function hasAuxiliaryModel() {
-      return Boolean(String(state.settings.auxiliaryModel || "").trim());
+      return hasText(state.settings.auxiliaryModel);
     }
 
     function isRpChat(chat) {
@@ -9765,7 +9819,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
     function getMainRequestRpSummaryBoundary(chat, sourceMessages) {
       const messages = Array.isArray(sourceMessages) ? sourceMessages : [];
-      if (!shouldUseRpSummary(chat) || !String(chat?.rpSummary || "").trim()) {
+      if (!shouldUseRpSummary(chat) || !hasText(chat?.rpSummary)) {
         return 0;
       }
 
@@ -9838,6 +9892,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         ? normalizeMessageIllustration(targetAssistant.illustration)?.prompt || ""
         : "";
 
+      requestIndexedDbMediaGc(collectReferencedMediaIdsFromMessages(activeChat.messages.slice(assistantIndex)));
       activeChat.messages = activeChat.messages.slice(0, assistantIndex);
       activeChat.updatedAt = new Date().toISOString();
       renderAppSections({
@@ -10031,7 +10086,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return false;
       }
 
-      if (!String(state.settings.auxiliaryModel || "").trim()) {
+      if (!hasText(state.settings.auxiliaryModel)) {
         return false;
       }
 
@@ -10052,6 +10107,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const targetMessage = findMessageInChat(chat, assistantMessage.id);
       if (!targetMessage || targetMessage.status !== "complete") {
         return;
+      }
+
+      if (targetMessage.illustration?.image?.mediaId) {
+        requestIndexedDbMediaGc(targetMessage.illustration.image.mediaId);
       }
 
       targetMessage.illustration = {
@@ -10357,7 +10416,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function estimateTextTokens(value) {
-      const text = String(value || "").trim();
+      const text = trimmed(value);
       if (!text) {
         return 0;
       }
@@ -10372,7 +10431,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
     function getRpSummarySourceMessages(chat) {
       const messages = getSummarizableRpMessages(chat);
-      if (!String(chat?.rpSummary || "").trim()) {
+      if (!hasText(chat?.rpSummary)) {
         return messages;
       }
 
@@ -10385,7 +10444,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     async function enhanceRpUserInput(chat, content, options = {}) {
-      const baseContent = String(content || "").trim() || getRpDefaultContinuationInput();
+      const baseContent = trimmed(content) || getRpDefaultContinuationInput();
       const wasEmptyInput = Boolean(options.wasEmptyInput);
       const isContinuationRequest = wasEmptyInput || isRpContinueInput(baseContent);
       const character = getRpCardById("character", chat?.characterCardId || state.rp.activeCharacterId);
@@ -10529,7 +10588,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
     async function requestAuxiliaryChatCompletion(messages, options = {}) {
       const apiBase = normalizeApiBase(state.settings.apiBaseUrl);
-      const auxiliaryModel = String(state.settings.auxiliaryModel || "").trim();
+      const auxiliaryModel = trimmed(state.settings.auxiliaryModel);
       if (!apiBase || !auxiliaryModel) {
         return "";
       }
@@ -10713,7 +10772,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
 
       const apiBase = normalizeApiBase(state.settings.apiBaseUrl);
-      const auxiliaryModel = String(state.settings.auxiliaryModel || "").trim();
+      const auxiliaryModel = trimmed(state.settings.auxiliaryModel);
       if (!apiBase || !auxiliaryModel) {
         throw new Error(t("selectModelRequired"));
       }
@@ -11549,7 +11608,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function getAssistantAuxiliaryStatusKey(message) {
-      return String(message?.auxiliaryStatus || "").trim();
+      return trimmed(message?.auxiliaryStatus);
     }
 
     function shouldDeferAssistantIllustrationImage(message, chat) {
@@ -11700,7 +11759,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function buildMessageRpSceneStateElement(message) {
-      const sceneState = String(message?.rpSceneState || "").trim();
+      const sceneState = trimmed(message?.rpSceneState);
       if (!sceneState || message?.role !== "assistant") {
         return null;
       }
@@ -12124,7 +12183,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function parseSupportedImageDataUrl(dataUrl) {
-      const match = String(dataUrl || "").trim().match(/^data:([^;,]+);base64,([\s\S]+)$/i);
+      const match = trimmed(dataUrl).match(/^data:([^;,]+);base64,([\s\S]+)$/i);
       const mimeType = normalizeSupportedImageMimeType(match?.[1]);
       if (!match || !mimeType) {
         throw new Error(t("unsupportedImportedImageFormat"));
@@ -12150,7 +12209,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function normalizeSupportedImageMimeType(mimeType) {
-      const value = String(mimeType || "").trim().toLowerCase();
+      const value = trimmed(mimeType).toLowerCase();
       if (/^image\/jpe?g$/.test(value)) {
         return "image/jpeg";
       }
@@ -12536,7 +12595,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function looksLikeInlineMath(text) {
-      const normalized = String(text || "").trim();
+      const normalized = trimmed(text);
       if (!normalized) {
         return false;
       }
@@ -12607,11 +12666,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const requestMessages = await Promise.all(messages
         .filter((message) => message.role === "user" || message.role === "assistant")
         .map((message) => buildApiRequestMessage(message, rpPlaceholders)));
-      const normalizedPrompt = replaceRpPromptPlaceholders(String(systemPrompt || "").trim(), rpPlaceholders);
-      const normalizedUserAlias = String(rpContext?.persona?.name || state.settings.userAlias || DEFAULT_SETTINGS.userAlias).trim();
-      const normalizedModelAlias = String(rpContext?.character?.name || state.settings.modelAlias || DEFAULT_SETTINGS.modelAlias).trim();
+      const normalizedPrompt = replaceRpPromptPlaceholders(trimmed(systemPrompt), rpPlaceholders);
+      const normalizedUserAlias = trimmed(rpContext?.persona?.name || state.settings.userAlias || DEFAULT_SETTINGS.userAlias);
+      const normalizedModelAlias = trimmed(rpContext?.character?.name || state.settings.modelAlias || DEFAULT_SETTINGS.modelAlias);
       const appLanguage = normalizeAppLanguage(state.settings.language);
-      const selectedModel = String(state.settings.selectedModel || "").trim();
+      const selectedModel = trimmed(state.settings.selectedModel);
       const systemInstructions = [];
 
       systemInstructions.push(buildResponseLanguageInstruction(appLanguage));
@@ -12718,8 +12777,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
 
       return {
-        char: String(rpContext.character?.name || "Unnamed Character").trim() || "Unnamed Character",
-        user: String(rpContext.persona?.name || "Unnamed Persona").trim() || "Unnamed Persona"
+        char: trimmed(rpContext.character?.name || "Unnamed Character") || "Unnamed Character",
+        user: trimmed(rpContext.persona?.name || "Unnamed Persona") || "Unnamed Persona"
       };
     }
 
@@ -12835,7 +12894,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function buildRpSummaryInstruction(rpContext, rpPlaceholders = null) {
-      const summary = String(rpContext?.summary || "").trim();
+      const summary = trimmed(rpContext?.summary);
       if (!summary) {
         return "";
       }
@@ -12848,7 +12907,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function buildRpSceneStateInstruction(rpContext, rpPlaceholders = null) {
-      const sceneState = String(rpContext?.sceneState || "").trim();
+      const sceneState = trimmed(rpContext?.sceneState);
       if (!sceneState) {
         return "";
       }
@@ -12865,7 +12924,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return "";
       }
 
-      const authorsNote = String(rpContext.authorsNote || "").trim();
+      const authorsNote = trimmed(rpContext.authorsNote);
       if (!authorsNote) {
         return "";
       }
@@ -13121,13 +13180,21 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function extractBase64Payload(dataUrl) {
-      const value = String(dataUrl || "").trim();
+      const value = trimmed(dataUrl);
       const match = value.match(/^data:[^;,]+;base64,(.+)$/i);
       return match?.[1] || "";
     }
 
+    function trimmed(value) {
+      return String(value || "").trim();
+    }
+
+    function hasText(value) {
+      return Boolean(trimmed(value));
+    }
+
     function normalizeApiBase(rawValue) {
-      const value = String(rawValue || "").trim().replace(/\/+$/, "");
+      const value = trimmed(rawValue).replace(/\/+$/, "");
       if (!value) {
         return "";
       }
@@ -13148,33 +13215,27 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function normalizeImageApiBase(rawValue) {
-      return String(rawValue || "")
-        .trim()
+      return trimmed(rawValue)
         .replace(/\/+$/, "")
         .replace(/\/sdapi\/v1\/txt2img$/i, "")
         .replace(/\/prompt$/i, "");
     }
 
-    function buildHeaders() {
+    function buildBearerHeaders(apiKey) {
       const headers = {};
-      const apiKey = state.settings.apiKey.trim();
-      if (apiKey) {
-        headers.Authorization = `Bearer ${apiKey}`;
+      const value = trimmed(apiKey);
+      if (value) {
+        headers.Authorization = `Bearer ${value}`;
       }
       return headers;
+    }
+
+    function buildHeaders() {
+      return buildBearerHeaders(state.settings.apiKey);
     }
 
     function buildImageApiHeaders() {
-      const headers = {};
-      const apiKey = String(state.settings.imageApiKey || "").trim();
-      if (apiKey) {
-        headers.Authorization = `Bearer ${apiKey}`;
-      }
-      return headers;
-    }
-
-    function setTabsStatus(message, tone = "default") {
-      showChatStatusToast(message, tone);
+      return buildBearerHeaders(state.settings.imageApiKey);
     }
 
     function setChatStatus(message, tone = "default") {
@@ -13186,16 +13247,16 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return;
       }
 
-      setChatStatus(message, tone);
+      showChatStatusToast(message, tone);
     }
 
     function normalizeOptionalNumber(value, options = {}) {
-      const trimmed = String(value ?? "").trim();
-      if (!trimmed) {
+      const text = String(value ?? "").trim();
+      if (!text) {
         return null;
       }
 
-      const parsed = Number(trimmed);
+      const parsed = Number(text);
       if (!Number.isFinite(parsed)) {
         return null;
       }
@@ -13229,7 +13290,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         ? navigator.languages
         : [navigator.language, navigator.userLanguage].filter(Boolean);
 
-      return locales.some((locale) => /^ko(?:[-_]|$)/i.test(String(locale || "").trim())) ? "ko" : "en";
+      return locales.some((locale) => /^ko(?:[-_]|$)/i.test(trimmed(locale))) ? "ko" : "en";
     }
 
     function normalizeAppLanguage(value) {
@@ -13294,14 +13355,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function isStreamingThinkingPlaceholder(text) {
-      const normalizedText = String(text || "").trim();
+      const normalizedText = trimmed(text);
       if (!normalizedText) {
         return false;
       }
 
       return SUPPORTED_APP_LANGUAGES.some((language) => {
         const placeholder = UI_STRINGS[language]?.streamingThinking;
-        return normalizedText === String(placeholder || "").trim();
+        return normalizedText === trimmed(placeholder);
       });
     }
 
