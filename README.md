@@ -18,15 +18,17 @@ Live Web App: https://chat.furabyss.com
 |          Chat Mode          |
 | :--------------------------: |
 | ![Screenshot 1][screenshot1] |
+| ![Screenshot 2][screenshot2] |
 
 |           RP Mode           |
 | :--------------------------: |
-| ![Screenshot 2][screenshot2] |
 | ![Screenshot 3][screenshot3] |
+| ![Screenshot 4][screenshot4] |
 
 [screenshot1]: https://github.com/furabyss/FocusAbove/blob/main/Screenshot/01.png
 [screenshot2]: https://github.com/furabyss/FocusAbove/blob/main/Screenshot/02.png
 [screenshot3]: https://github.com/furabyss/FocusAbove/blob/main/Screenshot/03.png
+[screenshot4]: https://github.com/furabyss/FocusAbove/blob/main/Screenshot/04.png
 
 # Support Languages
 - Korean
