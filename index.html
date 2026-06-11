@@ -3053,7 +3053,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section class="brand">
               <a class="brand-mark-link" href="https://github.com/furabyss/FocusAbove" target="_blank" rel="noopener noreferrer"><div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="8" y="8" width="48" height="48" rx="14" fill="currentColor"></rect><circle cx="32" cy="32" r="13" fill="none" stroke="#fff7ee" stroke-width="6"></circle><circle cx="46" cy="18" r="3" fill="#fff7ee" fill-opacity="0.9"></circle></svg><span>FocusAbove</span></div></a>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.6.0, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.6.1, ⓒ 2026 Fur-Abyss</p>
             </section>
 
             <div class="settings-tab-strip" role="tablist">
@@ -4603,6 +4603,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     let postResponseStatusRunId = 0;
     let editingMessageId = "";
     let chatStatusToastTimerId = 0;
+    let chatStatusToastHideFrameId = 0;
     let isPrimaryTab = false;
     let tabLockIntervalId = 0;
     let pendingImageAttachments = [];
@@ -4650,6 +4651,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     let renderedMessageChatId = "";
     let renderedMessageCount = INITIAL_MESSAGE_RENDER_LIMIT;
     let isLoadingOlderMessages = false;
+    let olderMessagesLoadCheckFrameId = 0;
     let chatMessageLoadPromises = new Map();
     let persistedChatRecordIds = new Set();
     let currentActiveChatLoadRequestId = 0;
@@ -4960,9 +4962,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
 
     function handleWindowScroll() {
-      maybeLoadOlderMessagesOnScroll();
-      if (currentStreamingMessageId) {
-        streamingAutoScrollPinnedToBottom = isPageNearBottom();
+      if (!olderMessagesLoadCheckFrameId) {
+        olderMessagesLoadCheckFrameId = window.requestAnimationFrame(() => {
+          olderMessagesLoadCheckFrameId = 0;
+          maybeLoadOlderMessagesOnScroll();
+          if (currentStreamingMessageId) {
+            streamingAutoScrollPinnedToBottom = isPageNearBottom();
+          }
+        });
       }
     }
 
@@ -7557,6 +7564,41 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return createElementWithClass("div", "older-messages-sentinel", t("olderMessagesLoading"));
     }
 
+    function prependOlderMessagesForActiveChat(chat, previousRenderedCount) {
+      if (!chat || renderedMessageChatId !== chat.id || !elements.messageStream?.childElementCount) {
+        return false;
+      }
+
+      const messages = Array.isArray(chat.messages) ? chat.messages : [];
+      const nextRenderedCount = Math.min(messages.length, Math.max(INITIAL_MESSAGE_RENDER_LIMIT, renderedMessageCount));
+      const startIndex = Math.max(0, messages.length - nextRenderedCount);
+      const endIndex = Math.max(0, messages.length - previousRenderedCount);
+      const nextMessages = messages.slice(startIndex, endIndex);
+      if (!nextMessages.length) {
+        return false;
+      }
+
+      const fragment = document.createDocumentFragment();
+      nextMessages.forEach((message) => {
+        const article = buildMessageArticle(chat, message);
+        fragment.appendChild(article);
+        cacheMessageArticleElements(article);
+      });
+
+      const sentinel = elements.messageStream.querySelector(".older-messages-sentinel");
+      if (sentinel) {
+        sentinel.after(fragment);
+        if (nextRenderedCount >= messages.length) {
+          sentinel.remove();
+        }
+      } else {
+        elements.messageStream.prepend(fragment);
+      }
+
+      renderedMessageCount = nextRenderedCount;
+      return true;
+    }
+
     function maybeLoadOlderMessagesOnScroll() {
       if (isLoadingOlderMessages || isSending) {
         return;
@@ -7578,8 +7620,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
       isLoadingOlderMessages = true;
       const previousScrollHeight = scrollRoot.scrollHeight;
+      const previousRenderedCount = renderedMessageCount;
       renderedMessageCount = Math.min(messages.length, renderedMessageCount + MESSAGE_RENDER_BATCH_SIZE);
-      renderActiveChat();
+      const prepended = prependOlderMessagesForActiveChat(activeChat, previousRenderedCount);
+      if (!prepended) {
+        renderActiveChat();
+      }
       requestAnimationFrame(() => {
         const nextScrollHeight = scrollRoot.scrollHeight;
         scrollRoot.scrollTop += Math.max(0, nextScrollHeight - previousScrollHeight);
@@ -14831,6 +14877,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return;
       }
 
+      if (chatStatusToastHideFrameId) {
+        window.cancelAnimationFrame(chatStatusToastHideFrameId);
+        chatStatusToastHideFrameId = 0;
+      }
+
       if (chatStatusToastTimerId) {
         window.clearTimeout(chatStatusToastTimerId);
         chatStatusToastTimerId = 0;
@@ -14842,11 +14893,16 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       element.setAttribute("aria-hidden", "false");
 
       const duration = tone === "error" ? 2200 : 1500;
-      chatStatusToastTimerId = window.setTimeout(() => {
-        element.className = "status-toast";
-        element.setAttribute("aria-hidden", "true");
-        chatStatusToastTimerId = 0;
-      }, duration);
+      chatStatusToastHideFrameId = window.requestAnimationFrame(() => {
+        chatStatusToastHideFrameId = window.requestAnimationFrame(() => {
+          chatStatusToastHideFrameId = 0;
+          chatStatusToastTimerId = window.setTimeout(() => {
+            element.className = "status-toast";
+            element.setAttribute("aria-hidden", "true");
+            chatStatusToastTimerId = 0;
+          }, duration);
+        });
+      });
     }
 
     function formatDate(value, withTime = false) {
