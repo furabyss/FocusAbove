@@ -120,10 +120,6 @@
       overscroll-behavior: none;
     }
 
-    :root[data-resolved-theme="dark"] body {
-      background: var(--bg);
-    }
-
     *::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -449,93 +445,6 @@
       pointer-events: none;
     }
 
-    .chat-list,
-    .message-stream,
-    .overlay-content,
-    .card-list,
-    .card-pane,
-    .card-fields {
-      scrollbar-width: thin;
-      scrollbar-color: rgba(var(--primary-rgb), 0.28) rgba(227, 233, 239, 0.72);
-    }
-
-    .chat-list::-webkit-scrollbar,
-    .message-stream::-webkit-scrollbar,
-    .overlay-content::-webkit-scrollbar,
-    .card-list::-webkit-scrollbar,
-    .card-pane::-webkit-scrollbar,
-    .card-fields::-webkit-scrollbar {
-      width: 7px;
-      height: 7px;
-    }
-
-    .chat-list::-webkit-scrollbar-track,
-    .message-stream::-webkit-scrollbar-track,
-    .overlay-content::-webkit-scrollbar-track,
-    .card-list::-webkit-scrollbar-track,
-    .card-pane::-webkit-scrollbar-track,
-    .card-fields::-webkit-scrollbar-track {
-      background: rgba(227, 233, 239, 0.72);
-      border-radius: 999px;
-    }
-
-    .chat-list::-webkit-scrollbar-thumb,
-    .message-stream::-webkit-scrollbar-thumb,
-    .overlay-content::-webkit-scrollbar-thumb,
-    .card-list::-webkit-scrollbar-thumb,
-    .card-pane::-webkit-scrollbar-thumb,
-    .card-fields::-webkit-scrollbar-thumb {
-      background: rgba(var(--primary-rgb), 0.34);
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.42);
-    }
-
-    .chat-list::-webkit-scrollbar-thumb:hover,
-    .message-stream::-webkit-scrollbar-thumb:hover,
-    .overlay-content::-webkit-scrollbar-thumb:hover,
-    .card-list::-webkit-scrollbar-thumb:hover,
-    .card-pane::-webkit-scrollbar-thumb:hover,
-    .card-fields::-webkit-scrollbar-thumb:hover {
-      background: rgba(var(--primary-rgb), 0.46);
-    }
-
-    :root[data-resolved-theme="dark"] .chat-list,
-    :root[data-resolved-theme="dark"] .message-stream,
-    :root[data-resolved-theme="dark"] .overlay-content,
-    :root[data-resolved-theme="dark"] .card-list,
-    :root[data-resolved-theme="dark"] .card-pane,
-    :root[data-resolved-theme="dark"] .card-fields {
-      scrollbar-color: rgba(var(--primary-rgb), 0.36) rgba(255, 255, 255, 0.08);
-    }
-
-    :root[data-resolved-theme="dark"] .chat-list::-webkit-scrollbar-track,
-    :root[data-resolved-theme="dark"] .message-stream::-webkit-scrollbar-track,
-    :root[data-resolved-theme="dark"] .overlay-content::-webkit-scrollbar-track,
-    :root[data-resolved-theme="dark"] .card-list::-webkit-scrollbar-track,
-    :root[data-resolved-theme="dark"] .card-pane::-webkit-scrollbar-track,
-    :root[data-resolved-theme="dark"] .card-fields::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    :root[data-resolved-theme="dark"] .chat-list::-webkit-scrollbar-thumb,
-    :root[data-resolved-theme="dark"] .message-stream::-webkit-scrollbar-thumb,
-    :root[data-resolved-theme="dark"] .overlay-content::-webkit-scrollbar-thumb,
-    :root[data-resolved-theme="dark"] .card-list::-webkit-scrollbar-thumb,
-    :root[data-resolved-theme="dark"] .card-pane::-webkit-scrollbar-thumb,
-    :root[data-resolved-theme="dark"] .card-fields::-webkit-scrollbar-thumb {
-      background: rgba(var(--primary-rgb), 0.32);
-      border-color: rgba(0, 0, 0, 0.5);
-    }
-
-    :root[data-resolved-theme="dark"] .chat-list::-webkit-scrollbar-thumb:hover,
-    :root[data-resolved-theme="dark"] .message-stream::-webkit-scrollbar-thumb:hover,
-    :root[data-resolved-theme="dark"] .overlay-content::-webkit-scrollbar-thumb:hover,
-    :root[data-resolved-theme="dark"] .card-list::-webkit-scrollbar-thumb:hover,
-    :root[data-resolved-theme="dark"] .card-pane::-webkit-scrollbar-thumb:hover,
-    :root[data-resolved-theme="dark"] .card-fields::-webkit-scrollbar-thumb:hover {
-      background: rgba(var(--primary-rgb), 0.42);
-    }
-
     .chat-list {
       display: flex;
       flex-direction: column;
@@ -556,10 +465,6 @@
       padding: 14px;
       color: inherit;
       min-height: 130px;
-    }
-
-    :root[data-resolved-theme="dark"] .chat-item {
-      background: var(--panel-muted);
     }
 
     .chat-item.active {
@@ -761,7 +666,6 @@
     }
 
     :root[data-resolved-theme="dark"] .header-mode-toggle {
-      border-color: rgba(255, 255, 255, 0.12);
       background: rgba(255, 255, 255, 0.05);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
     }
@@ -785,7 +689,6 @@
 
     :root[data-resolved-theme="dark"] .mode-toggle-button.active {
       background: rgba(var(--primary-rgb), 0.16);
-      color: var(--primary-strong);
     }
 
     .header-rp-actions {
@@ -822,10 +725,6 @@
       flex-direction: column;
       gap: 14px;
       scroll-behavior: smooth;
-    }
-
-    :root[data-resolved-theme="dark"] .message-stream {
-      background: transparent;
     }
 
     .empty-state {
@@ -918,7 +817,6 @@
     }
 
     :root[data-resolved-theme="dark"] .message-avatar {
-      border-color: rgba(255, 255, 255, 0.12);
       background: rgba(14, 14, 14, 0.9);
       box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
     }
@@ -965,7 +863,6 @@
     }
 
     .message-meta-time {
-      color: inherit;
       opacity: 0.78;
     }
 
@@ -1346,6 +1243,18 @@
       pointer-events: none;
     }
 
+    .composer-upload-group {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .composer-upload-group.single-upload {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
     .composer-attachment-hint {
       font-size: 12px;
       color: var(--muted);
@@ -1356,7 +1265,6 @@
       gap: 10px;
       overflow-x: auto;
       padding-bottom: 2px;
-      scrollbar-width: thin;
     }
 
     .composer-attachment-chip {
@@ -1576,6 +1484,122 @@
       font-size: 12px;
       line-height: 1.6;
       white-space: pre-wrap;
+    }
+
+    .composer-attachment-chip.document {
+      width: 148px;
+      min-height: 88px;
+      padding: 14px 12px 12px;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .composer-attachment-chip.document .composer-attachment-remove {
+      top: 8px;
+      right: 8px;
+    }
+
+    .composer-document-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 40px;
+      height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(var(--primary-rgb), 0.16);
+      background: rgba(var(--primary-rgb), 0.08);
+      color: var(--primary-strong);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .composer-document-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+      min-width: 0;
+      padding-right: 18px;
+    }
+
+    .composer-document-size {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .message.user .message-document-card {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+    }
+
+    .message.user .composer-document-badge {
+      border-color: rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.18);
+      color: #f8fbff;
+    }
+
+    .message.user .composer-attachment-name,
+    .message.user .composer-document-size {
+      color: #f8fbff;
+      opacity: 0.94;
+    }
+
+    .message-generated-document {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(var(--border-rgb), 0.12);
+      background: rgba(var(--primary-rgb), 0.06);
+    }
+
+    .message-generated-document-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .message-generated-document-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .message-generated-document-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .message-generated-document-meta {
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .message-generated-document-button {
+      flex: 0 0 auto;
+      min-height: 34px;
+      padding: 8px 12px;
+      border-radius: 12px;
+    }
+
+    :root[data-resolved-theme="dark"] .message-generated-document {
+      border-color: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
     }
 
     :root[data-resolved-theme="dark"] .message-rp-state-content {
@@ -2192,7 +2216,6 @@
 
     :root[data-resolved-theme="dark"] .stat-card,
     :root[data-resolved-theme="dark"] .prompt-preset-item {
-      border-color: rgba(255, 255, 255, 0.08);
       background: rgba(10, 10, 10, 0.82);
     }
 
@@ -2288,8 +2311,13 @@
       font-size: 12px;
       line-height: 1.5;
       color: var(--muted);
-      white-space: pre-wrap;
+      white-space: normal;
       word-break: break-word;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
     }
 
     .prompt-preset-item-actions {
@@ -2548,12 +2576,6 @@
         border-radius: 0;
         box-shadow: none;
         z-index: 11;
-      }
-
-      :root[data-resolved-theme="dark"] .desktop-tabs-sidebar {
-        background: transparent;
-        border: 0;
-        border-radius: 0;
       }
 
       .desktop-tabs-sidebar-inner {
@@ -2909,6 +2931,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14"></path><path d="M5 12h14"></path></symbol>
     <symbol id="icon-import" viewBox="0 0 24 24"><path d="M3 12h9"></path><path d="M8.5 7.5L13 12l-4.5 4.5"></path><path d="M14 6h5v12h-5"></path></symbol>
     <symbol id="icon-image" viewBox="0 0 24 24"><rect x="4.5" y="5.5" width="15" height="13" rx="2.2"></rect><circle cx="9.2" cy="9.5" r="1.2"></circle><path d="M6.8 15.6l2.8-3 2.3 2.2 2.2-2.5 2.1 3.3"></path></symbol>
+    <symbol id="icon-folder-open" viewBox="0 0 24 24"><path d="M3.5 7.5A2.5 2.5 0 0 1 6 5h3.2l1.6 1.9H18A2.5 2.5 0 0 1 20.5 9.4v1.1"></path><path d="M3.5 10.5h17l-2.1 7.2a2.5 2.5 0 0 1-2.4 1.8H6.1a2.5 2.5 0 0 1-2.4-3.2z"></path><path d="M11.2 13.2h5.1"></path></symbol>
     <symbol id="icon-note" viewBox="0 0 24 24"><path d="M6 3.5h8.5l3.5 3.5V19a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 6 19z"></path><path d="M14.5 3.5V7H18"></path><path d="M8.2 9.6h6.2"></path><path d="M8.2 12.3h7.1"></path><path d="M8.2 15h5.4"></path></symbol>
     <symbol id="icon-chevron-up" viewBox="0 0 24 24"><path d="M17 15L12 10L7 15"></path></symbol>
     <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M4 7h16"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"></path><path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path></symbol>
@@ -2965,13 +2988,19 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           <textarea id="messageInput" placeholder=""></textarea>
         </label>
         <input id="imageUploadInput" type="file" accept="image/*" multiple hidden>
+        <input id="documentUploadInput" type="file" accept=".txt,.epub" multiple hidden>
         <span id="imageUploadHint" class="composer-attachment-hint" hidden aria-hidden="true"></span>
         <div id="composerAttachments" class="composer-attachments" hidden></div>
       </div>
       <div class="composer-actions">
-        <button id="imageUploadButton" type="button" class="composer-upload-button" aria-label="이미지 업로드" title="이미지 업로드">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-image"></use></svg>
-        </button>
+        <div class="composer-upload-group">
+          <button id="imageUploadButton" type="button" class="composer-upload-button" aria-label="이미지 업로드" title="이미지 업로드">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-image"></use></svg>
+          </button>
+          <button id="documentUploadButton" type="button" class="composer-upload-button" aria-label="파일 업로드" title="파일 업로드">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-folder-open"></use></svg>
+          </button>
+        </div>
         <button id="sendButton" type="submit">보내기</button>
       </div>
     </form>
@@ -3024,7 +3053,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section class="brand">
               <a class="brand-mark-link" href="https://github.com/furabyss/FocusAbove" target="_blank" rel="noopener noreferrer"><div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="8" y="8" width="48" height="48" rx="14" fill="currentColor"></rect><circle cx="32" cy="32" r="13" fill="none" stroke="#fff7ee" stroke-width="6"></circle><circle cx="46" cy="18" r="3" fill="#fff7ee" fill-opacity="0.9"></circle></svg><span>FocusAbove</span></div></a>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.5.7, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.6.0, ⓒ 2026 Fur-Abyss</p>
             </section>
 
             <div class="settings-tab-strip" role="tablist">
@@ -3074,6 +3103,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                   </label>
                   <label class="inline-checkbox" for="smoothStreamingInput">
                     <input id="smoothStreamingInput" name="smoothStreaming" type="checkbox">
+                  </label>
+                  <label class="inline-checkbox" for="autoContinueInput">
+                    <input id="autoContinueInput" name="autoContinue" type="checkbox">
                   </label>
                   <div id="settingsRpSectionGroup" hidden>
                     <hr class="settings-divider" aria-hidden="true">
@@ -3632,6 +3664,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     const PERSIST_STATE_DEBOUNCE_MS = 80;
     const STREAMING_PERSIST_STATE_DEBOUNCE_MS = 450;
     const STREAMING_PERSIST_MIN_INTERVAL_MS = 1200;
+    const AUTO_CONTINUE_MAX_REQUESTS = 8;
     const SMOOTH_STREAMING_RENDER_THROTTLE_MS = 64;
     const STREAMING_RENDER_THROTTLE_MS = 120;
     const THINKING_STREAMING_RENDER_THROTTLE_MS = 2500;
@@ -3644,6 +3677,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     const LAZY_IMAGE_ROOT_MARGIN = "900px 0px";
     const IMAGE_PLACEHOLDER_DATA_URL = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23e9edf1'/%3E%3Cpath d='M14 42l12-13 9 8 7-9 10 14H14z' fill='%23b2bcc6'/%3E%3Ccircle cx='24' cy='22' r='5' fill='%235f6670' fill-opacity='.38'/%3E%3C/svg%3E";
     const CHAT_T2I_SKIP_TOKEN = "FOCUSABOVE_NO_T2I_IMAGE";
+    const MAX_PENDING_DOCUMENT_BYTES = 12 * 1024 * 1024;
     const MATH_RENDER_DELIMITERS = [
       { left: "$$", right: "$$", display: true },
       { left: "\\[", right: "\\]", display: true },
@@ -3703,6 +3737,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         languageKo: "한국어",
         languageEn: "English",
         smoothStreaming: "부드러운 응답 스트리밍(성능 영향 있음)",
+        autoContinue: "응답이 토큰 제한으로 잘리면 자동으로 이어 쓰기",
+        autoContinuingResponse: "응답이 길이 제한으로 끊겨 이어 쓰는 중입니다.",
+        autoContinueInstruction: "방금 응답이 출력 토큰 제한으로 중간에 끊겼습니다. 직전 내용 다음부터 같은 형식과 톤을 유지한 채 이어서 작성하세요. 이미 쓴 내용은 다시 시작하거나 요약하거나 반복하지 말고, 이어지는 내용만 출력하세요.",
         rpSettingsSection: "RP 설정",
         rpResponsePerspective: "RP 응답 시점",
         rpResponseLength: "응답 길이",
@@ -3849,6 +3886,22 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         send: "보내기",
         stop: "정지",
         stopResponse: "응답 정지",
+        fileUpload: "파일 업로드",
+        fileUploadTitle: ({ bytes }) => `텍스트 또는 EPUB 업로드 (총 ${bytes}까지.)`,
+        fileOnly: "파일만 전송됨",
+        addMessageOrImage: "보낼 메시지, 이미지, 또는 파일을 추가해 주세요.",
+        documentsAttached: ({ count }) => `${count}개 파일을 첨부했습니다.`,
+        documentAttachFailed: ({ error }) => `파일 첨부 실패: ${error}`,
+        documentFilesOnly: "txt와 epub 파일만 업로드할 수 있습니다.",
+        documentLibraryMissing: "EPUB 처리를 위한 압축 라이브러리를 불러오지 못했습니다.",
+        documentTooLarge: ({ bytes }) => `파일 크기 제한을 초과했습니다. 총 ${bytes}까지 업로드할 수 있습니다.`,
+        attachedFileLabel: ({ name }) => `첨부 파일: ${name}`,
+        attachedDocumentBlockTitle: ({ name, kind }) => `[첨부 파일: ${name} | 형식: ${kind}]`,
+        attachedDocumentBlockBody: "아래는 이 파일에서 추출한 전체 텍스트입니다. 사용자의 요청이 이 파일과 관련되어 있다면 이 내용을 근거로 처리하세요.",
+        documentOutputReady: "다운로드 가능한 파일을 만들었습니다.",
+        generatedDocument: "생성된 파일",
+        downloadFile: "파일 다운로드",
+        generatedDocumentMeta: ({ name, format }) => `${name} | ${format.toUpperCase()}`,
         imageUpload: "이미지 업로드",
         imageUploadTitle: ({ dimension, bytes }) => `이미지 업로드 (업로드 후 최대 ${dimension}px로 축소, 총 ${bytes}까지.)`,
         imageOnly: "이미지만 전송됨",
@@ -3900,7 +3953,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         importFailed: ({ error }) => `가져오기 실패: ${error}`,
         selectChatTabFirst: "먼저 채팅 탭을 선택해 주세요.",
         saveMessageEditsFirst: "메시지 수정을 먼저 저장해 주세요.",
-        addMessageOrImage: "보낼 메시지나 이미지를 추가해 주세요.",
         apiBaseUrlRequired: "API 주소가 비어 있습니다. 왼쪽 설정에서 입력해 주세요.",
         selectModelRequired: "사용할 모델을 선택해 주세요. 필요하면 모델 새로고침을 먼저 실행해 주세요.",
         noResponseToReroll: "다시 생성할 응답이 없습니다.",
@@ -3992,6 +4044,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         languageKo: "Korean",
         languageEn: "English",
         smoothStreaming: "Smooth streaming",
+        autoContinue: "Automatically continue when output hits the token limit",
+        autoContinuingResponse: "The response hit the token limit, continuing automatically.",
+        autoContinueInstruction: "Your previous response was cut off by the output token limit. Continue exactly from where you stopped, keeping the same format and tone. Do not restart, summarize, or repeat prior text. Output only the continuation.",
         rpSettingsSection: "RP settings",
         rpResponsePerspective: "RP response perspective",
         rpResponseLength: "Response length",
@@ -4138,6 +4193,22 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         send: "Send",
         stop: "Stop",
         stopResponse: "Stop response",
+        fileUpload: "Upload file",
+        fileUploadTitle: ({ bytes }) => `Upload text or EPUB (${bytes} total max).`,
+        fileOnly: "Files only",
+        addMessageOrImage: "Add a message, image, or file to send.",
+        documentsAttached: ({ count }) => `Attached ${count} file${count === 1 ? "" : "s"}.`,
+        documentAttachFailed: ({ error }) => `Failed to attach files: ${error}`,
+        documentFilesOnly: "Only txt and epub files can be uploaded.",
+        documentLibraryMissing: "Failed to load the zip library required for EPUB processing.",
+        documentTooLarge: ({ bytes }) => `File size limit exceeded. You can upload up to ${bytes} total.`,
+        attachedFileLabel: ({ name }) => `Attached file: ${name}`,
+        attachedDocumentBlockTitle: ({ name, kind }) => `[Attached file: ${name} | Format: ${kind}]`,
+        attachedDocumentBlockBody: "Below is the full text extracted from this file. If the user's request concerns this file, use this content as the basis for your answer.",
+        documentOutputReady: "Prepared a downloadable file.",
+        generatedDocument: "Generated file",
+        downloadFile: "Download file",
+        generatedDocumentMeta: ({ name, format }) => `${name} | ${format.toUpperCase()}`,
         imageUpload: "Upload image",
         imageUploadTitle: ({ dimension, bytes }) => `Upload image (${dimension}px max, ${bytes} total max).`,
         imageOnly: "Images only",
@@ -4189,7 +4260,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         importFailed: ({ error }) => `Import failed: ${error}`,
         selectChatTabFirst: "Select a chat tab first.",
         saveMessageEditsFirst: "Save your message edits first.",
-        addMessageOrImage: "Add a message or image to send.",
         apiBaseUrlRequired: "API base URL is empty. Enter it in Settings.",
         selectModelRequired: "Select a model. Refresh first if needed.",
         noResponseToReroll: "There is no response to reroll.",
@@ -4257,6 +4327,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         language: normalizedLanguage,
         themeMode: "system",
         smoothStreaming: true,
+        autoContinue: false,
         chatT2iEnabled: false,
         selectedModel: "",
         auxiliaryModel: "",
@@ -4389,6 +4460,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       settingsRpSectionTitle: document.getElementById("settingsRpSectionTitle"),
       settingsIllustrationSectionTitle: document.querySelector("#settingsIllustrationPanel .section-title"),
       smoothStreamingLabel: document.querySelector('label.inline-checkbox[for="smoothStreamingInput"]'),
+      autoContinueLabel: document.querySelector('label.inline-checkbox[for="autoContinueInput"]'),
       rpSummaryEnabledLabel: document.querySelector('label.inline-checkbox[for="rpSummaryEnabledInput"]'),
       rpInputEnhancementEnabledLabel: document.querySelector('label.inline-checkbox[for="rpInputEnhancementEnabledInput"]'),
       thinkingUnlimitedLabel: document.querySelector('label.inline-checkbox[for="thinkingUnlimitedInput"]'),
@@ -4408,6 +4480,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       themeModeSelect: document.getElementById("themeModeSelect"),
       languageSelect: document.getElementById("languageSelect"),
       smoothStreamingInput: document.getElementById("smoothStreamingInput"),
+      autoContinueInput: document.getElementById("autoContinueInput"),
       rpAssistanceFields: document.getElementById("rpAssistanceFields"),
       rpSummaryEnabledInput: document.getElementById("rpSummaryEnabledInput"),
       rpSummaryTokenThresholdField: document.getElementById("rpSummaryTokenThresholdField"),
@@ -4429,8 +4502,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       messageStream: document.getElementById("messageStream"),
       chatForm: document.getElementById("chatForm"),
       messageInput: document.getElementById("messageInput"),
+      composerUploadGroup: document.querySelector(".composer-upload-group"),
       imageUploadButton: document.getElementById("imageUploadButton"),
       imageUploadInput: document.getElementById("imageUploadInput"),
+      documentUploadButton: document.getElementById("documentUploadButton"),
+      documentUploadInput: document.getElementById("documentUploadInput"),
       imageUploadHint: document.getElementById("imageUploadHint"),
       composerAttachments: document.getElementById("composerAttachments"),
       scrollTopButton: document.getElementById("scrollTopButton"),
@@ -4530,6 +4606,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     let isPrimaryTab = false;
     let tabLockIntervalId = 0;
     let pendingImageAttachments = [];
+    let pendingDocumentAttachments = [];
     let storageDbPromise = null;
     let pendingStatePersistRequested = false;
     let pendingIndexedDbMediaGcCandidateIds = new Set();
@@ -4739,6 +4816,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           elements.imageUploadInput.click();
         }
       });
+      elements.documentUploadButton.addEventListener("click", () => {
+        if (!isSending) {
+          elements.documentUploadInput.click();
+        }
+      });
       bindInputActions([
         [elements.temperatureInput, updateActiveTemperature],
         [elements.thinkingTokenLimitInput, updateActiveThinkingTokenLimit],
@@ -4764,6 +4846,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       ].forEach((input) => input.addEventListener("input", syncIllustrationControls));
       elements.messageInput.addEventListener("keydown", handleComposerKeydown);
       elements.imageUploadInput.addEventListener("change", handleImageUploadSelection);
+      elements.documentUploadInput.addEventListener("change", handleDocumentUploadSelection);
       bindRpCardEditorEvents("character", getRpCardEditorEventConfig("character"));
       bindInputActions([
         [elements.characterCardDescriptionInput, updateCharacterCardDescriptionDraft]
@@ -4797,8 +4880,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         window.visualViewport.addEventListener("resize", handleRpImageCropViewportResize);
       }
       [elements.settingsOverlay, elements.promptPresetOverlay, elements.authorsNoteOverlay, elements.tabsOverlay, elements.characterOverlay, elements.personaOverlay, elements.imagePreviewOverlay, elements.rpImageCropOverlay].forEach((overlay) => {
+        overlay.dataset.closeStartOnBackdrop = "false";
+        overlay.addEventListener("pointerdown", (event) => {
+          overlay.dataset.closeStartOnBackdrop = event.target === overlay ? "true" : "false";
+        });
         overlay.addEventListener("click", (event) => {
-          if (event.target === overlay) {
+          const startedOnBackdrop = overlay.dataset.closeStartOnBackdrop === "true";
+          overlay.dataset.closeStartOnBackdrop = "false";
+          if (event.target === overlay && startedOnBackdrop) {
             if (overlay === elements.rpImageCropOverlay) {
               cancelRpImageCrop({ silent: true });
             } else {
@@ -4937,6 +5026,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const smoothStreaming = typeof parsed?.settings?.smoothStreaming === "boolean"
         ? parsed.settings.smoothStreaming
         : DEFAULT_SETTINGS.smoothStreaming;
+      const autoContinue = typeof parsed?.settings?.autoContinue === "boolean"
+        ? parsed.settings.autoContinue
+        : DEFAULT_SETTINGS.autoContinue;
       const language = normalizeAppLanguage(parsed?.settings?.language);
       const chats = Array.isArray(parsed?.chats) ? parsed.chats.map(normalizeChat).filter(Boolean) : [];
       const rp = normalizeRpState(parsed?.rp);
@@ -4951,6 +5043,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         language,
         themeMode: normalizeThemeMode(parsed?.settings?.themeMode),
         smoothStreaming,
+        autoContinue,
         chatT2iEnabled: typeof parsed?.settings?.chatT2iEnabled === "boolean"
           ? parsed.settings.chatT2iEnabled
           : DEFAULT_SETTINGS.chatT2iEnabled,
@@ -6056,6 +6149,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             role: ["system", "user", "assistant"].includes(message.role) ? message.role : "assistant",
             content: message.content,
             attachments: normalizeImageAttachments(message.attachments),
+            documents: normalizeDocumentAttachments(message.documents),
+            generatedDocument: normalizeGeneratedDocument(message.generatedDocument),
             timestamp: typeof message.timestamp === "string" ? message.timestamp : new Date().toISOString(),
             status: normalizeMessageStatus(message.status),
             isThinking: Boolean(message.isThinking),
@@ -6751,6 +6846,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return;
       }
 
+      if (normalizedMode === "rp" && pendingDocumentAttachments.length) {
+        pendingDocumentAttachments = [];
+        elements.documentUploadInput.value = "";
+      }
+
       state.activeMode = normalizedMode;
       if (normalizedMode === "rp") {
         ensureRpModeReady();
@@ -6798,6 +6898,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       elements.themeModeSelect.value = normalizeThemeMode(state.settings.themeMode);
       elements.languageSelect.value = normalizeAppLanguage(state.settings.language);
       elements.smoothStreamingInput.checked = state.settings.smoothStreaming !== false;
+      elements.autoContinueInput.checked = state.settings.autoContinue === true;
       elements.settingsRpSectionGroup.hidden = !isRpModeActive();
       elements.rpResponsePerspectiveField.hidden = !isRpModeActive();
       elements.rpResponseLengthField.hidden = !isRpModeActive();
@@ -7577,7 +7678,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         const item = createElementWithClass("article", "prompt-preset-item");
         const main = createElementWithClass("div", "prompt-preset-item-main");
         const name = createElementWithClass("div", "prompt-preset-item-name", preset.name);
-        const preview = createElementWithClass("p", "prompt-preset-item-preview", trimmed(preset.prompt) || "...");
+        const preview = createElementWithClass("p", "prompt-preset-item-preview", summarizePromptPresetPreview(preset.prompt));
 
         main.append(name, preview);
 
@@ -7599,6 +7700,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         item.append(main, actions);
         container.appendChild(item);
       });
+    }
+
+    function summarizePromptPresetPreview(prompt) {
+      const normalized = String(prompt || "").replace(/\s+/g, " ").trim();
+      if (!normalized) {
+        return "...";
+      }
+      return normalized.length > 160 ? `${normalized.slice(0, 157).trimEnd()}...` : normalized;
     }
 
     function openPromptPresetOverlay() {
@@ -7895,11 +8004,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     function renderComposerControls() {
       const activeChat = getActiveChat();
       const hasPendingMessageEdit = hasEditingMessageInChat(activeChat);
+      const chatMode = !isRpModeActive();
       elements.sendButton.disabled = hasPendingMessageEdit;
       elements.sendButton.textContent = isSending ? t("stop") : t("send");
       elements.sendButton.title = isSending ? t("stopResponse") : t("send");
       elements.sendButton.classList.toggle("danger-button", isSending);
       elements.messageInput.disabled = isSending;
+      elements.documentUploadButton.hidden = !chatMode;
+      elements.composerUploadGroup.classList.toggle("single-upload", !chatMode);
       elements.imageUploadButton.disabled = isSending;
       elements.imageUploadButton.title = t("imageUploadTitle", {
         dimension: MAX_IMAGE_DIMENSION,
@@ -7907,17 +8019,31 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       });
       elements.imageUploadButton.setAttribute("aria-label", t("imageUpload"));
       elements.imageUploadInput.disabled = isSending;
+      elements.documentUploadButton.disabled = isSending || !chatMode;
+      elements.documentUploadButton.title = t("fileUploadTitle", {
+        bytes: formatByteSize(MAX_PENDING_DOCUMENT_BYTES)
+      });
+      elements.documentUploadButton.setAttribute("aria-label", t("fileUpload"));
+      elements.documentUploadInput.disabled = isSending || !chatMode;
+    }
+
+    function renderComposer() {
+      renderComposerAttachments();
+      renderComposerControls();
     }
 
     function renderComposerAttachments() {
       const container = elements.composerAttachments;
+      const visibleDocumentAttachments = isRpModeActive() ? [] : pendingDocumentAttachments;
       const nextSignature = [
         normalizeAppLanguage(state.settings.language),
+        isRpModeActive() ? "rp" : "chat",
         isSending ? "1" : "0",
-        pendingImageAttachments.map((attachment) => `${attachment.id}:${attachment.name}:${attachment.sizeBytes || 0}`).join("|")
+        pendingImageAttachments.map((attachment) => `${attachment.id}:${attachment.name}:${attachment.sizeBytes || 0}`).join("|"),
+        visibleDocumentAttachments.map((attachment) => `${attachment.id}:${attachment.name}:${attachment.kind}:${attachment.sizeBytes || 0}`).join("|")
       ].join("~");
 
-      container.hidden = pendingImageAttachments.length === 0;
+      container.hidden = pendingImageAttachments.length === 0 && visibleDocumentAttachments.length === 0;
       if (composerAttachmentRenderSignature !== nextSignature) {
         container.innerHTML = "";
 
@@ -7935,12 +8061,32 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             title: t("remove"),
             iconName: "close",
             disabled: isSending,
-            onClick: () => removePendingAttachment(attachment.id)
+            onClick: () => removePendingImageAttachment(attachment.id)
           });
           chip.appendChild(removeButton);
 
           chip.appendChild(createElementWithClass("span", "composer-attachment-name", attachment.name));
 
+          container.appendChild(chip);
+        });
+
+        visibleDocumentAttachments.forEach((attachment) => {
+          const chip = createElementWithClass("div", "composer-attachment-chip document");
+          const removeButton = createIconButton({
+            className: "composer-attachment-remove",
+            label: `${attachment.name} ${t("remove")}`,
+            title: t("remove"),
+            iconName: "close",
+            disabled: isSending,
+            onClick: () => removePendingDocumentAttachment(attachment.id)
+          });
+          const meta = createElementWithClass("div", "composer-document-meta");
+          const badge = createElementWithClass("span", "composer-document-badge", attachment.kind || "TXT");
+          const name = createElementWithClass("span", "composer-attachment-name", attachment.name);
+          const size = createElementWithClass("span", "composer-document-size", formatByteSize(attachment.sizeBytes || 0));
+
+          meta.append(badge, name, size);
+          chip.append(removeButton, meta);
           container.appendChild(chip);
         });
 
@@ -8041,6 +8187,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       state.settings.language = nextLanguage;
       state.settings.themeMode = normalizeThemeMode(elements.themeModeSelect.value);
       state.settings.smoothStreaming = elements.smoothStreamingInput.checked;
+      state.settings.autoContinue = elements.autoContinueInput.checked;
       if (isRpModeActive()) {
         state.rp.responsePerspective = normalizeRpResponsePerspective(elements.rpResponsePerspectiveSelect.value);
         state.rp.responseLength = normalizeRpResponseLength(elements.rpResponseLengthSelect.value);
@@ -8077,6 +8224,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       state.settings.language = nextDefaultSettings.language;
       state.settings.themeMode = nextDefaultSettings.themeMode;
       state.settings.smoothStreaming = nextDefaultSettings.smoothStreaming;
+      state.settings.autoContinue = nextDefaultSettings.autoContinue;
       state.settings.chatT2iEnabled = nextDefaultSettings.chatT2iEnabled;
       if (isRpModeActive() && state.rp) {
         state.rp.responsePerspective = DEFAULT_RP_RESPONSE_PERSPECTIVE;
@@ -9631,6 +9779,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       let content = elements.messageInput.value.trim();
       const wasEmptyRpInput = isRpModeActive() && !content;
       let attachments = pendingImageAttachments.map(cloneImageAttachment);
+      const documents = isRpModeActive() ? [] : pendingDocumentAttachments.map(cloneDocumentAttachment);
 
       if (!activeChat) {
         setChatStatus(t("selectChatTabFirst"), "error");
@@ -9647,7 +9796,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         content = getRpDefaultContinuationInput();
       }
 
-      if (!content && !attachments.length) {
+      if (!content && !attachments.length && !documents.length) {
         setChatStatus(t("addMessageOrImage"), "error");
         return;
       }
@@ -9669,12 +9818,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const shouldEnhanceInput = shouldEnhanceRpInput(activeChat);
       const userMessage = createMessage("user", content, {
         attachments,
+        documents,
         status: shouldEnhanceInput ? "enhancing" : "complete"
       });
       activeChat.messages.push(userMessage);
       activeChat.updatedAt = new Date().toISOString();
       elements.messageInput.value = "";
-      clearPendingImageAttachments();
+      clearPendingComposerAttachments();
       renderAppSections({
         persist: !shouldEnhanceInput,
         chatList: true,
@@ -9964,6 +10114,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         : Array.isArray(chat?.messages) ? chat.messages : [];
       const rpContext = buildRpPromptContext(chat, rawSourceMessages);
       const sourceMessages = buildMainRequestSourceMessages(chat, rawSourceMessages);
+      const documentOutputInstructions = buildDocumentOutputSystemInstructions(sourceMessages);
 
       const assistantMessage = createMessage("assistant", "", {
         status: "streaming",
@@ -9989,47 +10140,53 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           : await prepareChatT2iPrompt(chat, getLatestUserMessageForChatT2i(sourceMessages), {
               avoidPrompt: options.chatT2iAvoidPrompt
             });
-        const requestBody = {
-          model: options.selectedModel,
-          messages: await buildChatRequestMessages(
-            sourceMessages,
-            state.settings.systemPrompt,
-            rpContext,
-            buildChatT2iMainModelInstructions(chatT2iPrompt, { chat })
-          ),
-          stream: true,
-          stream_options: {
-            include_usage: true
+        const baseRequestMessages = await buildChatRequestMessages(
+          sourceMessages,
+          state.settings.systemPrompt,
+          rpContext,
+          [
+            ...buildChatT2iMainModelInstructions(chatT2iPrompt, { chat }),
+            ...documentOutputInstructions
+          ]
+        );
+        const baseRequestBody = buildAssistantResponseRequestBody(options.selectedModel, baseRequestMessages);
+
+        let responseState = await streamAssistantResponseRequest(
+          options.apiBase,
+          requestAbortController,
+          baseRequestBody,
+          assistantMessage,
+          chat,
+          { accumulateContinuationUsage: false }
+        );
+
+        for (let attempt = 0; attempt < AUTO_CONTINUE_MAX_REQUESTS && shouldAutoContinueAssistantResponse(responseState, assistantMessage); attempt += 1) {
+          const previousContent = assistantMessage.content;
+          setChatStatus(t("autoContinuingResponse"));
+          responseState = await streamAssistantResponseRequest(
+            options.apiBase,
+            requestAbortController,
+            {
+              ...baseRequestBody,
+              messages: buildAutoContinueRequestMessages(baseRequestMessages, assistantMessage.content)
+            },
+            assistantMessage,
+            chat,
+            { accumulateContinuationUsage: true }
+          );
+
+          if (assistantMessage.content === previousContent) {
+            break;
           }
-        };
-
-        if (typeof state.settings.temperature === "number") {
-          requestBody.temperature = state.settings.temperature;
         }
 
-        if (state.settings.thinkingUnlimited === false && typeof state.settings.thinkingTokenLimit === "number") {
-          requestBody.reasoning = {
-            max_tokens: state.settings.thinkingTokenLimit
-          };
-        }
-
-        const response = await fetch(`${options.apiBase}/chat/completions`, {
-          method: "POST",
-          signal: requestAbortController.signal,
-          headers: {
-            ...buildHeaders(),
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(requestBody)
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status} ${response.statusText}`);
-        }
-
-        await readAssistantResponseStream(response, assistantMessage, chat);
         assistantMessage.status = "complete";
         assistantMessage.isThinking = false;
+        assistantMessage.generatedDocument = await createGeneratedDocumentMetadata(sourceMessages, assistantMessage);
+        if (assistantMessage.generatedDocument) {
+          assistantMessage.content = assistantMessage.generatedDocument.displayContent || "";
+          delete assistantMessage.generatedDocument.displayContent;
+        }
         chat.updatedAt = new Date().toISOString();
         persistState();
         replaceMessageArticleDom(chat, assistantMessage, { scrollToBottom: true });
@@ -10040,16 +10197,21 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           finalizeAbortedAssistantMessage(chat, assistantMessage);
           setChatStatus(t("responseStopped"), "success");
         } else {
-        console.error("Failed to stream response", error);
-        assistantMessage.content = `오류: ${error.message}`;
-        assistantMessage.status = "error";
-        assistantMessage.isThinking = false;
-        assistantMessage.timestamp = new Date().toISOString();
-        chat.updatedAt = assistantMessage.timestamp;
-        persistState();
-        replaceMessageArticleDom(chat, assistantMessage, { scrollToBottom: streamingAutoScrollPinnedToBottom });
-        renderChatList();
-        setChatStatus(t("requestFailedWithError", { error: error.message }), "error");
+          console.error("Failed to stream response", error);
+          const hasVisibleContent = assistantMessage.content.trim() && !isStreamingThinkingPlaceholder(assistantMessage.content);
+          assistantMessage.isThinking = false;
+          assistantMessage.timestamp = new Date().toISOString();
+          chat.updatedAt = assistantMessage.timestamp;
+          if (hasVisibleContent) {
+            assistantMessage.status = "complete";
+          } else {
+            assistantMessage.content = `오류: ${error.message}`;
+            assistantMessage.status = "error";
+          }
+          persistState();
+          replaceMessageArticleDom(chat, assistantMessage, { scrollToBottom: streamingAutoScrollPinnedToBottom });
+          renderChatList();
+          setChatStatus(t("requestFailedWithError", { error: error.message }), "error");
         }
       } finally {
         if (currentRequestAbortController === requestAbortController) {
@@ -10175,7 +10337,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         statusRunId,
         chatT2iPrompt: options.chatT2iPrompt
       });
-      setPostResponseChatStatus(statusRunId, assistantMessage.id, t("responseReceivedToast"), "success");
+      setPostResponseChatStatus(
+        statusRunId,
+        assistantMessage.id,
+        assistantMessage.generatedDocument ? t("documentOutputReady") : t("responseReceivedToast"),
+        "success"
+      );
     }
 
     function setPostResponseChatStatus(statusRunId, messageId, message, tone = "default") {
@@ -10411,97 +10578,58 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return Math.ceil(text.length / 1.8);
     }
 
-    function getSummarizableRpMessages(chat) {
-      return (Array.isArray(chat?.messages) ? chat.messages : [])
-        .filter((message) => message.role === "user" || message.role === "assistant");
-    }
-
-    function getRpSummarySourceMessages(chat) {
-      const messages = getSummarizableRpMessages(chat);
-      if (!hasText(chat?.rpSummary)) {
-        return messages;
+    async function enhanceRpUserInput(chat, content, options = {}) {
+      const apiBase = normalizeApiBase(state.settings.apiBaseUrl);
+      const auxiliaryModel = trimmed(state.settings.auxiliaryModel);
+      if (!isRpChat(chat) || !apiBase || !auxiliaryModel) {
+        return content;
       }
 
-      const summarizedCount = Math.min(
-        messages.length,
-        normalizeOptionalInteger(chat.rpSummaryUpdatedMessageCount, { min: 0 }) ?? 0
-      );
-      const overlapCount = 4;
-      return messages.slice(Math.max(0, summarizedCount - overlapCount));
-    }
+      const rawMessages = Array.isArray(chat?.messages) ? chat.messages : [];
+      const sourceMessages = options.excludeMessageId
+        ? rawMessages.filter((message) => message?.id !== options.excludeMessageId)
+        : rawMessages;
+      const rpContext = buildRpPromptContext(chat, sourceMessages);
+      const rpPlaceholders = createRpPromptPlaceholders(rpContext);
+      const wasEmptyInput = options.wasEmptyInput === true || isBareContinuationInput(content);
 
-    async function enhanceRpUserInput(chat, content, options = {}) {
-      const baseContent = trimmed(content) || getRpDefaultContinuationInput();
-      const wasEmptyInput = Boolean(options.wasEmptyInput);
-      const isContinuationRequest = wasEmptyInput || isRpContinueInput(baseContent);
-      const character = getRpCardById("character", chat?.characterCardId || state.rp.activeCharacterId);
-      const persona = getActiveRpPersona();
-      const rpPlaceholders = createRpPromptPlaceholders({ character, persona });
-      const openingMessage = wasEmptyInput ? getRpFirstMessageForAuxiliary(chat, rpPlaceholders) : "";
-      const mutableContext = wasEmptyInput ? buildRpAuxiliaryMutableContext(chat, { includeSummary: false }) : "";
-      const recentContextMessages = wasEmptyInput ? getRecentRpInputEnhancementMessages(chat, options.excludeMessageId) : [];
-      const enhanced = await requestAuxiliaryChatCompletion(buildRpAuxiliaryRequestMessages(chat, [
+      const response = await requestAuxiliaryChatCompletion([
         {
           role: "system",
-          content: [
-            "Rewrite RP user input before it is sent to the main model.",
-            `Return only the rewritten user input in ${t("promptLanguageName")}.`,
-            "Preserve intent. Do not add outcomes, control the assistant character, or narrate future results.",
-            wasEmptyInput ? "The user submitted empty input. Use the opening message and recent context to write a natural concise continuation instruction; do not return only '계속' or 'continue'." : "Polish only the provided input for clarity and flow. Preserve meaning, perspective, tense, and length as much as possible; do not add prior-message context.",
-            "No markdown, labels, explanations, or quotation marks."
-          ].filter(Boolean).join("\n")
+          content: wasEmptyInput
+            ? [
+                "Write one natural next user input for the ongoing RP conversation.",
+                `Return plain text only in ${t("promptLanguageName")}.`,
+                "Match the established tone and scene naturally from the user's side.",
+                "Do not add labels, quotes, markdown, explanations, or multiple options."
+              ].join("\n")
+            : [
+                "Polish the user's latest RP input without changing intent, facts, or perspective.",
+                `Return plain text only in ${t("promptLanguageName")}.`,
+                "Keep the same meaning and tone, but make it read smoothly.",
+                "Do not add new facts, markdown, quotes, or explanations."
+              ].join("\n")
         },
         {
           role: "user",
-          content: [
-            mutableContext,
-            wasEmptyInput && openingMessage ? "Opening character first message:" : "",
-            wasEmptyInput && openingMessage ? openingMessage : "",
-            wasEmptyInput ? "Recent RP messages:" : "",
-            wasEmptyInput ? formatMessagesForAuxiliary(recentContextMessages, recentContextMessages.length, rpPlaceholders, 520) : "",
-            "Original user input:",
-            baseContent
-          ].filter(Boolean).join("\n\n")
+          content: wasEmptyInput
+            ? [
+                getRpFirstMessageForAuxiliary(chat, rpPlaceholders) ? "Character's opening message:" : "",
+                getRpFirstMessageForAuxiliary(chat, rpPlaceholders),
+                "Recent RP messages:",
+                formatMessagesForAuxiliary(getRecentAuxiliaryMessagesExcluding({ ...chat, messages: sourceMessages }, "", 3), 3, rpPlaceholders, 420)
+              ].filter(Boolean).join("\n\n")
+            : [
+                "Latest user input:",
+                trimForAuxiliaryPrompt(replaceRpPromptPlaceholders(content || "", rpPlaceholders), 900)
+              ].filter(Boolean).join("\n\n")
         }
-      ]), { temperature: 0.25 });
+      ], { temperature: wasEmptyInput ? 0.6 : 0.2 });
 
-      const cleaned = cleanAuxiliaryText(enhanced);
-      if (wasEmptyInput && isContinuationRequest && (!cleaned || isRpContinueInput(cleaned))) {
-        return getRpContinuationFallbackInput();
-      }
-      return cleaned || baseContent;
+      return cleanAuxiliaryText(response) || content;
     }
 
-    function getRecentRpInputEnhancementMessages(chat, excludeMessageId = "") {
-      const messages = (Array.isArray(chat?.messages) ? chat.messages : [])
-        .filter((message) => message?.id !== excludeMessageId)
-        .filter((message) => message.role === "user" || message.role === "assistant");
-      if (!messages.length) {
-        return [];
-      }
-
-      let assistantResponseCount = 0;
-      let startIndex = messages.length - 1;
-      for (; startIndex >= 0; startIndex -= 1) {
-        const message = messages[startIndex];
-        if (message.role === "assistant" && !message.isFirstMessage) {
-          assistantResponseCount += 1;
-        }
-        if (assistantResponseCount >= 1) {
-          break;
-        }
-      }
-
-      const sliceStart = Math.max(0, startIndex);
-      const previousMessage = messages[sliceStart - 1];
-      if (messages[sliceStart]?.role === "assistant" && previousMessage?.role === "user") {
-        return messages.slice(sliceStart - 1);
-      }
-
-      return messages.slice(sliceStart);
-    }
-
-    function isRpContinueInput(value) {
+    function isBareContinuationInput(value) {
       const compact = String(value || "")
         .trim()
         .toLowerCase()
@@ -11222,7 +11350,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       };
     }
 
-    async function readAssistantResponseStream(response, assistantMessage, chat) {
+    async function readAssistantResponseStream(response, assistantMessage, chat, options = {}) {
       const contentType = response.headers.get("content-type") || "";
       if (!response.body || !/event-stream/i.test(contentType)) {
         const payload = await response.json();
@@ -11230,15 +11358,22 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         if (!assistantContent.trim()) {
           throw new Error(t("missingResponseContent"));
         }
-        assistantMessage.content = assistantContent.trim();
-        applyTokenUsageToMessage(assistantMessage, payload?.usage || payload?.x_groq?.usage || payload?.choices?.[0]?.usage);
-        return;
+        assistantMessage.content = mergeContinuedAssistantContent(assistantMessage.content, assistantContent.trim());
+        applyTokenUsageToMessage(
+          assistantMessage,
+          payload?.usage || payload?.x_groq?.usage || payload?.choices?.[0]?.usage,
+          options
+        );
+        return {
+          finishReason: normalizeFinishReason(payload?.choices?.[0]?.finish_reason)
+        };
       }
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder("utf-8");
       let buffer = "";
-      let hasVisibleContent = false;
+      let hasVisibleContent = Boolean(assistantMessage.content.trim() && !isStreamingThinkingPlaceholder(assistantMessage.content));
+      let finishReason = "";
 
       while (true) {
         const { value, done } = await reader.read();
@@ -11256,8 +11391,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             hasVisibleContentRef: () => hasVisibleContent,
             setHasVisibleContent: (nextValue) => {
               hasVisibleContent = nextValue;
+            },
+            setFinishReason: (nextValue) => {
+              finishReason = nextValue || finishReason;
             }
-          });
+          }, options);
 
           if (shouldStop) {
             break;
@@ -11274,13 +11412,18 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           hasVisibleContentRef: () => hasVisibleContent,
           setHasVisibleContent: (nextValue) => {
             hasVisibleContent = nextValue;
+          },
+          setFinishReason: (nextValue) => {
+            finishReason = nextValue || finishReason;
           }
-        });
+        }, options);
       }
 
       if (!assistantMessage.content.trim()) {
         throw new Error(t("missingStreamingResponseContent"));
       }
+
+      return { finishReason };
     }
 
     function finalizeAbortedAssistantMessage(chat, assistantMessage) {
@@ -11310,7 +11453,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return error?.name === "AbortError";
     }
 
-    function applyStreamChunk(chunk, assistantMessage, chat, helpers) {
+    function applyStreamChunk(chunk, assistantMessage, chat, helpers, options = {}) {
       const lines = chunk.split("\n");
       const dataLines = lines
         .map((line) => line.trim())
@@ -11335,11 +11478,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
       const choice = payload?.choices?.[0] || {};
       const delta = choice.delta || {};
+      const finishReason = normalizeFinishReason(choice.finish_reason);
       const thinkingText = extractThinkingText(delta);
       const contentText = extractDeltaText(delta.content);
       const usageChanged = applyTokenUsageToMessage(
         assistantMessage,
-        payload?.usage || payload?.x_groq?.usage || choice?.usage
+        payload?.usage || payload?.x_groq?.usage || choice?.usage,
+        options
       );
       let changed = false;
       const hasVisibleContent = helpers.hasVisibleContentRef();
@@ -11372,6 +11517,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
       if (usageChanged && (!isThinkingOnlyChunk || changed || shouldRefreshThinkingStreamingCard())) {
         changed = true;
+      }
+
+      if (finishReason) {
+        helpers.setFinishReason?.(finishReason);
       }
 
       if (changed) {
@@ -11535,6 +11684,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         role,
         content,
         attachments: [],
+        documents: [],
+        generatedDocument: null,
         timestamp: new Date().toISOString(),
         status: "complete",
         isThinking: false,
@@ -11735,6 +11886,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (renderResult.shouldRenderMath) {
         renderMathContent(element);
       }
+      const generatedDocument = buildMessageGeneratedDocumentElement(message);
+      if (generatedDocument) {
+        element.appendChild(generatedDocument);
+      }
       const illustration = buildMessageIllustrationElement(message, chat);
       if (illustration) {
         element.appendChild(illustration);
@@ -11779,6 +11934,41 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       });
 
       container.append(toggle, content);
+      return container;
+    }
+
+    function buildMessageGeneratedDocumentElement(message) {
+      const generatedDocument = normalizeGeneratedDocument(message?.generatedDocument);
+      if (!generatedDocument || message?.role !== "assistant") {
+        return null;
+      }
+
+      const container = document.createElement("div");
+      container.className = "message-generated-document";
+
+      const header = document.createElement("div");
+      header.className = "message-generated-document-header";
+
+      const copy = document.createElement("div");
+      copy.className = "message-generated-document-copy";
+      copy.append(
+        createElementWithClass("div", "message-generated-document-title", t("generatedDocument")),
+        createElementWithClass("div", "message-generated-document-meta", t("generatedDocumentMeta", {
+          name: generatedDocument.fileName,
+          format: generatedDocument.format
+        }))
+      );
+
+      const button = createButton({
+        className: "ghost-button message-generated-document-button",
+        textContent: t("downloadFile"),
+        onClick: () => {
+          void downloadGeneratedDocument(message.id);
+        }
+      });
+
+      header.append(copy, button);
+      container.appendChild(header);
       return container;
     }
 
@@ -11893,6 +12083,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
     function renderUserMessageContent(element, message) {
       const stack = createElementWithClass("div", "message-user-stack");
+      const documents = normalizeDocumentAttachments(message.documents);
 
       if (message.status === "enhancing") {
         stack.appendChild(createElementWithClass("div", "message-user-text", t("rpInputEnhancingCard")));
@@ -11909,11 +12100,38 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         stack.appendChild(buildUserAttachmentGrid(message.attachments));
       }
 
+      if (documents.length) {
+        stack.appendChild(buildUserDocumentAttachmentList(documents));
+      }
+
       if (!contentText && Array.isArray(message.attachments) && message.attachments.length) {
         stack.insertBefore(createElementWithClass("div", "message-image-only-label", t("imageOnly")), stack.firstChild);
+      } else if (!contentText && documents.length && !(Array.isArray(message.attachments) && message.attachments.length)) {
+        stack.insertBefore(createElementWithClass("div", "message-image-only-label", t("fileOnly")), stack.firstChild);
       }
 
       element.replaceChildren(stack);
+    }
+
+    function buildUserDocumentAttachmentList(documents) {
+      const list = document.createElement("div");
+      list.className = "message-image-grid";
+
+      documents.forEach((documentAttachment) => {
+        const card = document.createElement("div");
+        card.className = "message-image-card message-document-card";
+
+        const meta = createElementWithClass("div", "composer-document-meta");
+        const badge = createElementWithClass("span", "composer-document-badge", documentAttachment.kind || "TXT");
+        const name = createElementWithClass("span", "composer-attachment-name", documentAttachment.name);
+        const size = createElementWithClass("span", "composer-document-size", formatByteSize(documentAttachment.sizeBytes || 0));
+
+        meta.append(badge, name, size);
+        card.appendChild(meta);
+        list.appendChild(card);
+      });
+
+      return list;
     }
 
     function buildUserAttachmentGrid(attachments, options = {}) {
@@ -12011,7 +12229,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const editor = article?.querySelector(".message-content-editor");
       const nextContent = normalizeMessageEditorValue(editor?.value ?? message.content);
 
-      if (!nextContent.trim() && !normalizeImageAttachments(message.attachments).length) {
+      if (!nextContent.trim() && !normalizeImageAttachments(message.attachments).length && !normalizeDocumentAttachments(message.documents).length) {
         setChatStatus(t("emptyMessageCannotSave"), "error");
         if (editor) {
           editor.focus();
@@ -12074,8 +12292,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         }
 
         pendingImageAttachments.push(...nextAttachments);
-        renderComposerAttachments();
-        renderComposerControls();
+        renderComposer();
         setChatStatus(t("imagesAttached", { count: nextAttachments.length }), "success");
       } catch (error) {
         console.error("Failed to read image attachments", error);
@@ -12085,17 +12302,49 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
     }
 
-    function removePendingAttachment(attachmentId) {
-      pendingImageAttachments = pendingImageAttachments.filter((attachment) => attachment.id !== attachmentId);
-      renderComposerAttachments();
-      renderComposerControls();
+    async function handleDocumentUploadSelection(event) {
+      const files = Array.from(event.target.files || []);
+      if (!files.length) {
+        return;
+      }
+
+      try {
+        files.forEach(validateDocumentUploadFile);
+
+        const currentPendingBytes = sumDocumentAttachmentBytes(pendingDocumentAttachments);
+        const nextAttachments = await Promise.all(files.map(readDocumentAttachmentFile));
+        const nextBytes = sumDocumentAttachmentBytes(nextAttachments);
+        if (currentPendingBytes + nextBytes > MAX_PENDING_DOCUMENT_BYTES) {
+          throw new Error(t("documentTooLarge", { bytes: formatByteSize(MAX_PENDING_DOCUMENT_BYTES) }));
+        }
+
+        pendingDocumentAttachments.push(...nextAttachments);
+        renderComposer();
+        setChatStatus(t("documentsAttached", { count: nextAttachments.length }), "success");
+      } catch (error) {
+        console.error("Failed to read document attachments", error);
+        setChatStatus(t("documentAttachFailed", { error: error.message }), "error");
+      } finally {
+        elements.documentUploadInput.value = "";
+      }
     }
 
-    function clearPendingImageAttachments() {
+    function removePendingImageAttachment(attachmentId) {
+      pendingImageAttachments = pendingImageAttachments.filter((attachment) => attachment.id !== attachmentId);
+      renderComposer();
+    }
+
+    function removePendingDocumentAttachment(attachmentId) {
+      pendingDocumentAttachments = pendingDocumentAttachments.filter((attachment) => attachment.id !== attachmentId);
+      renderComposer();
+    }
+
+    function clearPendingComposerAttachments() {
       pendingImageAttachments = [];
+      pendingDocumentAttachments = [];
       elements.imageUploadInput.value = "";
-      renderComposerAttachments();
-      renderComposerControls();
+      elements.documentUploadInput.value = "";
+      renderComposer();
     }
 
     async function readImageAttachmentFile(file) {
@@ -12111,6 +12360,21 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       };
     }
 
+    async function readDocumentAttachmentFile(file) {
+      validateDocumentUploadFile(file);
+
+      const parsedDocument = await prepareDocumentAttachment(file);
+      return {
+        id: createId("doc"),
+        name: file.name || "document",
+        mimeType: parsedDocument.mimeType,
+        kind: parsedDocument.kind,
+        sizeBytes: parsedDocument.sizeBytes,
+        text: parsedDocument.text,
+        epub: normalizeEpubTemplate(parsedDocument.epub)
+      };
+    }
+
     function cloneImageAttachment(attachment) {
       return {
         id: typeof attachment?.id === "string" && attachment.id ? attachment.id : createId("img"),
@@ -12120,6 +12384,82 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         sizeBytes: normalizeOptionalInteger(attachment?.sizeBytes, { min: 0 }) ?? estimateImageAttachmentBytes(attachment?.dataUrl),
         dataUrl: typeof attachment?.dataUrl === "string" ? attachment.dataUrl : ""
       };
+    }
+
+    function cloneDocumentAttachment(attachment) {
+      const kind = normalizeDocumentKind(attachment?.kind || attachment?.mimeType || attachment?.name);
+      return {
+        id: typeof attachment?.id === "string" && attachment.id ? attachment.id : createId("doc"),
+        name: typeof attachment?.name === "string" && attachment.name ? attachment.name : "document",
+        mimeType: typeof attachment?.mimeType === "string" && attachment.mimeType
+          ? attachment.mimeType
+          : kind === "EPUB" ? "application/epub+zip" : "text/plain",
+        kind,
+        sizeBytes: normalizeOptionalInteger(attachment?.sizeBytes, { min: 0 }) ?? 0,
+        text: typeof attachment?.text === "string" ? attachment.text : "",
+        epub: kind === "EPUB" ? normalizeEpubTemplate(attachment?.epub) : null
+      };
+    }
+
+    function normalizeEpubTemplate(epub) {
+      if (!epub || typeof epub !== "object") {
+        return null;
+      }
+
+      const textEntries = Array.isArray(epub.textEntries)
+        ? epub.textEntries
+          .map((entry) => ({
+            path: normalizePosixPath(entry?.path),
+            title: typeof entry?.title === "string" ? entry.title.trim() : "",
+            text: typeof entry?.text === "string" ? entry.text.trim() : ""
+          }))
+          .filter((entry) => entry.path && entry.text)
+        : [];
+      if (!textEntries.length) {
+        return null;
+      }
+
+      return {
+        archiveBase64: typeof epub.archiveBase64 === "string" ? epub.archiveBase64 : "",
+        packagePath: normalizePosixPath(epub.packagePath),
+        title: typeof epub.title === "string" ? epub.title.trim() : "",
+        language: typeof epub.language === "string" ? epub.language.trim() : "",
+        textEntries
+      };
+    }
+
+    function normalizeGeneratedDocument(generatedDocument) {
+      if (!generatedDocument || typeof generatedDocument !== "object") {
+        return null;
+      }
+
+      const format = normalizeGeneratedDocumentFormat(generatedDocument.format);
+      if (!format) {
+        return null;
+      }
+
+      return {
+        format,
+        fileName: typeof generatedDocument.fileName === "string" && generatedDocument.fileName
+          ? generatedDocument.fileName
+          : `document.${format}`,
+        title: typeof generatedDocument.title === "string" && generatedDocument.title
+          ? generatedDocument.title
+          : "document",
+        sourceMessageId: typeof generatedDocument.sourceMessageId === "string" ? generatedDocument.sourceMessageId : "",
+        sourceDocumentId: typeof generatedDocument.sourceDocumentId === "string" ? generatedDocument.sourceDocumentId : "",
+        rawContent: typeof generatedDocument.rawContent === "string" ? generatedDocument.rawContent : "",
+        epubTemplate: normalizeEpubTemplate(generatedDocument.epubTemplate),
+        archiveBase64: typeof generatedDocument.archiveBase64 === "string" ? generatedDocument.archiveBase64 : ""
+      };
+    }
+
+    function normalizeDocumentAttachments(attachments) {
+      return Array.isArray(attachments)
+        ? attachments
+          .map(cloneDocumentAttachment)
+          .filter((attachment) => attachment.text)
+        : [];
     }
 
     function normalizeImageAttachments(attachments) {
@@ -12134,6 +12474,274 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (!file || !/^image\//i.test(file.type)) {
         throw new Error(t("imageFilesOnly"));
       }
+    }
+
+    function validateDocumentUploadFile(file) {
+      const kind = getDocumentKind(file);
+      if (!file || !kind) {
+        throw new Error(t("documentFilesOnly"));
+      }
+      const fileSize = normalizeOptionalInteger(file.size, { min: 0 }) ?? 0;
+      if (fileSize > MAX_PENDING_DOCUMENT_BYTES) {
+        throw new Error(t("documentTooLarge", { bytes: formatByteSize(MAX_PENDING_DOCUMENT_BYTES) }));
+      }
+    }
+
+    function getDocumentKind(file) {
+      return normalizeDocumentKind(file?.kind || file?.type || file?.mimeType || file?.name || "");
+    }
+
+    function normalizeDocumentKind(value) {
+      const text = String(value || "").trim().toLowerCase();
+      if (text === "txt" || text.endsWith(".txt") || text === "text/plain") {
+        return "TXT";
+      }
+      if (text === "epub" || text.endsWith(".epub") || text === "application/epub+zip") {
+        return "EPUB";
+      }
+      return "";
+    }
+
+    function normalizeGeneratedDocumentFormat(value) {
+      const format = String(value || "").trim().toLowerCase();
+      return format === "txt" || format === "epub" ? format : "";
+    }
+
+    async function prepareDocumentAttachment(file) {
+      const kind = getDocumentKind(file);
+      if (!kind) {
+        throw new Error(t("documentFilesOnly"));
+      }
+
+      const epub = kind === "EPUB" ? await extractEpubTemplate(file) : null;
+      const text = kind === "EPUB"
+        ? buildEpubPromptText(epub)
+        : await file.text();
+      const normalizedText = String(text || "").replace(/\r\n?/g, "\n").trim();
+      if (!normalizedText) {
+        throw new Error(t("missingResponseContent"));
+      }
+
+      return {
+        mimeType: kind === "EPUB" ? "application/epub+zip" : "text/plain",
+        kind,
+        sizeBytes: normalizeOptionalInteger(file.size, { min: 0 }) ?? normalizedText.length,
+        text: normalizedText,
+        epub
+      };
+    }
+
+    async function extractEpubTemplate(file) {
+      if (typeof window.JSZip !== "function") {
+        throw new Error(t("documentLibraryMissing"));
+      }
+
+      const arrayBuffer = await file.arrayBuffer();
+      const zip = await window.JSZip.loadAsync(arrayBuffer);
+      const parser = typeof DOMParser === "function" ? new DOMParser() : null;
+      if (!parser) {
+        throw new Error(t("missingResponseContent"));
+      }
+
+      const containerEntry = zip.file("META-INF/container.xml");
+      let packagePath = "";
+      if (containerEntry) {
+        const containerMarkup = await containerEntry.async("string");
+        const containerDocument = parser.parseFromString(containerMarkup, "application/xml");
+        packagePath = normalizePosixPath(findXmlFirstElementByLocalName(containerDocument, "rootfile")?.getAttribute("full-path"));
+      }
+
+      let title = "";
+      let language = "";
+      let textEntryPaths = [];
+      if (packagePath) {
+        const packageEntry = zip.file(packagePath);
+        if (packageEntry) {
+          const packageMarkup = await packageEntry.async("string");
+          const packageDocument = parser.parseFromString(packageMarkup, "application/xml");
+          title = getXmlFirstTextByLocalName(packageDocument, "title");
+          language = getXmlFirstTextByLocalName(packageDocument, "language");
+          textEntryPaths = getEpubSpineTextEntryPaths(packageDocument, packagePath, zip);
+        }
+      }
+
+      if (!textEntryPaths.length) {
+        textEntryPaths = Object.values(zip.files || {})
+          .filter((entry) => !entry.dir)
+          .map((entry) => normalizePosixPath(entry.name))
+          .filter((entryPath) => /\.(xhtml|html|htm)$/i.test(entryPath || ""))
+          .sort((left, right) => String(left).localeCompare(String(right)));
+      }
+
+      const textEntries = (await Promise.all(textEntryPaths.map(async (entryPath) => {
+        const entry = zip.file(entryPath);
+        if (!entry) {
+          return null;
+        }
+
+        const markup = await entry.async("string");
+        const documentNode = parser.parseFromString(markup, "application/xhtml+xml");
+        const normalizedText = extractNormalizedEpubEntryText(documentNode);
+        if (!normalizedText) {
+          return null;
+        }
+
+        return {
+          path: entryPath,
+          title: extractEpubEntryTitle(documentNode, entryPath),
+          text: normalizedText
+        };
+      }))).filter(Boolean);
+
+      if (!textEntries.length) {
+        throw new Error(t("missingResponseContent"));
+      }
+
+      return {
+        archiveBase64: arrayBufferToBase64(arrayBuffer),
+        packagePath,
+        title,
+        language,
+        textEntries
+      };
+    }
+
+    function buildEpubPromptText(epub) {
+      const normalizedEpub = normalizeEpubTemplate(epub);
+      if (!normalizedEpub) {
+        return "";
+      }
+
+      return normalizedEpub.textEntries.map((entry) => [
+        `[[EPUB_SECTION:${entry.path}]]`,
+        entry.title ? `Title: ${entry.title}` : "",
+        entry.text
+      ].filter(Boolean).join("\n")).join("\n\n");
+    }
+
+    function getEpubSpineTextEntryPaths(packageDocument, packagePath, zip) {
+      const manifestItems = new Map();
+      getXmlElementsByLocalName(packageDocument, "item").forEach((item) => {
+        const id = trimmed(item.getAttribute("id"));
+        if (!id) {
+          return;
+        }
+
+        manifestItems.set(id, {
+          href: trimmed(item.getAttribute("href")),
+          mediaType: trimmed(item.getAttribute("media-type")),
+          properties: trimmed(item.getAttribute("properties"))
+        });
+      });
+
+      const packageDir = getPosixDirname(packagePath);
+      const paths = [];
+      getXmlElementsByLocalName(packageDocument, "itemref").forEach((itemRef) => {
+        const manifestItem = manifestItems.get(trimmed(itemRef.getAttribute("idref")));
+        if (!manifestItem?.href) {
+          return;
+        }
+        if (!isEpubTextMediaType(manifestItem.mediaType)) {
+          return;
+        }
+
+        const resolvedPath = resolveRelativePosixPath(packageDir, manifestItem.href);
+        if (resolvedPath && zip.file(resolvedPath)) {
+          paths.push(resolvedPath);
+        }
+      });
+
+      return [...new Set(paths)];
+    }
+
+    function isEpubTextMediaType(mediaType) {
+      return /^(application\/xhtml\+xml|text\/html)$/i.test(String(mediaType || ""));
+    }
+
+    function extractNormalizedEpubEntryText(documentNode) {
+      const source = findXmlFirstElementByLocalName(documentNode, "body") || documentNode?.documentElement || null;
+      const text = source?.textContent || "";
+      return String(text || "").replace(/\s+/g, " ").trim();
+    }
+
+    function extractEpubEntryTitle(documentNode, fallbackPath = "") {
+      return extractFirstTextContent(documentNode, ["body h1", "body h2", "title", "head > title"]) || getPosixBasename(fallbackPath).replace(/\.[^.]+$/u, "");
+    }
+
+    function extractFirstTextContent(documentNode, selectors) {
+      for (const selector of Array.isArray(selectors) ? selectors : []) {
+        try {
+          const text = documentNode?.querySelector(selector)?.textContent;
+          if (hasText(text)) {
+            return String(text).trim();
+          }
+        } catch {}
+      }
+      return "";
+    }
+
+    function getXmlElementsByLocalName(documentNode, localName) {
+      if (!documentNode) {
+        return [];
+      }
+
+      return Array.from(documentNode.getElementsByTagName("*") || [])
+        .filter((node) => String(node.localName || node.nodeName || "").toLowerCase() === String(localName || "").toLowerCase());
+    }
+
+    function findXmlFirstElementByLocalName(documentNode, localName) {
+      return getXmlElementsByLocalName(documentNode, localName)[0] || null;
+    }
+
+    function getXmlFirstTextByLocalName(documentNode, localName) {
+      return trimmed(findXmlFirstElementByLocalName(documentNode, localName)?.textContent);
+    }
+
+    function normalizePosixPath(value) {
+      return String(value || "")
+        .replace(/\\/g, "/")
+        .split("/")
+        .reduce((parts, part) => {
+          const normalizedPart = String(part || "").trim();
+          if (!normalizedPart || normalizedPart === ".") {
+            return parts;
+          }
+          if (normalizedPart === "..") {
+            parts.pop();
+            return parts;
+          }
+          parts.push(normalizedPart);
+          return parts;
+        }, [])
+        .join("/");
+    }
+
+    function getPosixDirname(path) {
+      const normalized = normalizePosixPath(path);
+      const index = normalized.lastIndexOf("/");
+      return index >= 0 ? normalized.slice(0, index) : "";
+    }
+
+    function getPosixBasename(path) {
+      const normalized = normalizePosixPath(path);
+      const index = normalized.lastIndexOf("/");
+      return index >= 0 ? normalized.slice(index + 1) : normalized;
+    }
+
+    function resolveRelativePosixPath(baseDir, relativePath) {
+      const relative = String(relativePath || "").trim();
+      if (!relative) {
+        return "";
+      }
+      if (/^[a-z]+:/i.test(relative)) {
+        return normalizePosixPath(relative);
+      }
+      return normalizePosixPath([normalizePosixPath(baseDir), relative].filter(Boolean).join("/"));
+    }
+
+    function sumDocumentAttachmentBytes(attachments) {
+      return normalizeDocumentAttachments(attachments)
+        .reduce((total, attachment) => total + (attachment.sizeBytes || 0), 0);
     }
 
     function validateImportFileSize(file) {
@@ -13003,6 +13611,112 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return extractDeltaText(payload?.choices?.[0]?.text);
     }
 
+    function normalizeFinishReason(value) {
+      return typeof value === "string" ? value.trim().toLowerCase() : "";
+    }
+
+    function buildAssistantResponseRequestBody(model, messages) {
+      const requestBody = {
+        model,
+        messages,
+        stream: true,
+        stream_options: {
+          include_usage: true
+        }
+      };
+
+      if (typeof state.settings.temperature === "number") {
+        requestBody.temperature = state.settings.temperature;
+      }
+
+      if (state.settings.thinkingUnlimited === false && typeof state.settings.thinkingTokenLimit === "number") {
+        requestBody.reasoning = {
+          max_tokens: state.settings.thinkingTokenLimit
+        };
+      }
+
+      return requestBody;
+    }
+
+    async function streamAssistantResponseRequest(apiBase, requestAbortController, requestBody, assistantMessage, chat, options = {}) {
+      const response = await fetch(`${apiBase}/chat/completions`, {
+        method: "POST",
+        signal: requestAbortController.signal,
+        headers: {
+          ...buildHeaders(),
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status} ${response.statusText}`);
+      }
+
+      return readAssistantResponseStream(response, assistantMessage, chat, options);
+    }
+
+    function shouldAutoContinueAssistantResponse(responseState, assistantMessage) {
+      if (state.settings.autoContinue !== true) {
+        return false;
+      }
+
+      if (!hasText(assistantMessage?.content)) {
+        return false;
+      }
+
+      return isLengthLimitedFinishReason(responseState?.finishReason);
+    }
+
+    function isLengthLimitedFinishReason(value) {
+      const finishReason = normalizeFinishReason(value);
+      return finishReason === "length" || finishReason === "max_tokens" || finishReason === "max_output_tokens";
+    }
+
+    function buildAutoContinueRequestMessages(baseMessages, assistantContent) {
+      return [
+        ...(Array.isArray(baseMessages) ? baseMessages : []),
+        { role: "assistant", content: String(assistantContent || "") },
+        { role: "user", content: t("autoContinueInstruction") }
+      ];
+    }
+
+    function mergeContinuedAssistantContent(existingContent, nextContent) {
+      const previous = String(existingContent || "");
+      const incoming = String(nextContent || "");
+      if (!previous) {
+        return incoming;
+      }
+      if (!incoming) {
+        return previous;
+      }
+
+      const maxOverlap = Math.min(previous.length, incoming.length, 400);
+      for (let size = maxOverlap; size >= 24; size -= 1) {
+        if (previous.slice(-size) === incoming.slice(0, size)) {
+          return previous + normalizeAssistantContinuationBoundary(previous, incoming.slice(size));
+        }
+      }
+
+      return previous + normalizeAssistantContinuationBoundary(previous, incoming);
+    }
+
+    function normalizeAssistantContinuationBoundary(previous, nextSegment) {
+      const prior = String(previous || "");
+      let suffix = String(nextSegment || "");
+      if (!prior || !suffix) {
+        return suffix;
+      }
+
+      if (!/\n\s*$/.test(prior)) {
+        suffix = suffix.replace(/^[\t \r]*\n+/, "");
+      } else {
+        suffix = suffix.replace(/^\n{2,}/, "\n");
+      }
+
+      return suffix;
+    }
+
     function sanitizeChatModeFakeImageToolCallOutput(content, chat) {
       if (!content || isRpChat(chat)) {
         return content;
@@ -13022,18 +13736,27 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return nextContent.trimStart();
     }
 
-    function applyTokenUsageToMessage(message, usage) {
+    function applyTokenUsageToMessage(message, usage, options = {}) {
       const normalizedUsage = normalizeTokenUsage(usage);
       const nextResponseTokens = normalizedUsage?.responseTokens ?? null;
       const nextContextTokens = normalizedUsage?.contextTokens ?? null;
-      const changed = message.responseTokens !== nextResponseTokens || message.contextTokens !== nextContextTokens;
+      const shouldAccumulateContinuationUsage = options.accumulateContinuationUsage === true;
+      const resolvedResponseTokens = shouldAccumulateContinuationUsage
+        ? typeof nextResponseTokens === "number"
+          ? (normalizeOptionalInteger(message.responseTokens, { min: 0 }) ?? 0) + nextResponseTokens
+          : normalizeOptionalInteger(message.responseTokens, { min: 0 }) ?? null
+        : nextResponseTokens;
+      const resolvedContextTokens = shouldAccumulateContinuationUsage
+        ? normalizeOptionalInteger(message.contextTokens, { min: 0 }) ?? nextContextTokens
+        : nextContextTokens;
+      const changed = message.responseTokens !== resolvedResponseTokens || message.contextTokens !== resolvedContextTokens;
 
       if (!changed) {
         return false;
       }
 
-      message.responseTokens = nextResponseTokens;
-      message.contextTokens = nextContextTokens;
+      message.responseTokens = resolvedResponseTokens;
+      message.contextTokens = resolvedContextTokens;
       return true;
     }
 
@@ -13094,7 +13817,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           return false;
         }
 
-        return message.content.trim() || (Array.isArray(message.attachments) && message.attachments.length);
+        return message.content.trim()
+          || (Array.isArray(message.attachments) && message.attachments.length)
+          || normalizeDocumentAttachments(message.documents).length;
       });
       if (!firstUserMessage) {
         return t("newChatTitle", { count: state.chats.length + 1 });
@@ -13104,6 +13829,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return firstUserMessage.attachments.length === 1
           ? t("imageTitleSingle")
           : t("imageTitleMultiple", { count: firstUserMessage.attachments.length });
+      }
+
+      const documentAttachments = normalizeDocumentAttachments(firstUserMessage.documents);
+      if (!firstUserMessage.content.trim() && documentAttachments.length) {
+        return documentAttachments.length === 1
+          ? documentAttachments[0].name
+          : `${documentAttachments[0].name} +${documentAttachments.length - 1}`;
       }
 
       const compact = firstUserMessage.content.replace(/\s+/g, " ").trim();
@@ -13116,9 +13848,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         ...attachment,
         dataUrl: await resolveImageAttachmentDataUrl(attachment)
       })));
+      const documents = normalizeDocumentAttachments(message?.documents);
       const requestMessage = {
         role,
-        content: buildApiMessageContent(role, message?.content, attachments, rpPlaceholders)
+        content: buildApiMessageContent(role, message?.content, attachments, documents, rpPlaceholders)
       };
 
       if (role === "user" && attachments.length) {
@@ -13134,8 +13867,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return requestMessage;
     }
 
-    function buildApiMessageContent(role, content, attachments = [], rpPlaceholders = null) {
-      const normalizedContent = replaceRpPromptPlaceholders(String(content || ""), rpPlaceholders);
+    function buildApiMessageContent(role, content, attachments = [], documents = [], rpPlaceholders = null) {
+      const normalizedContent = buildUserMessageRequestText(content, documents, rpPlaceholders);
       if (role !== "user") {
         return normalizedContent;
       }
@@ -13164,6 +13897,299 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       });
 
       return parts;
+    }
+
+    function buildUserMessageRequestText(content, documents = [], rpPlaceholders = null) {
+      const normalizedContent = replaceRpPromptPlaceholders(String(content || ""), rpPlaceholders);
+      const normalizedDocuments = normalizeDocumentAttachments(documents);
+      if (!normalizedDocuments.length) {
+        return normalizedContent;
+      }
+
+      const documentBlocks = normalizedDocuments.map((attachment) => [
+        t("attachedDocumentBlockTitle", { name: attachment.name, kind: attachment.kind || "TXT" }),
+        t("attachedDocumentBlockBody"),
+        attachment.text
+      ].join("\n"));
+
+      return [normalizedContent, ...documentBlocks].filter(Boolean).join("\n\n");
+    }
+
+    function buildDocumentOutputSystemInstructions(messages) {
+      const outputRequest = getLatestDocumentOutputRequest(messages);
+      if (!outputRequest) {
+        return [];
+      }
+
+      const instructions = [
+        `[Document Output Mode]`,
+        `FocusAbove can turn your next reply into a downloadable ${outputRequest.format.toUpperCase()} file in the browser.`,
+        `Do not say that you cannot create, export, save, or provide files.`,
+        `Return only the final file content itself with no assistant preface, no explanations, no markdown fences, and no limitation notes.`,
+        outputRequest.format === "epub"
+          ? `Write clean plain text suitable for EPUB packaging. Preserve headings and paragraph breaks in normal text; FocusAbove will build the EPUB container.`
+          : `Write clean plain text suitable for direct TXT download.`,
+        `If the user requested a translation, output only the translated document content.`
+      ];
+
+      if (outputRequest.format === "epub" && outputRequest.sourceDocument?.epub?.textEntries?.length) {
+        instructions.push(
+          `Keep the original EPUB section order. Return one block per source section using exact markers on their own lines: [[[EPUB_SECTION:path]]].`,
+          `Use these exact section paths in order:`,
+          ...outputRequest.sourceDocument.epub.textEntries.map((entry) => `- ${entry.path}`)
+        );
+      }
+
+      return [instructions.join("\n")];
+    }
+
+    function getLatestDocumentOutputRequest(messages) {
+      const latestUserDocumentMessage = (Array.isArray(messages) ? messages : [])
+        .slice()
+        .reverse()
+        .find((message) => message?.role === "user" && normalizeDocumentAttachments(message.documents).length);
+      if (!latestUserDocumentMessage) {
+        return null;
+      }
+
+      const userText = String(latestUserDocumentMessage.content || "");
+      if (!isDocumentFileOutputRequested(userText)) {
+        return null;
+      }
+
+      const firstDocument = normalizeDocumentAttachments(latestUserDocumentMessage.documents)[0];
+      const format = inferRequestedGeneratedDocumentFormat(userText, firstDocument);
+      if (!format) {
+        return null;
+      }
+
+      const baseName = sanitizeDownloadFileName((firstDocument?.name || "document").replace(/\.[^.]+$/u, ""), "document");
+      const outputKind = /(번역|translate)/i.test(userText)
+        ? "translated"
+        : /(요약|summary|summar)/i.test(userText)
+          ? "summary"
+          : "output";
+
+      return {
+        format,
+        fileName: `${baseName}-${outputKind}.${format}`,
+        title: baseName,
+        sourceMessageId: latestUserDocumentMessage.id,
+        sourceDocumentId: firstDocument?.id || "",
+        sourceDocument: firstDocument || null
+      };
+    }
+
+    function isDocumentFileOutputRequested(text) {
+      const value = String(text || "");
+      return /(다운로드|파일로|파일 형태|파일 형식|파일로 다시|파일로 저장|출력해|내보내|저장해|export|download|save|output as|epub 파일|txt 파일|epub로|txt로)/i.test(value);
+    }
+
+    function inferRequestedGeneratedDocumentFormat(text, documentAttachment) {
+      const value = String(text || "");
+      if (/epub/i.test(value)) {
+        return "epub";
+      }
+      if (/(^|\W)txt(\W|$)|text file/i.test(value)) {
+        return "txt";
+      }
+      return String(documentAttachment?.kind || "").toLowerCase() === "epub" ? "epub" : "txt";
+    }
+
+    async function createGeneratedDocumentMetadata(messages, assistantMessage) {
+      const outputRequest = getLatestDocumentOutputRequest(messages);
+      if (!outputRequest || !hasText(assistantMessage?.content)) {
+        return null;
+      }
+
+      const rawContent = String(assistantMessage.content || "");
+      const displayContent = outputRequest.format === "epub"
+        ? stripGeneratedEpubSectionMarkers(rawContent)
+        : rawContent;
+
+      const metadata = {
+        format: outputRequest.format,
+        fileName: outputRequest.fileName,
+        title: outputRequest.title,
+        sourceMessageId: outputRequest.sourceMessageId,
+        sourceDocumentId: outputRequest.sourceDocumentId,
+        rawContent,
+        epubTemplate: outputRequest.format === "epub"
+          ? normalizeEpubTemplate(outputRequest.sourceDocument?.epub)
+          : null,
+        displayContent: ""
+      };
+
+      if (metadata.format === "epub") {
+        const prebuiltBlob = await createGeneratedEpubBlob(rawContent, metadata, outputRequest.sourceDocument);
+        metadata.archiveBase64 = arrayBufferToBase64(await prebuiltBlob.arrayBuffer());
+      }
+
+      return metadata;
+    }
+
+    async function downloadGeneratedDocument(messageId) {
+      const activeChat = getActiveChat();
+      const message = findMessageInChat(activeChat, messageId);
+      const generatedDocument = normalizeGeneratedDocument(message?.generatedDocument);
+      if (!message || !generatedDocument) {
+        return;
+      }
+
+      try {
+        const sourceDocument = resolveGeneratedDocumentSourceDocument(activeChat, generatedDocument);
+        const fileContent = generatedDocument.rawContent || message.content;
+        const blob = generatedDocument.format === "epub"
+          ? generatedDocument.archiveBase64
+            ? new Blob([base64ToArrayBuffer(generatedDocument.archiveBase64)], { type: "application/epub+zip" })
+            : await createGeneratedEpubBlob(fileContent, generatedDocument, sourceDocument)
+          : new Blob([fileContent], { type: "text/plain;charset=utf-8" });
+        triggerBlobDownload(blob, generatedDocument.fileName);
+      } catch (error) {
+        console.error("Failed to download generated document", error);
+        setChatStatus(t("requestFailedWithError", { error: error.message }), "error");
+      }
+    }
+
+    function resolveGeneratedDocumentSourceDocument(chat, generatedDocument) {
+      const sourceMessage = (Array.isArray(chat?.messages) ? chat.messages : [])
+        .find((message) => message?.id === generatedDocument?.sourceMessageId);
+      const sourceDocuments = normalizeDocumentAttachments(sourceMessage?.documents);
+      return sourceDocuments.find((documentAttachment) => documentAttachment.id === generatedDocument?.sourceDocumentId)
+        || sourceDocuments[0]
+        || null;
+    }
+
+    async function createGeneratedEpubBlob(text, generatedDocument, sourceDocument = null) {
+      if (typeof window.JSZip !== "function") {
+        throw new Error(t("documentLibraryMissing"));
+      }
+
+      const generatedTemplate = normalizeEpubTemplate(generatedDocument?.epubTemplate);
+      if (generatedTemplate?.archiveBase64) {
+        return createGeneratedTemplateEpubBlob(text, generatedDocument, { epub: generatedTemplate });
+      }
+
+      const normalizedSourceDocument = cloneDocumentAttachment(sourceDocument);
+      if (normalizedSourceDocument?.kind === "EPUB" && normalizedSourceDocument.epub?.archiveBase64) {
+        return createGeneratedTemplateEpubBlob(text, generatedDocument, normalizedSourceDocument);
+      }
+
+      const zip = new window.JSZip();
+      zip.file("mimetype", "application/epub+zip", { compression: "STORE" });
+      zip.file("META-INF/container.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">\n  <rootfiles>\n    <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/>\n  </rootfiles>\n</container>`);
+      zip.file("OEBPS/content.opf", buildGeneratedEpubPackageDocument(generatedDocument));
+      zip.file("OEBPS/chapter1.xhtml", buildGeneratedEpubChapterDocument(text, generatedDocument, null));
+      return zip.generateAsync({ type: "blob", mimeType: "application/epub+zip" });
+    }
+
+    async function createGeneratedTemplateEpubBlob(text, generatedDocument, sourceDocument) {
+      const template = normalizeEpubTemplate(sourceDocument?.epub);
+      if (!template?.archiveBase64 || !template.textEntries?.length) {
+        return createGeneratedEpubBlob(text, generatedDocument, null);
+      }
+
+      const zip = await window.JSZip.loadAsync(base64ToArrayBuffer(template.archiveBase64));
+      const sectionMap = buildGeneratedEpubSectionMap(text, template.textEntries);
+      for (const entry of template.textEntries) {
+        const nextText = sectionMap.get(entry.path) || "";
+        if (!hasText(nextText)) {
+          continue;
+        }
+        zip.file(entry.path, buildGeneratedEpubChapterDocument(nextText, generatedDocument, entry));
+      }
+      return zip.generateAsync({ type: "blob", mimeType: "application/epub+zip" });
+    }
+
+    function buildGeneratedEpubPackageDocument(generatedDocument) {
+      const safeTitle = escapeHtml(generatedDocument.title || "document");
+      return `<?xml version="1.0" encoding="UTF-8"?>\n<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="bookid" version="3.0">\n  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">\n    <dc:identifier id="bookid">urn:uuid:${createId("generated-epub")}</dc:identifier>\n    <dc:title>${safeTitle}</dc:title>\n    <dc:language>${getUiLanguage()}</dc:language>\n  </metadata>\n  <manifest>\n    <item id="chapter1" href="chapter1.xhtml" media-type="application/xhtml+xml"/>\n  </manifest>\n  <spine>\n    <itemref idref="chapter1"/>\n  </spine>\n</package>`;
+    }
+
+    function buildGeneratedEpubChapterDocument(text, generatedDocument, section = null) {
+      const title = escapeHtml(section?.title || generatedDocument.title || "document");
+      const paragraphs = String(text || "")
+        .replace(/\r\n?/g, "\n")
+        .split(/\n{2,}/)
+        .map((paragraph) => paragraph.trim())
+        .filter(Boolean)
+        .map((paragraph) => `<p>${escapeHtml(paragraph).replace(/\n/g, "<br/>")}</p>`)
+        .join("\n    ");
+      return `<?xml version="1.0" encoding="UTF-8"?>\n<html xmlns="http://www.w3.org/1999/xhtml" lang="${escapeHtml(getUiLanguage())}">\n  <head>\n    <title>${title}</title>\n  </head>\n  <body>\n    <h1>${title}</h1>\n    ${paragraphs || `<p>${escapeHtml(String(text || ""))}</p>`}\n  </body>\n</html>`;
+    }
+
+    function buildGeneratedEpubSectionMap(text, templateEntries) {
+      const entries = Array.isArray(templateEntries) ? templateEntries : [];
+      const explicitSections = parseGeneratedEpubSections(text);
+      const fallbackSections = splitGeneratedEpubSections(stripGeneratedEpubSectionMarkers(text), entries.length);
+      const sectionMap = new Map();
+
+      entries.forEach((entry, index) => {
+        const explicit = explicitSections.get(entry.path);
+        sectionMap.set(entry.path, hasText(explicit) ? explicit : (fallbackSections[index] || ""));
+      });
+
+      return sectionMap;
+    }
+
+    function parseGeneratedEpubSections(text) {
+      const value = String(text || "");
+      const matches = [...value.matchAll(/^\s*\[\[\[EPUB_SECTION:([^\]]+)\]\]\]\s*$/gm)];
+      const sections = new Map();
+      matches.forEach((match, index) => {
+        const startIndex = match.index + match[0].length;
+        const endIndex = index + 1 < matches.length ? matches[index + 1].index : value.length;
+        const path = normalizePosixPath(match[1]);
+        const body = value.slice(startIndex, endIndex).trim();
+        if (path && body) {
+          sections.set(path, body);
+        }
+      });
+      return sections;
+    }
+
+    function stripGeneratedEpubSectionMarkers(text) {
+      return String(text || "")
+        .replace(/^\s*\[\[\[EPUB_SECTION:[^\]]+\]\]\]\s*$/gm, "")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
+    }
+
+    function splitGeneratedEpubSections(text, count) {
+      const normalizedCount = Math.max(1, normalizeOptionalInteger(count, { min: 1 }) ?? 1);
+      const paragraphs = String(text || "")
+        .replace(/\r\n?/g, "\n")
+        .split(/\n{2,}/)
+        .map((paragraph) => paragraph.trim())
+        .filter(Boolean);
+      if (!paragraphs.length) {
+        return new Array(normalizedCount).fill("");
+      }
+      if (normalizedCount === 1) {
+        return [paragraphs.join("\n\n")];
+      }
+
+      const sections = [];
+      let index = 0;
+      for (let sectionIndex = 0; sectionIndex < normalizedCount; sectionIndex += 1) {
+        const remainingSections = normalizedCount - sectionIndex;
+        const remainingParagraphs = paragraphs.length - index;
+        const takeCount = Math.max(1, Math.ceil(remainingParagraphs / remainingSections));
+        sections.push(paragraphs.slice(index, index + takeCount).join("\n\n"));
+        index += takeCount;
+      }
+      return sections;
+    }
+
+    function triggerBlobDownload(blob, fileName) {
+      const downloadUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = sanitizeDownloadFileName(fileName, "document");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(downloadUrl);
     }
 
     function extractBase64Payload(dataUrl) {
@@ -13612,6 +14638,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       setSelectOptionTexts(elements.languageSelect, ["languageKo", "languageEn"]);
       [
         [elements.smoothStreamingLabel, "smoothStreaming"],
+        [elements.autoContinueLabel, "autoContinue"],
         [elements.rpSummaryEnabledLabel, "rpSummaryEnabled"],
         [elements.rpInputEnhancementEnabledLabel, "rpInputEnhancementEnabled"],
         [elements.thinkingUnlimitedLabel, "unlimited"],
