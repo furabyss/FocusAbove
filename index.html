@@ -3053,7 +3053,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section class="brand">
               <a class="brand-mark-link" href="https://github.com/furabyss/FocusAbove" target="_blank" rel="noopener noreferrer"><div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="8" y="8" width="48" height="48" rx="14" fill="currentColor"></rect><circle cx="32" cy="32" r="13" fill="none" stroke="#fff7ee" stroke-width="6"></circle><circle cx="46" cy="18" r="3" fill="#fff7ee" fill-opacity="0.9"></circle></svg><span>FocusAbove</span></div></a>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.6.1, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.6.2, ⓒ 2026 Fur-Abyss</p>
             </section>
 
             <div class="settings-tab-strip" role="tablist">
@@ -10378,11 +10378,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         setPostResponseChatStatus(statusRunId, assistantMessage.id, t("illustrationImageApiRequired"));
         return;
       }
-
-      await runPostResponseAuxiliaryTasks(chat, assistantMessage, {
-        statusRunId,
-        chatT2iPrompt: options.chatT2iPrompt
-      });
+      try {
+        await runPostResponseAuxiliaryTasks(chat, assistantMessage, {
+          statusRunId,
+          chatT2iPrompt: options.chatT2iPrompt
+        });
+      } catch (error) {
+        console.error("Failed to finish post-response auxiliary tasks", error);
+      }
       setPostResponseChatStatus(
         statusRunId,
         assistantMessage.id,
@@ -10414,6 +10417,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         delete assistantMessage.auxiliaryStatus;
       }
 
+      if (getActiveChat()?.id === chat?.id) {
+        replaceMessageArticleDom(chat, assistantMessage, { scrollToBottom: false });
+        return;
+      }
+
       refreshAssistantFooterDom(assistantMessage);
     }
 
@@ -10437,41 +10445,43 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return;
       }
 
-      if (state.chats.some((item) => item.id === chat.id)) {
-        if (options.chatT2iPrompt) {
-          setAssistantAuxiliaryStatus(chat, assistantMessage, "imageGenerating");
-          setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("imageGenerating"));
-          await generateIllustrationForAssistantMessage(chat, assistantMessage, { prompt: options.chatT2iPrompt });
+      try {
+        if (state.chats.some((item) => item.id === chat.id)) {
+          if (options.chatT2iPrompt) {
+            setAssistantAuxiliaryStatus(chat, assistantMessage, "imageGenerating");
+            setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("imageGenerating"));
+            await generateIllustrationForAssistantMessage(chat, assistantMessage, { prompt: options.chatT2iPrompt });
+          }
+          if (shouldGenerateAutomaticChatTitle(chat, assistantMessage)) {
+            setAssistantAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing");
+            setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("rpPostProcessing"));
+          }
+          await maybeGenerateAutomaticChatTitle(chat, assistantMessage);
+          return;
         }
-        if (shouldGenerateAutomaticChatTitle(chat, assistantMessage)) {
+
+        if (!isRpChat(chat)) {
+          return;
+        }
+
+        if (shouldGenerateIllustrationForResponse(chat, assistantMessage)) {
+          setAssistantAuxiliaryStatus(chat, assistantMessage, "illustrationGenerating");
+          setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("illustrationGenerating"));
+          await generateIllustrationForAssistantMessage(chat, assistantMessage);
+        }
+        if (!assistantMessage.isFirstMessage) {
           setAssistantAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing");
           setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("rpPostProcessing"));
         }
-        await maybeGenerateAutomaticChatTitle(chat, assistantMessage);
+        await maybeUpdateRpSceneState(chat, assistantMessage);
+        if (shouldUpdateRpSummary(chat)) {
+          setAssistantAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing");
+          setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("rpPostProcessing"));
+          await maybeUpdateRpSummary(chat);
+        }
+      } finally {
         setAssistantAuxiliaryStatus(chat, assistantMessage);
-        return;
       }
-
-      if (!isRpChat(chat)) {
-        return;
-      }
-
-      if (shouldGenerateIllustrationForResponse(chat, assistantMessage)) {
-        setAssistantAuxiliaryStatus(chat, assistantMessage, "illustrationGenerating");
-        setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("illustrationGenerating"));
-        await generateIllustrationForAssistantMessage(chat, assistantMessage);
-      }
-      if (!assistantMessage.isFirstMessage) {
-        setAssistantAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing");
-        setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("rpPostProcessing"));
-      }
-      await maybeUpdateRpSceneState(chat, assistantMessage);
-      if (shouldUpdateRpSummary(chat)) {
-        setAssistantAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing");
-        setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("rpPostProcessing"));
-        await maybeUpdateRpSummary(chat);
-      }
-      setAssistantAuxiliaryStatus(chat, assistantMessage);
     }
 
     async function maybeGenerateAutomaticChatTitle(chat, assistantMessage) {
