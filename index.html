@@ -2680,7 +2680,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section class="brand">
               <a class="brand-mark-link" href="https://github.com/furabyss/FocusAbove" target="_blank" rel="noopener noreferrer"><div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#icon-brand"></use></svg><span>FocusAbove</span></div></a>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.6.4, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.6.5, ⓒ 2026 Fur-Abyss</p>
             </section>
             <div class="settings-tab-strip" role="tablist">
               <button id="settingsGeneralTabButton" type="button" class="settings-tab-button active" role="tab" aria-selected="true" aria-controls="settingsGeneralPanel"></button>
@@ -9514,6 +9514,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           || await (typeof options.createPrompt === "function"
             ? options.createPrompt(targetMessage)
             : createIllustrationPrompt(chat, targetMessage));
+        if (typeof options.onPromptReady === "function") {
+          options.onPromptReady(prompt);
+        }
         const image = await detachImageAttachmentMedia(await generateStableDiffusionImage(prompt));
         const latestMessage = findMessageInChat(chat, targetMessage.id);
         if (!latestMessage) {
@@ -9640,10 +9643,18 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         if (!isRpChat(chat)) {
           return;
         }
+        let illustrationTask = null;
         if (shouldGenerateIllustrationForResponse(chat, assistantMessage)) {
           setAssistantAuxiliaryStatus(chat, assistantMessage, "illustrationGenerating");
           setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("illustrationGenerating"));
-          await generateIllustrationForAssistantMessage(chat, assistantMessage);
+          let resolveIllustrationPromptReady = null;
+          const illustrationPromptReady = new Promise((resolve) => {
+            resolveIllustrationPromptReady = resolve;
+          });
+          illustrationTask = generateIllustrationForAssistantMessage(chat, assistantMessage, {
+            onPromptReady: resolveIllustrationPromptReady
+          }).finally(resolveIllustrationPromptReady);
+          await illustrationPromptReady;
         }
         if (!assistantMessage.isFirstMessage) {
           setAssistantAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing");
@@ -9654,6 +9665,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           setAssistantAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing");
           setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("rpPostProcessing"));
           await maybeUpdateRpSummary(chat);
+        }
+        if (illustrationTask) {
+          await illustrationTask;
         }
       } finally {
         setAssistantAuxiliaryStatus(chat, assistantMessage);
@@ -10083,7 +10097,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           content: [
             "Write one concise Stable Diffusion prompt in English only.",
             buildIllustrationPromptStyleInstruction(illustrationSettings.promptStyle),
-            "Preserve stated gender and stable appearance from card details. Do not invent gender.",
+            "Preserve stated gender and stable appearance from card details. Do not invent gender. If the male character's groin is exposed, include a description of the penis in the prompt.",
             buildIllustrationPeopleScopeInstruction(illustrationSettings, { characterCard }),
             isWorldRpCard(characterCard)
               ? "For world cards, depict only the character or small set of characters actually present in the current scene. Prefer named major characters when recent context supports them. Never choose the persona/user. If solo-character mode is enabled, depict only the single most important current-scene character other than the persona/user."
