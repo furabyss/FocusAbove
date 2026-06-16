@@ -269,7 +269,81 @@
       flex-direction: column;
       gap: 10px;
     }
-    #settingsRpSectionGroup {
+    .talk-group-members {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .talk-group-members[hidden] {
+      display: none !important;
+    }
+    .talk-group-member-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto 82px auto;
+      align-items: center;
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid var(--subtle-br);
+      border-radius: var(--radius-md);
+      background: var(--subtle-bg);
+    }
+    #talkGroupMemberCandidateList {
+      width: 100%;
+      align-items: stretch;
+      padding-right: 0;
+      gap: 0;
+      background: var(--panel-solid);
+    }
+    #talkGroupMemberCandidateList .talk-group-candidate-item {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      width: 100%;
+      flex: 0 0 auto;
+      height: auto;
+      min-height: 72px;
+      aspect-ratio: auto;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      border-radius: 0;
+      background: var(--panel-solid);
+      box-shadow: none;
+      overflow: visible;
+      cursor: pointer;
+    }
+    #talkGroupMemberCandidateList .talk-group-candidate-item + .talk-group-candidate-item {
+      border-top-color: transparent;
+    }
+    #talkGroupMemberCandidateList .talk-group-candidate-item .card-thumb {
+      width: 56px;
+      height: 56px;
+      min-width: 56px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+    #talkGroupMemberCandidateList .talk-group-candidate-item .talk-group-member-name {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 700;
+    }
+    .talk-group-member-row input[type="number"] {
+      padding: 8px 10px;
+    }
+    .talk-group-limit-notice {
+      margin: -2px 0 0;
+      color: var(--danger);
+      font-weight: 700;
+    }
+    .talk-group-member-remove-button {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border-radius: 12px;
+    }
+    #settingsRpSectionGroup,
+    #settingsTalkSectionGroup {
       display: contents;
     }
     .settings-divider {
@@ -724,6 +798,18 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+    .message-avatar.placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      background: var(--panel-muted);
+    }
+    .message-avatar.placeholder svg {
+      width: 30px;
+      height: 30px;
+      display: block;
     }
     :root[data-resolved-theme="dark"] .message.system {
       background: rgba(255, 255, 255, 0.08);
@@ -2681,7 +2767,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section class="brand">
               <a class="brand-mark-link" href="https://github.com/furabyss/FocusAbove" target="_blank" rel="noopener noreferrer"><div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#icon-brand"></use></svg><span>FocusAbove</span></div></a>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.7.0, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.7.1, ⓒ 2026 Fur-Abyss</p>
             </section>
             <div class="settings-tab-strip" role="tablist">
               <button id="settingsGeneralTabButton" type="button" class="settings-tab-button active" role="tab" aria-selected="true" aria-controls="settingsGeneralPanel"></button>
@@ -2769,6 +2855,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                         <input id="rpInputEnhancementEnabledInput" name="rpInputEnhancementEnabled" type="checkbox">
                       </label>
                     </div>
+                  </div>
+                  <div id="settingsTalkSectionGroup" hidden>
+                    <hr class="settings-divider" aria-hidden="true">
+                    <h2 id="settingsTalkSectionTitle" class="section-title"></h2>
+                    <label class="inline-checkbox" for="talkGroupUnlimitedInput">
+                      <input id="talkGroupUnlimitedInput" name="talkGroupUnlimited" type="checkbox">
+                    </label>
                   </div>
                   <hr class="settings-divider" aria-hidden="true">
                   <section class="settings-backup-section" aria-labelledby="settingsBackupSectionTitle">
@@ -2971,6 +3064,19 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         </div>
       </aside>
     </div>
+    <div id="talkGroupMemberOverlay" class="overlay-shell" aria-hidden="true">
+      <aside class="panel overlay-panel" role="dialog" aria-modal="true" aria-labelledby="talkGroupMemberOverlayTitle">
+        <div class="panel-inner">
+          <div class="overlay-header" data-overlay-title-id="talkGroupMemberOverlayTitle" data-overlay-close-id="closeTalkGroupMemberOverlayButton"></div>
+          <div class="overlay-content">
+            <section class="panel-list-section">
+              <h2 id="talkGroupMemberCandidateTitle" class="section-title"></h2>
+              <div id="talkGroupMemberCandidateList" class="card-list" aria-live="polite"></div>
+            </section>
+          </div>
+        </div>
+      </aside>
+    </div>
     <div id="imagePreviewOverlay" class="overlay-shell image-preview-overlay media-overlay" aria-hidden="true">
       <aside class="panel image-preview-panel media-overlay-panel" role="dialog" aria-modal="true" aria-labelledby="imagePreviewTitle">
         <div class="panel-inner">
@@ -3114,6 +3220,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     function getRpCardControlButtonId(kind, action) {
       const suffixByAction = {
         new: "New",
+        newGroup: "NewGroup",
         import: "Import",
         save: "Save",
         export: "Export",
@@ -3168,26 +3275,22 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         onClick
       });
     }
-    function appendGeneratedButton(container, options, defaults = {}) {
-      if (!container) {
-        return;
-      }
-      const mergedOptions = {
-        ...defaults,
-        ...options,
-        className: [defaults.className || "", options.className || ""].filter(Boolean).join(" "),
-        attributes: {
-          ...(defaults.attributes || {}),
-          ...(options.attributes || {})
-        }
-      };
-      container.appendChild((mergedOptions.variant === "icon" ? createIconButton : createButton)(mergedOptions));
-    }
     function populateGeneratedButtons(container, specs, defaults = {}) {
       if (!container || container.childElementCount) {
         return;
       }
-      specs.forEach((spec) => appendGeneratedButton(container, spec, defaults));
+      specs.forEach((options) => {
+        const mergedOptions = {
+          ...defaults,
+          ...options,
+          className: [defaults.className || "", options.className || ""].filter(Boolean).join(" "),
+          attributes: {
+            ...(defaults.attributes || {}),
+            ...(options.attributes || {})
+          }
+        };
+        container.appendChild((mergedOptions.variant === "icon" ? createIconButton : createButton)(mergedOptions));
+      });
     }
     function populateOverlayHeaderMarkup() {
       document.querySelectorAll(".overlay-header[data-overlay-title-id][data-overlay-close-id]").forEach((header) => {
@@ -3210,8 +3313,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const toolbar = document.querySelector(`[data-rp-card-toolbar="${kind}"]`);
       const actionRow = document.querySelector(`[data-rp-card-action-row="${kind}"]`);
       const mediaActions = document.querySelector(`[data-rp-card-media-actions="${kind}"]`);
-      populateGeneratedButtons(toolbar, ["new", "import"].map((action) => ({
-        className: action === "import" ? "ghost-button" : "",
+      const toolbarActions = kind === "character" ? ["new", "newGroup", "import"] : ["new", "import"];
+      populateGeneratedButtons(toolbar, toolbarActions.map((action) => ({
+        className: action === "new" ? "" : "ghost-button",
         attributes: { id: getRpCardControlButtonId(kind, action) }
       })));
       populateGeneratedButtons(actionRow,
@@ -3238,7 +3342,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
     function getRpCardEditorFieldsMarkup(kind) {
       if (kind === "character") {
-        return '<label><input id="characterCardNameInput" type="text"></label><label class="inline-checkbox"><input id="characterCardIsWorldCardInput" type="checkbox"></label><label><span id="characterCardDescriptionLabelText"></span><select id="characterCardDescriptionModeSelect" hidden><option value="world"></option><option value="main-character"></option></select><textarea id="characterCardDescriptionInput"></textarea></label><label><textarea id="characterCardFirstMessageInput"></textarea></label>';
+        return '<label><input id="characterCardNameInput" type="text"></label><label class="inline-checkbox"><input id="characterCardIsWorldCardInput" type="checkbox"></label><label id="characterCardDescriptionField"><span id="characterCardDescriptionLabelText"></span><select id="characterCardDescriptionModeSelect" hidden><option value="world"></option><option value="main-character"></option></select><textarea id="characterCardDescriptionInput"></textarea></label><label><textarea id="characterCardFirstMessageInput"></textarea></label><section id="talkGroupMembersField" class="talk-group-members" hidden><h3 id="talkGroupMembersTitle" class="section-title"></h3><p id="talkGroupMembersHint" class="hint"></p><div id="talkGroupMembersList"></div><p id="talkGroupMembersLimitNotice" class="hint talk-group-limit-notice" hidden></p><button id="openTalkGroupMemberOverlayButton" type="button" class="ghost-button"></button></section>';
       }
         return '<label><input id="personaCardNameInput" type="text"></label><label><textarea id="personaCardDescriptionInput"></textarea></label>';
     }
@@ -3307,6 +3411,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         chatMode: "채팅",
         rpMode: "RP",
         talkMode: "톡",
+        characterButton: "캐릭터",
         character: "캐릭터",
         characterNoun: "캐릭터",
         persona: "페르소나",
@@ -3375,6 +3480,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         rpSummaryMaxTokens: "요약 최대 토큰",
         rpSummaryMaxTokensPlaceholder: "예: 1000",
         rpInputEnhancementEnabled: "인풋 보강 사용 [보조 모델]",
+        talkSettingsSection: "톡 모드",
+        talkGroupUnlimited: "실험적인 옵션: 단톡방 최대 인원 제한 해제",
         settingsBackupSection: "설정 백업 및 복원",
         backupIncludeSecrets: "API 키를 평문으로 백업에 포함",
         settingsBackupHint: "모든 설정과 저장 데이터를 ZIP 파일로 백업/복원합니다.",
@@ -3469,6 +3576,17 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         characterCards: "캐릭터 카드",
         personaCards: "페르소나 카드",
         newCard: "새 카드",
+        newGroupChat: "새 단톡방",
+        groupChat: "단톡방",
+        groupMembers: "단톡방 멤버",
+        groupMembersHint: "직접 불리지 않았을 때 답할 확률을 가중치(0~100)로 정합니다.",
+        addGroupMember: "멤버 추가",
+        groupMemberCandidates: "추가할 캐릭터",
+        noGroupMemberCandidates: "추가할 수 있는 캐릭터가 없습니다.",
+        groupMemberWeight: "가중치",
+        groupMemberLimitReached: "단톡방에는 최대 3명까지 추가할 수 있습니다.",
+        groupMemberRequired: "단톡방에 최소 1명의 캐릭터를 추가해 주세요.",
+        departedMember: "탈퇴한 회원",
         import: "가져오기",
         characterCardList: "캐릭터 카드 목록",
         personaCardList: "페르소나 카드 목록",
@@ -3639,7 +3757,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         modeToggleLabel: "Conversation mode",
         chatMode: "Chat",
         rpMode: "RP",
-        talkMode: "Messenger",
+        talkMode: "Msg",
+        characterButton: "Char",
         character: "Character",
         characterNoun: "character",
         persona: "Persona",
@@ -3708,6 +3827,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         rpSummaryMaxTokens: "Summary max",
         rpSummaryMaxTokensPlaceholder: "e.g. 1000",
         rpInputEnhancementEnabled: "Input enhancement [Aux. model]",
+        talkSettingsSection: "Messenger settings",
+        talkGroupUnlimited: "Experimental: remove Group Chat member limit",
         settingsBackupSection: "Settings Backup and Restore",
         backupIncludeSecrets: "Include API keys in plaintext",
         settingsBackupHint: "Back up or restore all settings and saved data as a ZIP file.",
@@ -3802,6 +3923,17 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         characterCards: "Character cards",
         personaCards: "Persona cards",
         newCard: "New card",
+        newGroupChat: "New Group Chat",
+        groupChat: "Group Chat",
+        groupMembers: "Group Chat members",
+        groupMembersHint: "Set how likely they are to reply when not addressed directly by changing weight(0~100).",
+        addGroupMember: "Add member",
+        groupMemberCandidates: "Characters to add",
+        noGroupMemberCandidates: "No available characters.",
+        groupMemberWeight: "Weight",
+        groupMemberLimitReached: "Group Chat can include up to 3 characters.",
+        groupMemberRequired: "Add at least one character to this Group Chat.",
+        departedMember: "Departed member",
         import: "Import",
         characterCardList: "Character card list",
         personaCardList: "Persona card list",
@@ -3993,6 +4125,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         autoContinue: false,
         chatT2iEnabled: false,
         talkT2iEnabled: false,
+        talkGroupUnlimited: false,
         selectedModel: "",
         auxiliaryModel: "",
         systemPrompt: "",
@@ -4076,6 +4209,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       tabsOverlay: document.getElementById("tabsOverlay"),
       characterOverlay: document.getElementById("characterOverlay"),
       personaOverlay: document.getElementById("personaOverlay"),
+      talkGroupMemberOverlay: document.getElementById("talkGroupMemberOverlay"),
       imagePreviewOverlay: document.getElementById("imagePreviewOverlay"),
       rpImageCropOverlay: document.getElementById("rpImageCropOverlay"),
       tabLockWarning: document.getElementById("tabLockWarning"),
@@ -4102,6 +4236,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       promptPresetListTitle: document.getElementById("promptPresetListTitle"),
       characterOverlayTitle: document.getElementById("characterOverlayTitle"),
       personaOverlayTitle: document.getElementById("personaOverlayTitle"),
+      talkGroupMemberOverlayTitle: document.getElementById("talkGroupMemberOverlayTitle"),
+      talkGroupMemberCandidateTitle: document.getElementById("talkGroupMemberCandidateTitle"),
       imagePreviewTitle: document.getElementById("imagePreviewTitle"),
       rpImageCropTitle: document.getElementById("rpImageCropTitle"),
       tabLockWarningTitle: document.getElementById("tabLockWarningTitle"),
@@ -4111,6 +4247,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       closeTabsOverlayButton: document.getElementById("closeTabsOverlayButton"),
       closeCharacterOverlayButton: document.getElementById("closeCharacterOverlayButton"),
       closePersonaOverlayButton: document.getElementById("closePersonaOverlayButton"),
+      closeTalkGroupMemberOverlayButton: document.getElementById("closeTalkGroupMemberOverlayButton"),
       closeImagePreviewButton: document.getElementById("closeImagePreviewButton"),
       closeRpImageCropButton: document.getElementById("closeRpImageCropButton"),
       settingsSection: document.getElementById("settingsSection"),
@@ -4125,6 +4262,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       settingsGeneralSectionTitle: document.getElementById("settingsGeneralSectionTitle"),
       settingsRpSectionGroup: document.getElementById("settingsRpSectionGroup"),
       settingsRpSectionTitle: document.getElementById("settingsRpSectionTitle"),
+      settingsTalkSectionGroup: document.getElementById("settingsTalkSectionGroup"),
+      settingsTalkSectionTitle: document.getElementById("settingsTalkSectionTitle"),
       settingsBackupSectionTitle: document.getElementById("settingsBackupSectionTitle"),
       settingsBackupHint: document.getElementById("settingsBackupHint"),
       settingsIllustrationSectionTitle: document.querySelector("#settingsIllustrationPanel .section-title"),
@@ -4137,6 +4276,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       illustrationEnabledLabel: document.querySelector('label.inline-checkbox[for="illustrationEnabledInput"]'),
       chatT2iEnabledLabel: document.querySelector('label.inline-checkbox[for="chatT2iEnabledInput"]'),
       talkT2iEnabledLabel: document.querySelector('label.inline-checkbox[for="talkT2iEnabledInput"]'),
+      talkGroupUnlimitedLabel: document.querySelector('label.inline-checkbox[for="talkGroupUnlimitedInput"]'),
       illustrationIgnorePeopleLabel: document.querySelector('label.inline-checkbox[for="illustrationIgnoreNonCharacterPeopleInput"]'),
       settingsActionButtons: document.querySelectorAll("#settingsForm .settings-tab-actions button"),
       modelStatLabels: document.querySelectorAll("#settingsModelPanel .stat-card span"),
@@ -4215,6 +4355,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       illustrationEnabledInput: document.getElementById("illustrationEnabledInput"),
       chatT2iEnabledInput: document.getElementById("chatT2iEnabledInput"),
       talkT2iEnabledInput: document.getElementById("talkT2iEnabledInput"),
+      talkGroupUnlimitedInput: document.getElementById("talkGroupUnlimitedInput"),
       illustrationIgnoreNonCharacterPeopleInput: document.getElementById("illustrationIgnoreNonCharacterPeopleInput"),
       illustrationPromptStyleSelect: document.getElementById("illustrationPromptStyleSelect"),
       illustrationArtStyleSelect: document.getElementById("illustrationArtStyleSelect"),
@@ -4250,7 +4391,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       characterCardDescriptionModeSelect: document.getElementById("characterCardDescriptionModeSelect"),
       characterCardDescriptionInput: document.getElementById("characterCardDescriptionInput"),
       characterCardFirstMessageInput: document.getElementById("characterCardFirstMessageInput"),
+      talkGroupMembersField: document.getElementById("talkGroupMembersField"),
+      talkGroupMembersTitle: document.getElementById("talkGroupMembersTitle"),
+      talkGroupMembersHint: document.getElementById("talkGroupMembersHint"),
+      talkGroupMembersList: document.getElementById("talkGroupMembersList"),
+      talkGroupMembersLimitNotice: document.getElementById("talkGroupMembersLimitNotice"),
+      openTalkGroupMemberOverlayButton: document.getElementById("openTalkGroupMemberOverlayButton"),
+      talkGroupMemberCandidateList: document.getElementById("talkGroupMemberCandidateList"),
       characterNewButton: document.getElementById("characterNewButton"),
+      characterNewGroupButton: document.getElementById("characterNewGroupButton"),
       characterImportButton: document.getElementById("characterImportButton"),
       characterSaveButton: document.getElementById("characterSaveButton"),
       characterExportButton: document.getElementById("characterExportButton"),
@@ -4307,6 +4456,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     let cachedUiNumberFormatterLocale = "";
     let activeSettingsTab = "general";
     let backupRestoreInProgress = false;
+    let activeTalkGroupResponseChatId = "";
     let editingChatId = "";
     let modelSettingsDraft = null;
     let rpCardDrafts = {
@@ -4380,7 +4530,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
     }
     function bindRpCardEditorEvents(kind, config) {
-      bindClickActions([
+      const clickBindings = [
         [config.newButton, () => createNewRpCard(kind)],
         [config.saveButton, () => {
           void saveRpCard(kind);
@@ -4388,7 +4538,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         [config.exportButton, () => exportRpCard(kind)],
         [config.imageClearButton, () => clearRpCardImage(kind)],
         [config.deleteButton, () => deleteRpCard(kind)]
-      ]);
+      ];
+      if (config.newGroupButton) {
+        clickBindings.push([config.newGroupButton, () => createNewTalkGroupCard()]);
+      }
+      bindClickActions(clickBindings);
       bindProxyClickAction(config.importButton, config.importInput);
       bindProxyClickAction(config.imageButton, config.imageInput);
       bindInputActions(config.fields.map(([field, input]) => [input, () => updateRpCardDraftField(kind, field, input.value)]));
@@ -4400,6 +4554,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const prefix = isCharacter ? "character" : "persona";
       return {
         newButton: elements[getRpCardControlButtonId(prefix, "new")],
+        newGroupButton: isCharacter ? elements[getRpCardControlButtonId(prefix, "newGroup")] : null,
         importButton: elements[getRpCardControlButtonId(prefix, "import")],
         saveButton: elements[getRpCardControlButtonId(prefix, "save")],
         exportButton: elements[getRpCardControlButtonId(prefix, "export")],
@@ -4444,6 +4599,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         [elements.closeTabsOverlayButton, () => closeOverlay(elements.tabsOverlay)],
         [elements.closeCharacterOverlayButton, () => closeOverlay(elements.characterOverlay)],
         [elements.closePersonaOverlayButton, () => closeOverlay(elements.personaOverlay)],
+        [elements.closeTalkGroupMemberOverlayButton, () => closeOverlay(elements.talkGroupMemberOverlay)],
         [elements.closeImagePreviewButton, closeImagePreview],
         [elements.closeRpImageCropButton, () => cancelRpImageCrop({ silent: true })],
         [elements.settingsGeneralTabButton, () => setSettingsOverlayTab("general")],
@@ -4489,6 +4645,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         resetRpCardDraft("persona");
         renderAppSections({ persist: false, rpCards: true, header: true });
       });
+      bindOverlayOpenAction(elements.openTalkGroupMemberOverlayButton, elements.talkGroupMemberOverlay, () => {
+        renderTalkGroupMemberCandidateList();
+      });
       elements.importChatsInput.addEventListener("change", handleImportChats);
       elements.importFullBackupInput.addEventListener("change", handleImportFullBackup);
       elements.chatForm.addEventListener("submit", handleSendMessage);
@@ -4517,6 +4676,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         [elements.illustrationEnabledInput, syncIllustrationControls],
         [elements.chatT2iEnabledInput, syncIllustrationControls],
         [elements.talkT2iEnabledInput, syncIllustrationControls],
+        [elements.talkGroupUnlimitedInput, () => {
+          renderAppSections({ persist: false, rpCards: true });
+        }],
         [elements.rpResponsePerspectiveSelect, updateActiveRpResponsePerspective],
         [elements.rpResponseLengthSelect, updateActiveRpResponseLength]
       ], "change");
@@ -4537,6 +4699,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         [elements.characterCardIsWorldCardInput, updateCharacterCardWorldCardDraft],
         [elements.characterCardDescriptionModeSelect, updateCharacterCardDescriptionModeDraft]
       ], "change");
+      elements.talkGroupMembersList.addEventListener("click", handleTalkGroupMembersInput);
+      elements.talkGroupMembersList.addEventListener("input", handleTalkGroupMembersInput);
+      elements.talkGroupMemberCandidateList.addEventListener("click", handleTalkGroupMemberCandidateAction);
+      elements.talkGroupMemberCandidateList.addEventListener("keydown", handleTalkGroupMemberCandidateAction);
       bindRpCardEditorEvents("persona", getRpCardEditorEventConfig("persona"));
       bindRpCardReorderEvents("character", elements.characterCardList);
       bindRpCardReorderEvents("persona", elements.personaCardList);
@@ -4561,7 +4727,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         window.visualViewport.addEventListener("resize", scheduleComposerLayoutUpdate);
         window.visualViewport.addEventListener("resize", handleRpImageCropViewportResize);
       }
-      [elements.settingsOverlay, elements.promptPresetOverlay, elements.authorsNoteOverlay, elements.tabsOverlay, elements.characterOverlay, elements.personaOverlay, elements.imagePreviewOverlay, elements.rpImageCropOverlay].forEach((overlay) => {
+      [elements.settingsOverlay, elements.promptPresetOverlay, elements.authorsNoteOverlay, elements.tabsOverlay, elements.characterOverlay, elements.personaOverlay, elements.talkGroupMemberOverlay, elements.imagePreviewOverlay, elements.rpImageCropOverlay].forEach((overlay) => {
         overlay.dataset.closeStartOnBackdrop = "false";
         overlay.addEventListener("pointerdown", (event) => {
           overlay.dataset.closeStartOnBackdrop = event.target === overlay ? "true" : "false";
@@ -4717,6 +4883,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         talkT2iEnabled: typeof parsed?.settings?.talkT2iEnabled === "boolean"
           ? parsed.settings.talkT2iEnabled
           : DEFAULT_SETTINGS.talkT2iEnabled,
+        talkGroupUnlimited: typeof parsed?.settings?.talkGroupUnlimited === "boolean"
+          ? parsed.settings.talkGroupUnlimited
+          : DEFAULT_SETTINGS.talkGroupUnlimited,
         selectedModel: typeof parsed?.settings?.selectedModel === "string"
           ? parsed.settings.selectedModel
             : DEFAULT_SETTINGS.selectedModel,
@@ -4918,12 +5087,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const chatMode = options.chatMode === "talk" ? "talk" : "rp";
       const base = chatMode === "talk" ? createDefaultTalkState() : createDefaultRpState();
       const characterCards = Array.isArray(rpState?.characterCards)
-        ? rpState.characterCards.map((card) => normalizeRpCard(card, "character", { allowWorldCards })).filter(Boolean)
+        ? rpState.characterCards.map((card) => normalizeRpCard(card, "character", { allowWorldCards, chatMode })).filter(Boolean)
         : [];
       const personaCards = Array.isArray(rpState?.personaCards)
-        ? rpState.personaCards.map((card) => normalizeRpCard(card, "persona", { allowWorldCards })).filter(Boolean)
+        ? rpState.personaCards.map((card) => normalizeRpCard(card, "persona", { allowWorldCards, chatMode })).filter(Boolean)
         : [];
       const validCharacterIds = new Set(characterCards.map((card) => card.id));
+      pruneInvalidTalkGroupMembers({ characterCards }, { touchUpdatedAt: false });
       const chatsByCharacterId = {};
       characterCards.forEach((card) => {
         chatsByCharacterId[card.id] = Array.isArray(rpState?.chatsByCharacterId?.[card.id])
@@ -4958,18 +5128,73 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
       const label = getRpCardKindLabel(kind);
       const isWorldCard = options.allowWorldCards !== false && kind === "character" && normalizeWorldCardFlag(card.isWorldCard ?? card.IsWorldCard);
+      const isGroupChat = kind === "character" && options.chatMode === "talk" && card.isGroupChat === true;
       return {
         id: typeof card.id === "string" && card.id ? card.id : createId(`${kind}-card`),
         kind,
         name: typeof card.name === "string" && card.name.trim() ? card.name.trim() : t("newKindName", { kind: label }),
         description: typeof card.description === "string" ? card.description : "",
         firstMessage: kind === "character" && typeof card.firstMessage === "string" ? card.firstMessage : "",
-        isWorldCard,
-        mainCharacterDescription: isWorldCard && typeof card.mainCharacterDescription === "string" ? card.mainCharacterDescription : "",
+        isWorldCard: isGroupChat ? false : isWorldCard,
+        isGroupChat,
+        groupMembers: isGroupChat ? normalizeTalkGroupMembers(card.groupMembers, { excludeId: card.id }) : [],
+        mainCharacterDescription: !isGroupChat && isWorldCard && typeof card.mainCharacterDescription === "string" ? card.mainCharacterDescription : "",
         profileImage: normalizeCardProfileImage(card.profileImage),
         createdAt: typeof card.createdAt === "string" ? card.createdAt : new Date().toISOString(),
         updatedAt: typeof card.updatedAt === "string" ? card.updatedAt : new Date().toISOString()
       };
+    }
+    function normalizeTalkGroupMemberWeight(value) {
+      const normalized = normalizeOptionalInteger(value, { min: 0, max: 100 });
+      return typeof normalized === "number" ? normalized : 50;
+    }
+    function normalizeTalkGroupMembers(value, options = {}) {
+      if (!Array.isArray(value)) {
+        return [];
+      }
+      const seen = new Set();
+      return value
+        .map((member) => ({
+          characterId: typeof member?.characterId === "string" ? member.characterId : "",
+          weight: normalizeTalkGroupMemberWeight(member?.weight)
+        }))
+        .filter((member) => {
+          if (!member.characterId || member.characterId === options.excludeId || seen.has(member.characterId)) {
+            return false;
+          }
+          seen.add(member.characterId);
+          return true;
+        });
+    }
+    function pruneInvalidTalkGroupMembers(rpLikeState, options = {}) {
+      const cards = Array.isArray(rpLikeState?.characterCards) ? rpLikeState.characterCards : [];
+      if (!cards.length) {
+        return false;
+      }
+      const validMemberIds = new Set(cards
+        .filter((card) => !isTalkGroupCard(card))
+        .map((card) => card.id)
+        .filter(Boolean));
+      let changed = false;
+      cards.forEach((card) => {
+        if (!isTalkGroupCard(card)) {
+          return;
+        }
+        const previousSignature = JSON.stringify(normalizeTalkGroupMembers(card.groupMembers, { excludeId: card.id }));
+        const nextMembers = normalizeTalkGroupMembers(card.groupMembers, { excludeId: card.id })
+          .filter((member) => validMemberIds.has(member.characterId));
+        const nextSignature = JSON.stringify(nextMembers);
+        if (previousSignature === nextSignature) {
+          card.groupMembers = nextMembers;
+          return;
+        }
+        card.groupMembers = nextMembers;
+        if (options.touchUpdatedAt !== false) {
+          card.updatedAt = new Date().toISOString();
+        }
+        changed = true;
+      });
+      return changed;
     }
     function normalizeWorldCardFlag(value) {
       return value === true;
@@ -6253,6 +6478,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         name: `${getRpCardKindLabel(kind)} ${count}`,
         description: "",
         isWorldCard: false,
+        isGroupChat: false,
+        groupMembers: [],
         mainCharacterDescription: "",
         firstMessage: kind === "character" ? "" : "",
         profileImage: null,
@@ -6267,6 +6494,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         name: activeCard?.name || "",
         description: activeCard?.description || "",
         isWorldCard: kind === "character" ? Boolean(activeCard?.isWorldCard) : false,
+        isGroupChat: kind === "character" ? Boolean(activeCard?.isGroupChat) : false,
+        groupMembers: kind === "character" ? normalizeTalkGroupMembers(activeCard?.groupMembers, { excludeId: activeCard?.id || "" }) : [],
         mainCharacterDescription: kind === "character" ? (activeCard?.mainCharacterDescription || "") : "",
         descriptionMode: kind === "character" ? "world" : "world",
         firstMessage: kind === "character" ? (activeCard?.firstMessage || "") : "",
@@ -6302,16 +6531,221 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
     function syncCharacterCardEditorModeControls() {
       const draft = getRpCardDraft("character");
+      const isGroupChat = isTalkModeActive() && Boolean(draft?.isGroupChat);
       const isWorldCard = isRpModeActive() && Boolean(draft?.isWorldCard);
       const descriptionMode = normalizeCharacterCardDescriptionMode(draft?.descriptionMode);
       elements.characterCardIsWorldCardInput.checked = isWorldCard;
-      elements.characterCardIsWorldCardInput.disabled = isTalkModeActive();
-      elements.characterCardIsWorldCardInput.closest("label").hidden = isTalkModeActive();
+      elements.characterCardIsWorldCardInput.disabled = isTalkModeActive() || isGroupChat;
+      elements.characterCardIsWorldCardInput.closest("label").hidden = isTalkModeActive() || isGroupChat;
       elements.characterCardDescriptionLabelText.hidden = isWorldCard;
       elements.characterCardDescriptionModeSelect.hidden = !isWorldCard;
       elements.characterCardDescriptionModeSelect.value = descriptionMode;
       elements.characterCardDescriptionInput.value = getCharacterCardDescriptionDraftValue(draft);
       elements.characterCardDescriptionInput.placeholder = t(getCharacterCardDescriptionPlaceholderKey(draft));
+      elements.characterCardDescriptionInput.closest("label").hidden = isGroupChat;
+      elements.characterImageButton.hidden = isGroupChat;
+      elements.characterImageClearButton.hidden = isGroupChat;
+      elements.characterExportButton.hidden = isGroupChat;
+      elements.talkGroupMembersField.hidden = !isGroupChat;
+      if (isGroupChat) {
+        renderTalkGroupMembersEditor(draft);
+      }
+    }
+    function isTalkGroupCard(card) {
+      return Boolean(card?.isGroupChat);
+    }
+    function getTalkCharacterCardsForGroupMembers(excludeId = "") {
+      return (state.talk?.characterCards || []).filter((card) => card.id !== excludeId && !isTalkGroupCard(card));
+    }
+    function getTalkGroupMemberLimit() {
+      return state.settings.talkGroupUnlimited === true ? Infinity : 3;
+    }
+    function getNormalizedTalkGroupDraftMembers(draft, excludeId = "") {
+      const validIds = new Set(getTalkCharacterCardsForGroupMembers(excludeId).map((card) => card.id));
+      const limit = getTalkGroupMemberLimit();
+      return normalizeTalkGroupMembers(draft?.groupMembers, { excludeId })
+        .filter((member) => validIds.has(member.characterId))
+        .slice(0, Number.isFinite(limit) ? limit : undefined);
+    }
+    function renderTalkGroupMembersEditor(draft) {
+      const list = elements.talkGroupMembersList;
+      if (!list) {
+        return;
+      }
+      const members = getNormalizedTalkGroupDraftMembers(draft, draft.cardId);
+      draft.groupMembers = members;
+      list.innerHTML = "";
+      const cardsById = new Map(getTalkCharacterCardsForGroupMembers(draft.cardId).map((card) => [card.id, card]));
+      if (!members.length) {
+        list.appendChild(createEmptyState(t("groupMemberRequired")));
+      }
+      members.forEach((member) => {
+        const card = cardsById.get(member.characterId);
+        if (!card) {
+          return;
+        }
+        const row = createElementWithClass("div", "talk-group-member-row");
+        const name = createElementWithClass("span", "talk-group-member-name", card.name || t("character"));
+        const weightLabel = createElementWithClass("span", "talk-group-member-weight-label", t("groupMemberWeight"));
+        const weightInput = document.createElement("input");
+        weightInput.type = "number";
+        weightInput.min = "0";
+        weightInput.max = "100";
+        weightInput.step = "1";
+        weightInput.dataset.groupMemberWeightId = card.id;
+        weightInput.value = String(member.weight ?? 50);
+        const removeButton = createButton({
+          className: "chat-item-icon-button danger talk-group-member-remove-button",
+          label: t("remove"),
+          title: t("remove"),
+          html: iconSvg("trash"),
+          attributes: {
+            "data-group-member-remove-id": card.id
+          }
+        });
+        row.append(name, weightLabel, weightInput, removeButton);
+        list.appendChild(row);
+      });
+      elements.openTalkGroupMemberOverlayButton.textContent = t("addGroupMember");
+      const availableCandidates = getTalkGroupAvailableCandidates(draft, members);
+      const memberLimitReached = isTalkGroupMemberLimitReached(members);
+      elements.openTalkGroupMemberOverlayButton.disabled = memberLimitReached || !availableCandidates.length;
+      elements.openTalkGroupMemberOverlayButton.title = memberLimitReached ? t("groupMemberLimitReached") : "";
+      elements.openTalkGroupMemberOverlayButton.setAttribute("aria-label", memberLimitReached
+        ? `${t("addGroupMember")} - ${t("groupMemberLimitReached")}`
+        : t("addGroupMember"));
+      if (elements.talkGroupMembersLimitNotice) {
+        elements.talkGroupMembersLimitNotice.hidden = !memberLimitReached;
+        elements.talkGroupMembersLimitNotice.textContent = memberLimitReached ? t("groupMemberLimitReached") : "";
+      }
+    }
+    function isTalkGroupMemberLimitReached(members = normalizeTalkGroupMembers(getRpCardDraft("character")?.groupMembers)) {
+      const limit = getTalkGroupMemberLimit();
+      return Number.isFinite(limit) && members.length >= limit;
+    }
+    function handleTalkGroupMembersInput(event) {
+      const draft = getRpCardDraft("character");
+      if (!isTalkModeActive() || !draft?.isGroupChat) {
+        return;
+      }
+      const target = event.target;
+      const removeTarget = target?.closest?.("[data-group-member-remove-id]");
+      const memberId = target?.dataset?.groupMemberWeightId || removeTarget?.dataset?.groupMemberRemoveId || "";
+      if (!memberId) {
+        return;
+      }
+      const members = normalizeTalkGroupMembers(draft.groupMembers, { excludeId: draft.cardId });
+      const existing = members.find((member) => member.characterId === memberId);
+      if (removeTarget) {
+        draft.groupMembers = members.filter((member) => member.characterId !== memberId);
+        renderTalkGroupMembersEditor(draft);
+        renderTalkGroupMemberCandidateList();
+        return;
+      }
+      if (existing) {
+        existing.weight = normalizeTalkGroupMemberWeight(target.value);
+      }
+      draft.groupMembers = members;
+      renderTalkGroupMembersEditor(draft);
+    }
+    function getTalkGroupAvailableCandidates(draft = getRpCardDraft("character"), members = normalizeTalkGroupMembers(draft?.groupMembers, { excludeId: draft?.cardId || "" })) {
+      if (isTalkGroupMemberLimitReached(members)) {
+        return [];
+      }
+      const memberIds = new Set(members.map((member) => member.characterId));
+      return getTalkCharacterCardsForGroupMembers(draft?.cardId || "").filter((card) => !memberIds.has(card.id));
+    }
+    function renderTalkGroupMemberCandidateList() {
+      const list = elements.talkGroupMemberCandidateList;
+      if (!list) {
+        return;
+      }
+      const draft = getRpCardDraft("character");
+      const members = normalizeTalkGroupMembers(draft?.groupMembers, { excludeId: draft?.cardId || "" });
+      const canEditGroup = isTalkModeActive() && draft?.isGroupChat;
+      const limitReached = canEditGroup && isTalkGroupMemberLimitReached(members);
+      const candidates = canEditGroup ? getTalkGroupAvailableCandidates(draft, members) : [];
+      list.innerHTML = "";
+      if (limitReached) {
+        list.appendChild(createEmptyState(t("groupMemberLimitReached")));
+        return;
+      }
+      if (!candidates.length) {
+        list.appendChild(createEmptyState(t("noGroupMemberCandidates")));
+        return;
+      }
+      candidates.forEach((card) => {
+        const row = createElementWithClass("div", "card-item talk-group-candidate-item");
+        row.dataset.groupMemberAddId = card.id;
+        row.setAttribute("role", "button");
+        row.tabIndex = 0;
+        row.appendChild(createRpCardThumb(card, "character"));
+        const name = createElementWithClass("span", "talk-group-member-name", card.name || t("character"));
+        row.append(name);
+        list.appendChild(row);
+      });
+    }
+    function handleTalkGroupMemberCandidateAction(event) {
+      if (event.type === "keydown" && event.key !== "Enter" && event.key !== " ") {
+        return;
+      }
+      const memberId = event.target?.closest("[data-group-member-add-id]")?.dataset?.groupMemberAddId || "";
+      if (!memberId) {
+        return;
+      }
+      if (event.type === "keydown") {
+        event.preventDefault();
+      }
+      addTalkGroupMemberFromCandidateId(memberId);
+    }
+    function addTalkGroupMemberFromCandidateId(memberId) {
+      if (!memberId) {
+        return;
+      }
+      const draft = getRpCardDraft("character");
+      if (!isTalkModeActive() || !draft?.isGroupChat) {
+        return;
+      }
+      const members = normalizeTalkGroupMembers(draft.groupMembers, { excludeId: draft.cardId });
+      if (members.some((member) => member.characterId === memberId)) {
+        return;
+      }
+      const limit = getTalkGroupMemberLimit();
+      if (Number.isFinite(limit) && members.length >= limit) {
+        setChatStatus(t("groupMemberLimitReached"), "error");
+        return;
+      }
+      members.push({ characterId: memberId, weight: 50 });
+      draft.groupMembers = members;
+      renderTalkGroupMembersEditor(draft);
+      renderTalkGroupMemberCandidateList();
+      if (!getTalkGroupAvailableCandidates(draft).length) {
+        closeOverlay(elements.talkGroupMemberOverlay);
+      }
+    }
+    function getTalkGroupResolvedMembers(groupCard) {
+      if (!isTalkGroupCard(groupCard)) {
+        return [];
+      }
+      const cardsById = new Map((state.talk?.characterCards || []).map((card) => [card.id, card]));
+      return normalizeTalkGroupMembers(groupCard.groupMembers, { excludeId: groupCard.id })
+        .map((member) => ({
+          ...member,
+          card: cardsById.get(member.characterId) || null
+        }))
+        .filter((member) => member.card && !isTalkGroupCard(member.card));
+    }
+    function getMentionedTalkGroupMemberIds(userMessage, members) {
+      const content = String(userMessage?.content || "").toLocaleLowerCase();
+      if (!content) {
+        return new Set();
+      }
+      return new Set(members
+        .filter((member) => {
+          const name = String(member.card?.name || "").trim().toLocaleLowerCase();
+          return name && content.includes(name);
+        })
+        .map((member) => member.characterId));
     }
     function updateCharacterCardDescriptionDraft() {
       const draft = getRpCardDraft("character");
@@ -6408,6 +6842,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       elements.smoothStreamingInput.checked = state.settings.smoothStreaming !== false;
       elements.autoContinueInput.checked = state.settings.autoContinue === true;
       elements.settingsRpSectionGroup.hidden = !isRpModeActive();
+      elements.settingsTalkSectionGroup.hidden = !isTalkModeActive();
+      elements.talkGroupUnlimitedInput.checked = state.settings.talkGroupUnlimited === true;
       elements.rpResponsePerspectiveField.hidden = !isRpModeActive();
       elements.rpResponseLengthField.hidden = !isRpModeActive();
       elements.rpAssistanceFields.hidden = !isRpModeActive();
@@ -6551,15 +6987,25 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       elements.authorsNoteButton.setAttribute("aria-label", title);
     }
     function renderRpCardPanels() {
+      syncTalkGroupCardToolbar();
       renderRpCardPanel("character");
       renderRpCardPanel("persona");
+    }
+    function syncTalkGroupCardToolbar() {
+      if (!elements.characterNewGroupButton) {
+        return;
+      }
+      elements.characterNewGroupButton.textContent = t("newGroupChat");
+      elements.characterNewGroupButton.hidden = !isTalkModeActive();
     }
     function getRpCardPanelListSignature(kind, draft) {
       return [
         normalizeAppLanguage(state.settings.language),
+        state.settings.talkGroupUnlimited === true ? "group-unlimited" : "group-limited",
         draft?.cardId || "",
+        JSON.stringify(draft?.groupMembers || []),
         getRpCardCollection(kind)
-          .map((card) => [card.id, card.updatedAt || "", card.name || "", card.profileImage?.id || ""].join(":"))
+          .map((card) => [card.id, card.updatedAt || "", card.name || "", card.profileImage?.id || "", card.isGroupChat ? "group" : "", JSON.stringify(card.groupMembers || [])].join(":"))
           .join("|")
       ].join("~");
     }
@@ -6600,7 +7046,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (firstMessageInput) {
         const firstMessageLabel = firstMessageInput.closest("label");
         if (firstMessageLabel) {
-          firstMessageLabel.hidden = isTalkModeActive();
+          firstMessageLabel.hidden = isTalkModeActive() || Boolean(draft.isGroupChat);
         }
         firstMessageInput.value = draft.firstMessage || "";
       }
@@ -7355,6 +7801,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (!isRpLikeModeActive()) {
         return null;
       }
+      if (isDepartedTalkMemberMessage(message)) {
+        const avatar = createElementWithClass("div", "message-avatar placeholder");
+        avatar.setAttribute("aria-label", t("departedMember"));
+        avatar.innerHTML = `<svg viewBox="0 0 44 44" aria-hidden="true" focusable="false"><circle cx="22" cy="15" r="8" fill="currentColor" opacity="0.9"></circle><path d="M8 38c1.6-9 7.1-14 14-14s12.4 5 14 14" fill="currentColor" opacity="0.72"></path></svg>`;
+        return avatar;
+      }
       const rpLikeState = getActiveRpLikeState();
       const profileImage = message.role === "assistant"
         ? getRpCardById("character", message.characterCardId || rpLikeState.activeCharacterId)?.profileImage
@@ -7370,6 +7822,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       avatar.appendChild(image);
       queueImageElementSource(image, profileImage);
       return avatar;
+    }
+    function isDepartedTalkMemberMessage(message) {
+      if (!isTalkModeActive() || message?.role !== "assistant" || !message.characterCardId) {
+        return false;
+      }
+      return !getRpCardByIdFromState(state.talk, "character", message.characterCardId);
     }
     function buildMessageMetaActions(chat, message) {
       const metaActions = createElementWithClass("div", "message-meta-actions");
@@ -7571,6 +8029,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       state.settings.themeMode = normalizeThemeMode(elements.themeModeSelect.value);
       state.settings.smoothStreaming = elements.smoothStreamingInput.checked;
       state.settings.autoContinue = elements.autoContinueInput.checked;
+      state.settings.talkGroupUnlimited = elements.talkGroupUnlimitedInput.checked;
       if (isRpModeActive()) {
         state.rp.responsePerspective = normalizeRpResponsePerspective(elements.rpResponsePerspectiveSelect.value);
         state.rp.responseLength = normalizeRpResponseLength(elements.rpResponseLengthSelect.value);
@@ -7609,6 +8068,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       state.settings.autoContinue = nextDefaultSettings.autoContinue;
       state.settings.chatT2iEnabled = nextDefaultSettings.chatT2iEnabled;
       state.settings.talkT2iEnabled = nextDefaultSettings.talkT2iEnabled;
+      state.settings.talkGroupUnlimited = nextDefaultSettings.talkGroupUnlimited;
       if (isRpModeActive() && state.rp) {
         state.rp.responsePerspective = DEFAULT_RP_RESPONSE_PERSPECTIVE;
         state.rp.responseLength = DEFAULT_RP_RESPONSE_LENGTH;
@@ -7808,6 +8268,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       closeOverlay(elements.promptPresetOverlay);
       closeOverlay(elements.authorsNoteOverlay);
       closeOverlay(elements.tabsOverlay);
+      closeOverlay(elements.talkGroupMemberOverlay);
       closeOverlay(elements.characterOverlay);
       closeOverlay(elements.personaOverlay);
     }
@@ -8209,6 +8670,36 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       renderAll();
       setChatStatus(t("rpCardCreated", { kind: getRpCardKindNoun(kind) }), "success");
     }
+    function createNewTalkGroupCard() {
+      if (!isTalkModeActive()) {
+        return;
+      }
+      ensureRpModeReady();
+      const createdAt = new Date().toISOString();
+      const rpLikeState = getActiveRpLikeState();
+      const card = {
+        id: createId("talk-group-card"),
+        kind: "character",
+        name: `${t("groupChat")} ${rpLikeState.characterCards.filter((item) => item.isGroupChat).length + 1}`,
+        description: "",
+        isWorldCard: false,
+        isGroupChat: true,
+        groupMembers: [],
+        mainCharacterDescription: "",
+        firstMessage: "",
+        profileImage: null,
+        createdAt,
+        updatedAt: createdAt
+      };
+      rpLikeState.characterCards.unshift(card);
+      rpLikeState.activeCharacterId = card.id;
+      rpLikeState.chatsByCharacterId[card.id] = [createChatRecord({ characterCardId: card.id, chatMode: "talk" })];
+      rpLikeState.activeChatIdsByCharacterId[card.id] = rpLikeState.chatsByCharacterId[card.id][0].id;
+      resetModelSettingsDraft();
+      resetRpCardDraft("character");
+      renderAll();
+      setChatStatus(t("rpCardCreated", { kind: t("groupChat") }), "success");
+    }
     async function saveRpCard(kind) {
       const draft = getRpCardDraft(kind);
       const card = getRpCardCollection(kind).find((item) => item.id === draft.cardId);
@@ -8222,17 +8713,25 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         requestIndexedDbMediaGc(previousProfileMediaId);
       }
       card.name = trimmed(draft.name) || card.name;
-      card.description = String(draft.description || "");
       if (kind === "character") {
-        card.isWorldCard = isRpModeActive() && Boolean(draft.isWorldCard);
+        card.isGroupChat = isTalkModeActive() && Boolean(draft.isGroupChat);
+        card.groupMembers = card.isGroupChat ? getNormalizedTalkGroupDraftMembers(draft, card.id) : [];
+        if (card.isGroupChat && !card.groupMembers.length) {
+          setChatStatus(t("groupMemberRequired"), "error");
+          return;
+        }
+        card.description = card.isGroupChat ? "" : String(draft.description || "");
+        card.isWorldCard = !card.isGroupChat && isRpModeActive() && Boolean(draft.isWorldCard);
         card.mainCharacterDescription = card.isWorldCard ? String(draft.mainCharacterDescription || "") : "";
-        card.firstMessage = isRpModeActive() ? String(draft.firstMessage || "") : "";
+        card.firstMessage = !card.isGroupChat && isRpModeActive() ? String(draft.firstMessage || "") : "";
         await ensureChatsLoaded(getRpChatsForCharacterId(card.id));
         if (isRpModeActive()) {
           syncRpCharacterChatsFirstMessage(card.id);
         }
+      } else {
+        card.description = String(draft.description || "");
       }
-      card.profileImage = draft.profileImage ? cloneImageAttachment(draft.profileImage) : null;
+      card.profileImage = card.isGroupChat ? null : (draft.profileImage ? cloneImageAttachment(draft.profileImage) : null);
       card.updatedAt = new Date().toISOString();
       resetRpCardDraft(kind);
       renderAppSections({ chatList: kind === "character", activeChat: true, rpCards: true, header: true });
@@ -8256,6 +8755,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (kind === "character") {
         const rpLikeState = getActiveRpLikeState();
         card.isWorldCard = false;
+        card.isGroupChat = false;
+        card.groupMembers = [];
         card.mainCharacterDescription = "";
         card.firstMessage = "";
         const existingChats = getRpChatsForCharacterId(card.id);
@@ -8301,6 +8802,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (kind === "character") {
         const rpLikeState = getActiveRpLikeState();
         rpLikeState.characterCards = rpLikeState.characterCards.filter((card) => card.id !== activeCard.id);
+        pruneInvalidTalkGroupMembers(rpLikeState);
         delete rpLikeState.chatsByCharacterId[activeCard.id];
         delete rpLikeState.activeChatIdsByCharacterId[activeCard.id];
         rpLikeState.activeCharacterId = rpLikeState.characterCards[0].id;
@@ -8526,13 +9028,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         header: true
       });
       setChatStatus(t("chatTabDeleted"), "success");
-    }
-    function renameActiveChat() {
-      const activeChat = getActiveChat();
-      if (!activeChat) {
-        return;
-      }
-      toggleChatTitleEdit(activeChat.id);
     }
     async function exportChatToJson(chatId) {
       if (!isPrimaryTab) {
@@ -9083,12 +9578,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
       modelSettingsDraft.forbiddenWords = normalizeForbiddenWords(elements.forbiddenWordsInput.value);
     }
-    function canRerollLatestAssistant(chat) {
-      return getLatestAssistantMessage(chat) !== null;
-    }
     function canRerollMessage(chat, messageId) {
+      if (isTalkGroupResponseInProgressForChat(chat)) {
+        return false;
+      }
       const latestAssistant = getLatestAssistantMessage(chat);
       return Boolean(latestAssistant && latestAssistant.id === messageId && latestAssistant.status !== "streaming");
+    }
+    function isTalkGroupResponseInProgressForChat(chat) {
+      return Boolean(activeTalkGroupResponseChatId && chat?.id === activeTalkGroupResponseChatId);
     }
     function getLatestAssistantMessage(chat) {
       if (!chat) {
@@ -9261,6 +9759,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         setChatStatus(t("selectModelRequired"), "error");
         return;
       }
+      const activeTalkGroup = getActiveTalkGroupCardForChat(activeChat);
+      if (activeTalkGroup && !getTalkGroupResolvedMembers(activeTalkGroup).length) {
+        setChatStatus(t("groupMemberRequired"), "error");
+        return;
+      }
       attachments = await detachImageAttachmentsMedia(attachments);
       const shouldEnhanceInput = shouldEnhanceRpInput(activeChat);
       const userMessage = createMessage("user", content, {
@@ -9323,6 +9826,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           header: true
         });
       }
+      if (getActiveTalkGroupCardForChat(activeChat)) {
+        await requestTalkGroupResponses(activeChat, userMessage, {
+          apiBase,
+          selectedModel
+        });
+        return;
+      }
       await requestAssistantResponse(activeChat, {
         apiBase,
         selectedModel,
@@ -9330,6 +9840,110 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         notifyMissingAuxiliaryIllustrationModel: shouldNotifyMissingAuxiliaryIllustrationModel(),
         notifyMissingIllustrationImageApi: shouldNotifyMissingIllustrationImageApi()
       });
+    }
+    function getActiveTalkGroupCardForChat(chat) {
+      if (!isTalkChat(chat)) {
+        return null;
+      }
+      const card = getRpCardByIdFromState(state.talk, "character", chat?.characterCardId);
+      return isTalkGroupCard(card) ? card : null;
+    }
+    async function requestTalkGroupResponses(chat, userMessage, options = {}) {
+      const groupCard = getActiveTalkGroupCardForChat(chat);
+      const members = getTalkGroupResolvedMembers(groupCard);
+      if (!groupCard || !members.length) {
+        setChatStatus(t("groupMemberRequired"), "error");
+        return;
+      }
+      activeTalkGroupResponseChatId = chat.id;
+      refreshActiveMessageMetaActions();
+      renderComposerControls();
+      try {
+        const speakerIds = await selectTalkGroupResponders(chat, userMessage, members);
+        const selectedMembers = speakerIds
+          .map((id) => members.find((member) => member.characterId === id))
+          .filter(Boolean);
+        for (const member of selectedMembers) {
+          if (currentRequestAbortController?.signal?.aborted) {
+            break;
+          }
+          await requestAssistantResponse(chat, {
+            ...options,
+            sourceMessages: chat.messages,
+            characterCardId: member.characterId
+          });
+          if (!isSending && currentRequestAbortController === null) {
+            continue;
+          }
+        }
+      } finally {
+        if (activeTalkGroupResponseChatId === chat.id) {
+          activeTalkGroupResponseChatId = "";
+        }
+        refreshActiveMessageMetaActions();
+        renderComposerControls();
+      }
+    }
+    async function selectTalkGroupResponders(chat, userMessage, members) {
+      const mentionedIds = getMentionedTalkGroupMemberIds(userMessage, members);
+      let selectedIds = [];
+      let usedAuxiliarySelection = false;
+      if (hasAuxiliaryModel()) {
+        try {
+          selectedIds = parseTalkGroupResponderIds(await requestAuxiliaryChatCompletion([
+            {
+              role: "system",
+              content: [
+                "Select which characters should reply in a FocusAbove Messenger Mode Group Chat.",
+                "A directly addressed or clearly mentioned character must reply.",
+                "For characters not addressed, use their weight as the probability that they reply.",
+                "If nobody is directly addressed, select at least one character.",
+                "Return only JSON: {\"speakerIds\":[\"character-id\"]}"
+              ].join("\n")
+            },
+            {
+              role: "user",
+              content: [
+                "Members:",
+                members.map((member) => `- id=${member.characterId}; name=${member.card?.name || "Unnamed"}; weight=${member.weight}`).join("\n"),
+                "Recent messages:",
+                formatMessagesForAuxiliary(getRecentAuxiliaryMessagesBefore(chat, userMessage?.id, 8), 8, null, 300),
+                "Latest user message:",
+                trimForAuxiliaryPrompt(userMessage?.content || "", 900)
+              ].join("\n\n")
+            }
+          ], { temperature: 0.1, maxTokens: 160 }));
+          usedAuxiliarySelection = selectedIds.length > 0;
+        } catch (error) {
+          console.error("Group Chat responder selection failed", error);
+        }
+      }
+      const validIds = new Set(members.map((member) => member.characterId));
+      selectedIds = selectedIds.filter((id) => validIds.has(id));
+      mentionedIds.forEach((id) => selectedIds.push(id));
+      if (!usedAuxiliarySelection) {
+        members.forEach((member) => {
+          if (mentionedIds.has(member.characterId) || selectedIds.includes(member.characterId)) {
+            return;
+          }
+          if (Math.random() * 100 < normalizeTalkGroupMemberWeight(member.weight)) {
+            selectedIds.push(member.characterId);
+          }
+        });
+      }
+      if (!selectedIds.length) {
+        selectedIds.push([...members].sort((a, b) => b.weight - a.weight)[0].characterId);
+      }
+      return [...new Set(selectedIds)];
+    }
+    function parseTalkGroupResponderIds(value) {
+      const text = cleanAuxiliaryText(value);
+      try {
+        const parsed = JSON.parse(text);
+        return Array.isArray(parsed?.speakerIds) ? parsed.speakerIds.filter((id) => typeof id === "string") : [];
+      } catch (_error) {
+        return [...text.matchAll(/["']([^"']+)["']/g)].map((match) => match[1]);
+      }
     }
     function shouldCheckChatT2iPrompt(chat, userMessage) {
       const enabled = isTalkChat(chat)
@@ -9384,9 +9998,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
     function isTalkChat(chat) {
       return Boolean(chat?.characterCardId) && chat?.chatMode === "talk";
-    }
-    function isRpLikeChat(chat) {
-      return isRpChat(chat) || isTalkChat(chat);
     }
     function shouldUseRpSummary(chat) {
       return isRpModeActive()
@@ -9459,6 +10070,29 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         setChatStatus(t("selectModelRequired"), "error");
         return;
       }
+      const groupCard = getActiveTalkGroupCardForChat(activeChat);
+      if (groupCard) {
+        const userIndex = findPreviousUserMessageIndex(activeChat.messages, assistantIndex);
+        const userMessage = userIndex >= 0 ? activeChat.messages[userIndex] : null;
+        if (!userMessage) {
+          setChatStatus(t("noResponseToReroll"), "error");
+          return;
+        }
+        requestIndexedDbMediaGc(collectReferencedMediaIdsFromMessages(activeChat.messages.slice(userIndex + 1)));
+        activeChat.messages = activeChat.messages.slice(0, userIndex + 1);
+        activeChat.updatedAt = new Date().toISOString();
+        renderAppSections({
+          chatList: true,
+          activeChat: true,
+          composerControls: true,
+          header: true
+        });
+        await requestTalkGroupResponses(activeChat, userMessage, {
+          apiBase,
+          selectedModel
+        });
+        return;
+      }
       const previousChatT2iPrompt = !isRpChat(activeChat)
         ? normalizeMessageIllustration(targetAssistant.illustration)?.prompt || ""
         : "";
@@ -9477,6 +10111,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         sourceMessages: activeChat.messages,
         chatT2iAvoidPrompt: previousChatT2iPrompt
       });
+    }
+    function findPreviousUserMessageIndex(messages, startIndex) {
+      for (let index = startIndex - 1; index >= 0; index -= 1) {
+        if (messages[index]?.role === "user") {
+          return index;
+        }
+      }
+      return -1;
     }
     async function regenerateMessageIllustration(messageId) {
       if (isSending) {
@@ -9536,13 +10178,17 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const rawSourceMessages = Array.isArray(options.sourceMessages)
         ? options.sourceMessages
         : Array.isArray(chat?.messages) ? chat.messages : [];
-      const rpContext = buildRpPromptContext(chat, rawSourceMessages);
+      const rpContext = buildRpPromptContext(chat, rawSourceMessages, options);
       const sourceMessages = buildMainRequestSourceMessages(chat, rawSourceMessages);
       const documentOutputInstructions = buildDocumentOutputSystemInstructions(sourceMessages);
-      const assistantMessage = createMessage("assistant", "", {
+      const assistantOverrides = {
         status: "streaming",
         isThinking: false
-      });
+      };
+      if (options.characterCardId) {
+        assistantOverrides.characterCardId = options.characterCardId;
+      }
+      const assistantMessage = createMessage("assistant", "", assistantOverrides);
       chat.messages.push(assistantMessage);
       chat.updatedAt = new Date().toISOString();
       currentStreamingMessageId = assistantMessage.id;
@@ -9560,6 +10206,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           ? options.chatT2iPrompt
           : await prepareChatT2iPrompt(chat, getLatestUserMessageForChatT2i(sourceMessages), {
               avoidPrompt: options.chatT2iAvoidPrompt,
+              characterCardId: options.characterCardId || "",
               signal: requestAbortController.signal
             });
         const baseRequestMessages = await buildChatRequestMessages(
@@ -10329,7 +10976,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const illustrationSettings = normalizeRpIllustrationSettings(state.rp?.illustration);
       const recentMessages = getRecentAuxiliaryMessagesBefore(chat, userMessage?.id, 3);
       const avoidPrompt = trimForAuxiliaryPrompt(options.avoidPrompt || "", 700);
-      const talkVisualContext = isTalkChat(chat) ? buildTalkVisualAuxiliaryContext(chat, userMessage) : "";
+      const talkVisualContext = isTalkChat(chat) ? buildTalkVisualAuxiliaryContext(chat, userMessage, { characterCardId: options.characterCardId || "" }) : "";
       const generatedPrompt = await requestAuxiliaryChatCompletion([
         {
           role: "system",
@@ -10355,16 +11002,19 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           ].filter(Boolean).join("\n\n")
         }
       ], { temperature: avoidPrompt ? 0.45 : 0.1, signal: options.signal });
-      const cleanPrompt = cleanIllustrationPrompt(generatedPrompt);
-      if (!cleanPrompt || isChatT2iSkipPrompt(cleanPrompt)) {
-        return CHAT_T2I_SKIP_TOKEN;
-      }
-      return applyIllustrationArtStylePrefix(cleanPrompt, illustrationSettings.artStyle);
+      return finalizeChatT2iPrompt(generatedPrompt, illustrationSettings);
+    }
+    function finalizeChatT2iPrompt(value, illustrationSettings) {
+      const cleanPrompt = cleanIllustrationPrompt(value);
+      return !cleanPrompt || isChatT2iSkipPrompt(cleanPrompt)
+        ? CHAT_T2I_SKIP_TOKEN
+        : applyIllustrationArtStylePrefix(cleanPrompt, illustrationSettings.artStyle);
     }
     async function createTalkPostResponseT2iPrompt(chat, assistantMessage, options = {}) {
       const illustrationSettings = normalizeRpIllustrationSettings(state.rp?.illustration);
       const previousMessages = getRecentAuxiliaryMessagesBefore(chat, assistantMessage?.id, 6);
       const userMessage = getLatestUserMessageForChatT2i(previousMessages);
+      const avoidPrompt = trimForAuxiliaryPrompt(options.avoidPrompt || "", 700);
       const generatedPrompt = await requestAuxiliaryChatCompletion([
         {
           role: "system",
@@ -10373,6 +11023,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             `If no image attachment is clearly implied, output exactly ${CHAT_T2I_SKIP_TOKEN}.`,
             "If an image attachment should be included, output one concise Stable Diffusion prompt in English only.",
             buildIllustrationPromptStyleInstruction(illustrationSettings.promptStyle),
+            avoidPrompt ? "If an earlier image prompt is provided, create meaningfully different composition and details while preserving the attachment implied by the assistant response." : "",
             "Use the character card, persona card, latest user request, and assistant response. No markdown, explanations, quotes, watermarks, signatures, or camera metadata."
           ].filter(Boolean).join("\n")
         },
@@ -10385,19 +11036,17 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             "Latest user message:",
             trimForAuxiliaryPrompt(userMessage?.content || "", 700),
             "Latest assistant message:",
-            trimForAuxiliaryPrompt(assistantMessage?.content || "", 900)
+            trimForAuxiliaryPrompt(assistantMessage?.content || "", 900),
+            avoidPrompt ? "Earlier image prompt to avoid:" : "",
+            avoidPrompt
           ].filter(Boolean).join("\n\n")
         }
-      ], { temperature: 0.1, signal: options.signal });
-      const cleanPrompt = cleanIllustrationPrompt(generatedPrompt);
-      if (!cleanPrompt || isChatT2iSkipPrompt(cleanPrompt)) {
-        return CHAT_T2I_SKIP_TOKEN;
-      }
-      return applyIllustrationArtStylePrefix(cleanPrompt, illustrationSettings.artStyle);
+      ], { temperature: avoidPrompt ? 0.45 : 0.1, signal: options.signal });
+      return finalizeChatT2iPrompt(generatedPrompt, illustrationSettings);
     }
-    function buildTalkVisualAuxiliaryContext(chat, message = null) {
+    function buildTalkVisualAuxiliaryContext(chat, message = null, options = {}) {
       const rpLikeState = getRpLikeStateForChat(chat);
-      const character = getRpCardByIdFromState(rpLikeState, "character", chat?.characterCardId || message?.characterCardId || rpLikeState?.activeCharacterId);
+      const character = getRpCardByIdFromState(rpLikeState, "character", options.characterCardId || message?.characterCardId || chat?.characterCardId || rpLikeState?.activeCharacterId);
       const persona = getRpCardByIdFromState(rpLikeState, "persona", message?.personaCardId || rpLikeState?.activePersonaId);
       const placeholders = createRpPromptPlaceholders({ character, persona });
       return [
@@ -10410,6 +11059,16 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
     async function createChatT2iPromptForAssistantMessage(chat, assistantMessage) {
       const previousPrompt = normalizeMessageIllustration(assistantMessage?.illustration)?.prompt || "";
+      if (isTalkChat(chat)) {
+        const prompt = await createTalkPostResponseT2iPrompt(chat, assistantMessage, { avoidPrompt: previousPrompt });
+        if ((!prompt || isChatT2iSkipPrompt(prompt)) && previousPrompt) {
+          return previousPrompt;
+        }
+        if (!prompt || isChatT2iSkipPrompt(prompt)) {
+          throw new Error(t("missingResponseContent"));
+        }
+        return prompt;
+      }
       const previousMessages = getRecentAuxiliaryMessagesBefore(chat, assistantMessage?.id, 12);
       const userMessage = getLatestUserMessageForChatT2i(previousMessages);
       const prompt = userMessage
@@ -12510,11 +13169,24 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
     function buildTalkModeInstruction(rpContext, rpPlaceholders = null) {
       const character = rpContext?.character;
+      const activeCharacter = rpContext?.activeCharacter;
+      const isGroup = isTalkGroupCard(activeCharacter);
+      const groupMembers = isGroup
+        ? getTalkGroupResolvedMembers(activeCharacter).map((member) => member.card).filter(Boolean)
+        : [];
       return [
         `[Messenger Mode]`,
-        `You are chatting with the user as a character in an instant messenger conversation.`,
+        isGroup
+          ? `This is a Group Chat. You are writing only as the current responding character in an instant messenger conversation.`
+          : `You are chatting with the user as a character in an instant messenger conversation.`,
         `Write like a direct message thread: concise, reactive, in-character, and natural.`,
         `Do not write novel-style narration, stage directions, scene prose, or assistant-like explanations unless the user explicitly asks.`,
+        isGroup ? `The characters in this Group Chat know each other are present in the same chat room. React naturally to the user's message and to other members' recent messages.` : "",
+        isGroup ? `Only write ${character?.name || "the current character"}'s own message. Do not include other members' replies in this output.` : "",
+        groupMembers.length ? [
+          `[Group Chat Members]`,
+          ...groupMembers.map((member) => `- ${member.name || "Unnamed Character"}: ${trimForAuxiliaryPrompt(replaceRpPromptPlaceholders(member.description || "", rpPlaceholders), 500)}`)
+        ].join("\n") : "",
         `If sending a photo or drawing is planned by FocusAbove, mention it casually as an attachment being sent, but do not output fake tool calls or image URLs.`,
         character?.name ? `Character: ${character.name}` : `Character: Unnamed Character`,
         character?.description ? replaceRpPromptPlaceholders(character.description, rpPlaceholders) : ""
@@ -12607,15 +13279,20 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         authorsNote
       ].join("\n");
     }
-    function buildRpPromptContext(chat, sourceMessages = null) {
+    function buildRpPromptContext(chat, sourceMessages = null, options = {}) {
       if (!isRpLikeModeActive()) {
         return null;
       }
       const rpLikeState = getActiveRpLikeState();
       const shouldIncludeSummary = getMainRequestRpSummaryBoundary(chat, sourceMessages || chat?.messages) > 0;
+      const activeCharacter = getRpCardById("character", chat?.characterCardId || rpLikeState.activeCharacterId);
+      const responseCharacter = options.characterCardId
+        ? getRpCardById("character", options.characterCardId)
+        : activeCharacter;
       return {
         mode: isTalkModeActive() ? "talk" : "rp",
-        character: getRpCardById("character", chat?.characterCardId || rpLikeState.activeCharacterId),
+        character: responseCharacter,
+        activeCharacter,
         persona: getActiveRpPersona(),
         responsePerspective: normalizeRpResponsePerspective(state.rp?.responsePerspective),
         responseLength: normalizeRpResponseLength(state.rp?.responseLength),
@@ -12634,6 +13311,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
       if (role === "assistant") {
         if (isRpLikeModeActive()) {
+          if (isDepartedTalkMemberMessage(message)) {
+            return t("departedMember");
+          }
           const rpLikeState = getActiveRpLikeState();
           return getRpCardById("character", message?.characterCardId || rpLikeState.activeCharacterId)?.name || state.settings.modelAlias || DEFAULT_SETTINGS.modelAlias;
         }
@@ -13444,6 +14124,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         [elements[`${prefix}ImageButton`], "chooseImage"],
         [elements[`${prefix}ImageClearButton`], "clearImage"]
       ]);
+      syncTalkGroupCardToolbar();
       setAriaLabelIfPresent(elements[`${prefix}CardList`], t(`${prefix}CardList`));
       const settingsPanel = elements[`${prefix}SettingsPanel`];
       if (settingsPanel) {
@@ -13451,7 +14132,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
       if (isCharacter) {
         applyTranslatedTextContent([
-          [elements.characterCardDescriptionLabelText, "characterDescription"]
+          [elements.characterCardDescriptionLabelText, "characterDescription"],
+          [elements.talkGroupMembersTitle, "groupMembers"],
+          [elements.talkGroupMembersHint, "groupMembersHint"],
+          [elements.openTalkGroupMemberOverlayButton, "addGroupMember"]
         ]);
         applyTranslatedFieldLabels([
           [nameInput, "characterName"],
@@ -13490,7 +14174,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         [elements.chatModeButton, "chatMode"],
         [elements.rpModeButton, "rpMode"],
         [elements.talkModeButton, "talkMode"],
-        [elements.openCharacterOverlayButton, "character"],
+        [elements.openCharacterOverlayButton, "characterButton"],
         [elements.openPersonaOverlayButton, "persona"],
         [elements.openSettingsOverlayButton, "settings"],
         [elements.openTabsOverlayButton, "tabs"],
@@ -13527,6 +14211,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         [elements.settingsConnectionSectionTitle, "connectionSettings"],
         [elements.settingsGeneralSectionTitle, "generalSettingsSection"],
         [elements.settingsRpSectionTitle, "rpSettingsSection"],
+        [elements.settingsTalkSectionTitle, "talkSettingsSection"],
         [elements.settingsBackupSectionTitle, "settingsBackupSection"],
         [elements.settingsBackupHint, "settingsBackupHint"],
         [elements.exportFullBackupButton, "exportFullBackup"],
@@ -13558,6 +14243,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         [elements.backupIncludeSecretsLabel, "backupIncludeSecrets"],
         [elements.rpSummaryEnabledLabel, "rpSummaryEnabled"],
         [elements.rpInputEnhancementEnabledLabel, "rpInputEnhancementEnabled"],
+        [elements.talkGroupUnlimitedLabel, "talkGroupUnlimited"],
         [elements.thinkingUnlimitedLabel, "unlimited"],
         [elements.illustrationEnabledLabel, "illustrationEnabled"],
         [elements.chatT2iEnabledLabel, "chatT2iEnabled"],
@@ -13640,7 +14326,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       ]);
       renderPromptPresetList();
       applyTranslatedTextContent([
-        [elements.closeTabsOverlayButton, "close"]
+        [elements.closeTabsOverlayButton, "close"],
+        [elements.talkGroupMemberOverlayTitle, "groupMembers"],
+        [elements.closeTalkGroupMemberOverlayButton, "close"],
+        [elements.talkGroupMemberCandidateTitle, "groupMemberCandidates"]
       ]);
       applyTranslatedButtonTitles([
         [elements.newChatButton, "newTab"],
@@ -13766,12 +14455,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         .trim()
         .replace(/[.\s]+$/g, "");
       return normalized || String(fallback || "download").trim() || "download";
-    }
-    function formatUnixTimestamp(unixSeconds) {
-      if (!unixSeconds) {
-        return "-";
-      }
-      return formatDate(new Date(unixSeconds * 1000).toISOString(), true);
     }
   </script>
 </body>
