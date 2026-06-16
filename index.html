@@ -2590,6 +2590,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         <div class="header-mode-toggle" role="tablist" aria-label="대화 모드">
           <button id="chatModeButton" type="button" class="mode-toggle-button active" role="tab" aria-selected="true">채팅</button>
           <button id="rpModeButton" type="button" class="mode-toggle-button" role="tab" aria-selected="false">RP</button>
+          <button id="talkModeButton" type="button" class="mode-toggle-button" role="tab" aria-selected="false">톡</button>
         </div>
         <div id="rpHeaderActions" class="header-rp-actions" hidden>
           <button id="openCharacterOverlayButton" type="button" class="toolbar-button">캐릭터</button>
@@ -2680,7 +2681,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section class="brand">
               <a class="brand-mark-link" href="https://github.com/furabyss/FocusAbove" target="_blank" rel="noopener noreferrer"><div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#icon-brand"></use></svg><span>FocusAbove</span></div></a>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.6.5, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.7.0, ⓒ 2026 Fur-Abyss</p>
             </section>
             <div class="settings-tab-strip" role="tablist">
               <button id="settingsGeneralTabButton" type="button" class="settings-tab-button active" role="tab" aria-selected="true" aria-controls="settingsGeneralPanel"></button>
@@ -2847,6 +2848,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                 <div class="illustration-controls">
                   <label class="inline-checkbox" for="chatT2iEnabledInput">
                     <input id="chatT2iEnabledInput" type="checkbox">
+                  </label>
+                  <label class="inline-checkbox" for="talkT2iEnabledInput">
+                    <input id="talkT2iEnabledInput" type="checkbox">
                   </label>
                   <label class="inline-checkbox" for="illustrationEnabledInput">
                     <input id="illustrationEnabledInput" type="checkbox">
@@ -3302,6 +3306,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         modeToggleLabel: "대화 모드",
         chatMode: "채팅",
         rpMode: "RP",
+        talkMode: "톡",
         character: "캐릭터",
         characterNoun: "캐릭터",
         persona: "페르소나",
@@ -3426,6 +3431,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         illustrationGeneration: "이미지 생성",
         illustrationEnabled: "RP 모드에서 자동으로 삽화 생성 [보조 모델, 이미지 API]",
         chatT2iEnabled: "채팅 모드에서 T2I 이미지 생성 사용 [보조 모델, 이미지 API]",
+        talkT2iEnabled: "톡 모드에서 이미지 생성 사용 [보조 모델, 이미지 API]",
         illustrationIgnoreNonCharacterPeople: "페르소나 및 기타 인물 무시",
         illustrationPromptStyle: "프롬프트 형식",
         illustrationPromptStyleTags: "일반 프롬프트",
@@ -3447,9 +3453,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         imageHeight: "세로",
         generatedImage: "생성된 이미지",
         generatedIllustration: "생성된 삽화",
+        attachedImage: "첨부 이미지",
         regenerateIllustration: "삽화 재생성",
         illustrationRegenerated: "삽화를 다시 생성했습니다.",
         imageGenerating: "이미지 생성 중",
+        imageSending: "이미지 전송 중",
         illustrationGenerating: "삽화 생성 중",
         illustrationError: ({ error }) => `삽화 생성 실패: ${error}`,
         rpPostProcessing: "후처리 중",
@@ -3552,6 +3560,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         daysAgo: ({ count }) => `${count}일 전`,
         selectedModelPrefix: ({ model }) => `선택 모델: ${model}`,
         rpSubtitle: ({ character, persona, model }) => `RP · ${character} · ${persona} · ${model}`,
+        talkSubtitle: ({ character, persona, model }) => `톡 · ${character} · ${persona} · ${model}`,
         rpTabTitle: ({ name }) => `${name} 탭`,
         chatTabTitle: "채팅 탭",
         modelTag: ({ model }) => `모델 ${model}`,
@@ -3562,6 +3571,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         imageTitleSingle: "이미지 1장",
         imageTitleMultiple: ({ count }) => `이미지 ${count}장`,
         switchedToRpMode: "RP 모드로 전환했습니다.",
+        switchedToTalkMode: "톡 모드로 전환했습니다.",
         switchedToChatMode: "채팅 모드로 전환했습니다.",
         settingsSaved: "설정을 저장했습니다.",
         generalSettingsRestored: "일반 설정을 기본값으로 복원했습니다.",
@@ -3629,6 +3639,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         modeToggleLabel: "Conversation mode",
         chatMode: "Chat",
         rpMode: "RP",
+        talkMode: "Messenger",
         character: "Character",
         characterNoun: "character",
         persona: "Persona",
@@ -3752,7 +3763,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         refreshModels: "Refresh models",
         illustrationGeneration: "Image generation",
         illustrationEnabled: "Auto illustrations in RP [Aux. model, Image API]",
-        chatT2iEnabled: "Chat T2I images [Aux. model, Image API]",
+        chatT2iEnabled: "T2I images in Chat Mode [Aux. model, Image API]",
+        talkT2iEnabled: "T2I images in Messenger Mode [Aux. model, Image API]",
         illustrationIgnoreNonCharacterPeople: "Ignore persona and other people",
         illustrationPromptStyle: "Prompt style",
         illustrationPromptStyleTags: "Standard prompt",
@@ -3774,9 +3786,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         imageHeight: "Height",
         generatedImage: "Generated image",
         generatedIllustration: "Generated illustration",
+        attachedImage: "Attached image",
         regenerateIllustration: "Regenerate illustration",
         illustrationRegenerated: "Regenerated the illustration.",
         imageGenerating: "Generating image",
+        imageSending: "Sending image",
         illustrationGenerating: "Generating illustration",
         illustrationError: ({ error }) => `Illustration failed: ${error}`,
         rpPostProcessing: "Post-processing",
@@ -3879,6 +3893,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         daysAgo: ({ count }) => `${count} day${count === 1 ? "" : "s"} ago`,
         selectedModelPrefix: ({ model }) => `Selected model: ${model}`,
         rpSubtitle: ({ character, persona, model }) => `RP · ${character} · ${persona} · ${model}`,
+        talkSubtitle: ({ character, persona, model }) => `Messenger · ${character} · ${persona} · ${model}`,
         rpTabTitle: ({ name }) => `${name} tab`,
         chatTabTitle: "Chat tabs",
         modelTag: ({ model }) => `Model ${model}`,
@@ -3889,6 +3904,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         imageTitleSingle: "1 image",
         imageTitleMultiple: ({ count }) => `${count} images`,
         switchedToRpMode: "Switched to RP mode.",
+        switchedToTalkMode: "Switched to Messenger mode.",
         switchedToChatMode: "Switched to chat mode.",
         settingsSaved: "Saved settings.",
         generalSettingsRestored: "Restored default general settings.",
@@ -3976,6 +3992,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         smoothStreaming: true,
         autoContinue: false,
         chatT2iEnabled: false,
+        talkT2iEnabled: false,
         selectedModel: "",
         auxiliaryModel: "",
         systemPrompt: "",
@@ -4041,6 +4058,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         assistance: { ...DEFAULT_RP_ASSISTANCE_SETTINGS },
         chatsByCharacterId: {},
         activeChatIdsByCharacterId: {}
+      },
+      talk: {
+        characterCards: [],
+        activeCharacterId: "",
+        personaCards: [],
+        activePersonaId: "",
+        chatsByCharacterId: {},
+        activeChatIdsByCharacterId: {}
       }
     };
     const elements = {
@@ -4059,6 +4084,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       modeToggle: document.querySelector(".header-mode-toggle"),
       chatModeButton: document.getElementById("chatModeButton"),
       rpModeButton: document.getElementById("rpModeButton"),
+      talkModeButton: document.getElementById("talkModeButton"),
       rpHeaderActions: document.getElementById("rpHeaderActions"),
       openCharacterOverlayButton: document.getElementById("openCharacterOverlayButton"),
       openPersonaOverlayButton: document.getElementById("openPersonaOverlayButton"),
@@ -4110,6 +4136,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       thinkingUnlimitedLabel: document.querySelector('label.inline-checkbox[for="thinkingUnlimitedInput"]'),
       illustrationEnabledLabel: document.querySelector('label.inline-checkbox[for="illustrationEnabledInput"]'),
       chatT2iEnabledLabel: document.querySelector('label.inline-checkbox[for="chatT2iEnabledInput"]'),
+      talkT2iEnabledLabel: document.querySelector('label.inline-checkbox[for="talkT2iEnabledInput"]'),
       illustrationIgnorePeopleLabel: document.querySelector('label.inline-checkbox[for="illustrationIgnoreNonCharacterPeopleInput"]'),
       settingsActionButtons: document.querySelectorAll("#settingsForm .settings-tab-actions button"),
       modelStatLabels: document.querySelectorAll("#settingsModelPanel .stat-card span"),
@@ -4187,6 +4214,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       refreshModelsButton: document.getElementById("refreshModelsButton"),
       illustrationEnabledInput: document.getElementById("illustrationEnabledInput"),
       chatT2iEnabledInput: document.getElementById("chatT2iEnabledInput"),
+      talkT2iEnabledInput: document.getElementById("talkT2iEnabledInput"),
       illustrationIgnoreNonCharacterPeopleInput: document.getElementById("illustrationIgnoreNonCharacterPeopleInput"),
       illustrationPromptStyleSelect: document.getElementById("illustrationPromptStyleSelect"),
       illustrationArtStyleSelect: document.getElementById("illustrationArtStyleSelect"),
@@ -4405,6 +4433,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         [elements.rpModeButton, () => {
           void switchAppMode("rp");
         }],
+        [elements.talkModeButton, () => {
+          void switchAppMode("talk");
+        }],
         [elements.openPromptPresetOverlayButton, openPromptPresetOverlay],
         [elements.authorsNoteButton, openAuthorsNoteOverlay],
         [elements.closeSettingsOverlayButton, () => closeOverlay(elements.settingsOverlay)],
@@ -4485,6 +4516,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         [elements.rpSummaryEnabledInput, syncRpAssistanceControls],
         [elements.illustrationEnabledInput, syncIllustrationControls],
         [elements.chatT2iEnabledInput, syncIllustrationControls],
+        [elements.talkT2iEnabledInput, syncIllustrationControls],
         [elements.rpResponsePerspectiveSelect, updateActiveRpResponsePerspective],
         [elements.rpResponseLengthSelect, updateActiveRpResponseLength]
       ], "change");
@@ -4665,7 +4697,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         : DEFAULT_SETTINGS.autoContinue;
       const language = normalizeAppLanguage(parsed?.settings?.language);
       const chats = Array.isArray(parsed?.chats) ? parsed.chats.map(normalizeChat).filter(Boolean) : [];
-      const rp = normalizeRpState(parsed?.rp);
+      const rp = normalizeRpState(parsed?.rp, { chatMode: "rp", allowWorldCards: true });
+      const talk = normalizeRpState(parsed?.talk, { chatMode: "talk", allowWorldCards: false });
       const activeMode = normalizeAppMode(parsed?.activeMode);
       const settings = {
         apiBaseUrl: parsed?.settings?.apiBaseUrl || DEFAULT_SETTINGS.apiBaseUrl,
@@ -4681,6 +4714,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         chatT2iEnabled: typeof parsed?.settings?.chatT2iEnabled === "boolean"
           ? parsed.settings.chatT2iEnabled
           : DEFAULT_SETTINGS.chatT2iEnabled,
+        talkT2iEnabled: typeof parsed?.settings?.talkT2iEnabled === "boolean"
+          ? parsed.settings.talkT2iEnabled
+          : DEFAULT_SETTINGS.talkT2iEnabled,
         selectedModel: typeof parsed?.settings?.selectedModel === "string"
           ? parsed.settings.selectedModel
             : DEFAULT_SETTINGS.selectedModel,
@@ -4706,7 +4742,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         activeMode,
         activeChatId: typeof parsed?.activeChatId === "string" ? parsed.activeChatId : "",
         chats,
-        rp
+        rp,
+        talk
       };
     }
     function isSplitChatStorageState(parsed) {
@@ -4795,6 +4832,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         activeChatIdsByCharacterId: {}
       };
     }
+    function createDefaultTalkState() {
+      const base = createDefaultRpState();
+      delete base.responsePerspective;
+      delete base.responseLength;
+      delete base.illustration;
+      delete base.assistance;
+      return base;
+    }
     function normalizeRpAssistanceSettings(settings) {
       return {
         summaryEnabled: Boolean(settings?.summaryEnabled),
@@ -4866,21 +4911,23 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return Math.min(1024, Math.max(512, Math.round(normalized / 64) * 64));
     }
     function normalizeAppMode(mode) {
-      return mode === "rp" ? "rp" : "chat";
+      return mode === "rp" || mode === "talk" ? mode : "chat";
     }
-    function normalizeRpState(rpState) {
-      const base = createDefaultRpState();
+    function normalizeRpState(rpState, options = {}) {
+      const allowWorldCards = options.allowWorldCards !== false;
+      const chatMode = options.chatMode === "talk" ? "talk" : "rp";
+      const base = chatMode === "talk" ? createDefaultTalkState() : createDefaultRpState();
       const characterCards = Array.isArray(rpState?.characterCards)
-        ? rpState.characterCards.map((card) => normalizeRpCard(card, "character")).filter(Boolean)
+        ? rpState.characterCards.map((card) => normalizeRpCard(card, "character", { allowWorldCards })).filter(Boolean)
         : [];
       const personaCards = Array.isArray(rpState?.personaCards)
-        ? rpState.personaCards.map((card) => normalizeRpCard(card, "persona")).filter(Boolean)
+        ? rpState.personaCards.map((card) => normalizeRpCard(card, "persona", { allowWorldCards })).filter(Boolean)
         : [];
       const validCharacterIds = new Set(characterCards.map((card) => card.id));
       const chatsByCharacterId = {};
       characterCards.forEach((card) => {
         chatsByCharacterId[card.id] = Array.isArray(rpState?.chatsByCharacterId?.[card.id])
-          ? rpState.chatsByCharacterId[card.id].map(normalizeChat).filter(Boolean)
+          ? rpState.chatsByCharacterId[card.id].map((chat) => normalizeChat(chat, { chatMode })).filter(Boolean)
           : [];
       });
       const activeChatIdsByCharacterId = {};
@@ -4895,20 +4942,22 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         activeCharacterId: validCharacterIds.has(rpState?.activeCharacterId) ? rpState.activeCharacterId : (characterCards[0]?.id || ""),
         personaCards,
         activePersonaId: personaCards.some((card) => card.id === rpState?.activePersonaId) ? rpState.activePersonaId : (personaCards[0]?.id || ""),
-        responsePerspective: normalizeRpResponsePerspective(rpState?.responsePerspective),
-        responseLength: normalizeRpResponseLength(rpState?.responseLength),
-        illustration: normalizeRpIllustrationSettings(rpState?.illustration),
-        assistance: normalizeRpAssistanceSettings(rpState?.assistance),
+        ...(chatMode === "rp" ? {
+          responsePerspective: normalizeRpResponsePerspective(rpState?.responsePerspective),
+          responseLength: normalizeRpResponseLength(rpState?.responseLength),
+          illustration: normalizeRpIllustrationSettings(rpState?.illustration),
+          assistance: normalizeRpAssistanceSettings(rpState?.assistance)
+        } : {}),
         chatsByCharacterId,
         activeChatIdsByCharacterId
       };
     }
-    function normalizeRpCard(card, kind) {
+    function normalizeRpCard(card, kind, options = {}) {
       if (!card || typeof card !== "object") {
         return null;
       }
       const label = getRpCardKindLabel(kind);
-      const isWorldCard = kind === "character" && normalizeWorldCardFlag(card.isWorldCard ?? card.IsWorldCard);
+      const isWorldCard = options.allowWorldCards !== false && kind === "character" && normalizeWorldCardFlag(card.isWorldCard ?? card.IsWorldCard);
       return {
         id: typeof card.id === "string" && card.id ? card.id : createId(`${kind}-card`),
         kind,
@@ -4935,7 +4984,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return normalizeImageAttachments(image ? [image] : [])[0] || null;
     }
     function getAllStateChats(targetState = state) {
-      return [targetState?.chats, ...Object.values(targetState?.rp?.chatsByCharacterId || {})]
+      return [
+        targetState?.chats,
+        ...Object.values(targetState?.rp?.chatsByCharacterId || {}),
+        ...Object.values(targetState?.talk?.chatsByCharacterId || {})
+      ]
         .flatMap((chats) => Array.isArray(chats) ? chats : []);
     }
     function syncPersistedChatRecordIds(targetState = state) {
@@ -5184,7 +5237,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return snapshot;
     }
     function scrubEphemeralMessageStateFromSnapshot(snapshot) {
-      const chatGroups = [snapshot?.chats, ...Object.values(snapshot?.rp?.chatsByCharacterId || {})];
+      const chatGroups = [
+        snapshot?.chats,
+        ...Object.values(snapshot?.rp?.chatsByCharacterId || {}),
+        ...Object.values(snapshot?.talk?.chatsByCharacterId || {})
+      ];
       chatGroups.forEach((chats) => {
         if (!Array.isArray(chats)) {
           return;
@@ -5205,7 +5262,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (!targetState || typeof callback !== "function") {
         return;
       }
-      [targetState.chats, ...Object.values(targetState.rp?.chatsByCharacterId || {})].forEach((chats) => {
+      [targetState.chats, ...Object.values(targetState.rp?.chatsByCharacterId || {}), ...Object.values(targetState.talk?.chatsByCharacterId || {})].forEach((chats) => {
         (Array.isArray(chats) ? chats : []).forEach((chat) => {
           (Array.isArray(chat?.messages) ? chat.messages : []).forEach((message) => {
             (Array.isArray(message?.attachments) ? message.attachments : []).forEach(callback);
@@ -5213,7 +5270,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           });
         });
       });
-      [targetState.rp?.characterCards, targetState.rp?.personaCards].forEach((cards) => {
+      [targetState.rp?.characterCards, targetState.rp?.personaCards, targetState.talk?.characterCards, targetState.talk?.personaCards].forEach((cards) => {
         (Array.isArray(cards) ? cards : []).forEach((card) => {
           card?.profileImage && callback(card.profileImage);
         });
@@ -5591,14 +5648,17 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         ? STREAMING_PERSIST_STATE_DEBOUNCE_MS
         : PERSIST_STATE_DEBOUNCE_MS;
     }
-    function normalizeChat(chat) {
+    function normalizeChat(chat, options = {}) {
       if (!chat || typeof chat !== "object") {
         return null;
       }
       const messagesLoaded = typeof chat.messagesLoaded === "boolean"
         ? chat.messagesLoaded
         : Array.isArray(chat.messages);
-      const messages = messagesLoaded ? normalizeStoredChatMessages(chat.messages) : [];
+      const chatMode = options.chatMode === "talk" || chat.chatMode === "talk"
+        ? "talk"
+        : (options.chatMode === "rp" || chat.chatMode === "rp" || chat.characterCardId ? "rp" : "chat");
+      const messages = messagesLoaded ? normalizeChatMessagesForMode(normalizeStoredChatMessages(chat.messages), chatMode) : [];
       const messageCount = messagesLoaded
         ? messages.length
         : normalizeOptionalInteger(chat.messageCount, { min: 0 }) ?? 0;
@@ -5612,6 +5672,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         autoTitleGenerated: Boolean(chat.autoTitleGenerated),
         titleManuallyEdited: Boolean(chat.titleManuallyEdited),
         characterCardId: typeof chat.characterCardId === "string" ? chat.characterCardId : "",
+        chatMode,
         createdAt: typeof chat.createdAt === "string" ? chat.createdAt : new Date().toISOString(),
         updatedAt: typeof chat.updatedAt === "string" ? chat.updatedAt : new Date().toISOString(),
         messageCount,
@@ -5642,6 +5703,18 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             personaCardId: typeof message.personaCardId === "string" ? message.personaCardId : ""
           }))
         : [];
+    }
+    function normalizeChatMessagesForMode(messages, chatMode) {
+      const normalizedMessages = Array.isArray(messages) ? messages : [];
+      if (chatMode !== "talk") {
+        return normalizedMessages;
+      }
+      return normalizedMessages
+        .filter((message) => !(message?.role === "assistant" && message?.isFirstMessage))
+        .map((message) => ({
+          ...message,
+          isFirstMessage: false
+        }));
     }
     function getChatMessageCount(chat) {
       if (!chat || typeof chat !== "object") {
@@ -5684,11 +5757,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return null;
       }
       if (chat.messagesLoaded !== false) {
+        chat.messages = normalizeChatMessagesForMode(chat.messages, chat.chatMode);
         syncChatMessageCount(chat);
         return chat;
       }
       if (!supportsIndexedDb()) {
-        chat.messages = Array.isArray(chat.messages) ? chat.messages : [];
+        chat.messages = normalizeChatMessagesForMode(Array.isArray(chat.messages) ? chat.messages : [], chat.chatMode);
         chat.messagesLoaded = true;
         syncChatMessageCount(chat);
         return chat;
@@ -5699,7 +5773,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
       const loadPromise = readChatMessagesFromIndexedDb(chat.id)
         .then((record) => {
-          chat.messages = normalizeStoredChatMessages(record?.messages);
+          chat.messages = normalizeChatMessagesForMode(normalizeStoredChatMessages(record?.messages), chat.chatMode);
           chat.messagesLoaded = true;
           chat.messageCount = chat.messages.length;
           return chat;
@@ -5886,7 +5960,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       setPrimaryTabState(false);
     }
     function ensureInitialChat() {
-      if (isRpModeActive()) {
+      if (isRpLikeModeActive()) {
         ensureRpModeReady();
         return;
       }
@@ -5898,16 +5972,17 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
     }
     function syncChatSelection() {
-      if (isRpModeActive()) {
+      if (isRpLikeModeActive()) {
         ensureRpModeReady();
-        const characterId = state.rp.activeCharacterId;
+        const rpLikeState = getActiveRpLikeState();
+        const characterId = rpLikeState.activeCharacterId;
         if (!characterId) {
           return;
         }
         const chats = getRpChatsForCharacterId(characterId);
-        const activeChatId = state.rp.activeChatIdsByCharacterId[characterId];
+        const activeChatId = rpLikeState.activeChatIdsByCharacterId[characterId];
         if (!chats.some((chat) => chat.id === activeChatId) && chats.length) {
-          state.rp.activeChatIdsByCharacterId[characterId] = chats[0].id;
+          rpLikeState.activeChatIdsByCharacterId[characterId] = chats[0].id;
         }
         return;
       }
@@ -5919,12 +5994,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     function createChatRecord(options = {}) {
       const createdAt = new Date().toISOString();
       const characterCardId = typeof options.characterCardId === "string" ? options.characterCardId : "";
-      const existingRpChats = characterCardId ? state.rp?.chatsByCharacterId?.[characterCardId] : null;
+      const chatMode = options.chatMode === "talk" ? "talk" : (characterCardId ? "rp" : "chat");
+      const ownerState = chatMode === "talk" ? state.talk : state.rp;
+      const existingRpChats = characterCardId ? ownerState?.chatsByCharacterId?.[characterCardId] : null;
       const titleNumber = characterCardId
         ? (Array.isArray(existingRpChats) ? existingRpChats.length + 1 : 1)
         : state.chats.length + 1;
       const characterCard = characterCardId ? getRpCardById("character", characterCardId) : null;
-      const firstMessage = trimmed(characterCard?.firstMessage);
+      const firstMessage = chatMode === "rp" ? trimmed(characterCard?.firstMessage) : "";
       const messages = firstMessage ? [createRpFirstMessageMessage(characterCardId, firstMessage, createdAt)] : [];
       return {
         id: createId("chat"),
@@ -5936,6 +6013,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         autoTitleGenerated: false,
         titleManuallyEdited: false,
         characterCardId,
+        chatMode,
         createdAt,
         updatedAt: createdAt,
         messageCount: messages.length,
@@ -5958,7 +6036,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       };
     }
     function syncRpCharacterChatFirstMessage(chat, characterCard) {
-      if (!chat || !characterCard || chat.characterCardId !== characterCard.id) {
+      if (!isRpChat(chat) || !characterCard || chat.characterCardId !== characterCard.id) {
         return false;
       }
       const firstMessage = trimmed(characterCard.firstMessage);
@@ -6025,14 +6103,53 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     function isRpModeActive() {
       return normalizeAppMode(state.activeMode) === "rp";
     }
+    function isTalkModeActive() {
+      return normalizeAppMode(state.activeMode) === "talk";
+    }
+    function isRpLikeModeActive() {
+      return isRpModeActive() || isTalkModeActive();
+    }
+    function getActiveRpLikeState() {
+      if (isTalkModeActive()) {
+        if (!state.talk || typeof state.talk !== "object") {
+          state.talk = createDefaultTalkState();
+        }
+        return state.talk;
+      }
+      if (!state.rp || typeof state.rp !== "object") {
+        state.rp = createDefaultRpState();
+      }
+      return state.rp;
+    }
+    function getRpLikeStateForChat(chat = null) {
+      return isTalkChat(chat) ? state.talk : state.rp;
+    }
+    function getActiveRpLikeChatMode() {
+      return isTalkModeActive() ? "talk" : "rp";
+    }
     function getRpCardCollection(kind) {
-      return kind === "character" ? state.rp.characterCards : state.rp.personaCards;
+      const rpLikeState = getActiveRpLikeState();
+      return kind === "character" ? rpLikeState.characterCards : rpLikeState.personaCards;
     }
     function getRpCardById(kind, cardId) {
-      return getRpCardCollection(kind).find((card) => card.id === cardId) || null;
+      const activeMatch = getRpCardCollection(kind).find((card) => card.id === cardId);
+      if (activeMatch) {
+        return activeMatch;
+      }
+      const collections = kind === "character"
+        ? [state.rp?.characterCards, state.talk?.characterCards]
+        : [state.rp?.personaCards, state.talk?.personaCards];
+      return collections
+        .flatMap((cards) => Array.isArray(cards) ? cards : [])
+        .find((card) => card.id === cardId) || null;
+    }
+    function getRpCardByIdFromState(rpLikeState, kind, cardId) {
+      const cards = kind === "character" ? rpLikeState?.characterCards : rpLikeState?.personaCards;
+      return (Array.isArray(cards) ? cards : []).find((card) => card.id === cardId) || null;
     }
     function getActiveRpCard(kind) {
-      const activeId = kind === "character" ? state.rp.activeCharacterId : state.rp.activePersonaId;
+      const rpLikeState = getActiveRpLikeState();
+      const activeId = kind === "character" ? rpLikeState.activeCharacterId : rpLikeState.activePersonaId;
       return getRpCardById(kind, activeId);
     }
     function getActiveRpCharacter() {
@@ -6059,68 +6176,71 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (!characterId) {
         return [];
       }
-      if (!Array.isArray(state.rp.chatsByCharacterId[characterId])) {
-        state.rp.chatsByCharacterId[characterId] = [];
+      const rpLikeState = getActiveRpLikeState();
+      if (!Array.isArray(rpLikeState.chatsByCharacterId[characterId])) {
+        rpLikeState.chatsByCharacterId[characterId] = [];
       }
-      return state.rp.chatsByCharacterId[characterId];
+      return rpLikeState.chatsByCharacterId[characterId];
     }
     function getCurrentChatCollection() {
-      if (!isRpModeActive()) {
+      if (!isRpLikeModeActive()) {
         return state.chats;
       }
       ensureRpModeReady();
-      return getRpChatsForCharacterId(state.rp.activeCharacterId);
+      return getRpChatsForCharacterId(getActiveRpLikeState().activeCharacterId);
     }
     function getCurrentActiveChatId() {
-      if (!isRpModeActive()) {
+      if (!isRpLikeModeActive()) {
         return state.activeChatId;
       }
-      const characterId = state.rp.activeCharacterId;
-      return characterId ? (state.rp.activeChatIdsByCharacterId[characterId] || "") : "";
+      const rpLikeState = getActiveRpLikeState();
+      const characterId = rpLikeState.activeCharacterId;
+      return characterId ? (rpLikeState.activeChatIdsByCharacterId[characterId] || "") : "";
     }
     function setCurrentActiveChatId(chatId) {
-      if (!isRpModeActive()) {
+      if (!isRpLikeModeActive()) {
         state.activeChatId = chatId;
         return;
       }
-      if (!state.rp.activeCharacterId) {
+      const rpLikeState = getActiveRpLikeState();
+      if (!rpLikeState.activeCharacterId) {
         return;
       }
-      state.rp.activeChatIdsByCharacterId[state.rp.activeCharacterId] = chatId;
+      rpLikeState.activeChatIdsByCharacterId[rpLikeState.activeCharacterId] = chatId;
     }
     function ensureRpModeReady() {
-      if (!state.rp || typeof state.rp !== "object") {
-        state.rp = createDefaultRpState();
-      }
-      if (!state.rp.characterCards.length) {
+      const rpLikeState = getActiveRpLikeState();
+      if (!rpLikeState.characterCards.length) {
         const character = createRpCardRecord("character");
-        state.rp.characterCards.push(character);
-        state.rp.activeCharacterId = character.id;
-        state.rp.chatsByCharacterId[character.id] = [createChatRecord({ characterCardId: character.id })];
-        state.rp.activeChatIdsByCharacterId[character.id] = state.rp.chatsByCharacterId[character.id][0].id;
+        rpLikeState.characterCards.push(character);
+        rpLikeState.activeCharacterId = character.id;
+        rpLikeState.chatsByCharacterId[character.id] = [createChatRecord({ characterCardId: character.id, chatMode: getActiveRpLikeChatMode() })];
+        rpLikeState.activeChatIdsByCharacterId[character.id] = rpLikeState.chatsByCharacterId[character.id][0].id;
       }
-      if (!state.rp.personaCards.length) {
+      if (!rpLikeState.personaCards.length) {
         const persona = createRpCardRecord("persona");
-        state.rp.personaCards.push(persona);
-        state.rp.activePersonaId = persona.id;
+        rpLikeState.personaCards.push(persona);
+        rpLikeState.activePersonaId = persona.id;
       }
-      if (!state.rp.characterCards.some((card) => card.id === state.rp.activeCharacterId)) {
-        state.rp.activeCharacterId = state.rp.characterCards[0]?.id || "";
+      if (!rpLikeState.characterCards.some((card) => card.id === rpLikeState.activeCharacterId)) {
+        rpLikeState.activeCharacterId = rpLikeState.characterCards[0]?.id || "";
       }
-      if (!state.rp.personaCards.some((card) => card.id === state.rp.activePersonaId)) {
-        state.rp.activePersonaId = state.rp.personaCards[0]?.id || "";
+      if (!rpLikeState.personaCards.some((card) => card.id === rpLikeState.activePersonaId)) {
+        rpLikeState.activePersonaId = rpLikeState.personaCards[0]?.id || "";
       }
-      if (state.rp.activeCharacterId) {
-        const chats = getRpChatsForCharacterId(state.rp.activeCharacterId);
+      if (rpLikeState.activeCharacterId) {
+        const chats = getRpChatsForCharacterId(rpLikeState.activeCharacterId);
         if (!chats.length) {
-          const chat = createChatRecord({ characterCardId: state.rp.activeCharacterId });
+          const chat = createChatRecord({ characterCardId: rpLikeState.activeCharacterId, chatMode: getActiveRpLikeChatMode() });
           chats.push(chat);
-          state.rp.activeChatIdsByCharacterId[state.rp.activeCharacterId] = chat.id;
+          rpLikeState.activeChatIdsByCharacterId[rpLikeState.activeCharacterId] = chat.id;
         }
-        syncRpCharacterChatsFirstMessage(state.rp.activeCharacterId);
-        const activeChatId = state.rp.activeChatIdsByCharacterId[state.rp.activeCharacterId];
+        if (isRpModeActive()) {
+          syncRpCharacterChatsFirstMessage(rpLikeState.activeCharacterId);
+        }
+        const activeChatId = rpLikeState.activeChatIdsByCharacterId[rpLikeState.activeCharacterId];
         if (!chats.some((chat) => chat.id === activeChatId)) {
-          state.rp.activeChatIdsByCharacterId[state.rp.activeCharacterId] = chats[0].id;
+          rpLikeState.activeChatIdsByCharacterId[rpLikeState.activeCharacterId] = chats[0].id;
         }
       }
     }
@@ -6182,9 +6302,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
     function syncCharacterCardEditorModeControls() {
       const draft = getRpCardDraft("character");
-      const isWorldCard = Boolean(draft?.isWorldCard);
+      const isWorldCard = isRpModeActive() && Boolean(draft?.isWorldCard);
       const descriptionMode = normalizeCharacterCardDescriptionMode(draft?.descriptionMode);
       elements.characterCardIsWorldCardInput.checked = isWorldCard;
+      elements.characterCardIsWorldCardInput.disabled = isTalkModeActive();
+      elements.characterCardIsWorldCardInput.closest("label").hidden = isTalkModeActive();
       elements.characterCardDescriptionLabelText.hidden = isWorldCard;
       elements.characterCardDescriptionModeSelect.hidden = !isWorldCard;
       elements.characterCardDescriptionModeSelect.value = descriptionMode;
@@ -6202,7 +6324,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
     function updateCharacterCardWorldCardDraft() {
       const draft = getRpCardDraft("character");
-      draft.isWorldCard = elements.characterCardIsWorldCardInput.checked;
+      draft.isWorldCard = isRpModeActive() && elements.characterCardIsWorldCardInput.checked;
       if (!draft.isWorldCard) {
         draft.descriptionMode = "world";
       }
@@ -6218,12 +6340,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (normalizedMode === normalizeAppMode(state.activeMode)) {
         return;
       }
-      if (normalizedMode === "rp" && pendingDocumentAttachments.length) {
+      if (normalizedMode !== "chat" && pendingDocumentAttachments.length) {
         pendingDocumentAttachments = [];
         elements.documentUploadInput.value = "";
       }
       state.activeMode = normalizedMode;
-      if (normalizedMode === "rp") {
+      if (normalizedMode !== "chat") {
         ensureRpModeReady();
       } else {
         ensureInitialChat();
@@ -6235,7 +6357,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       await ensureCurrentActiveChatLoaded();
       renderAll();
       setSettingsOverlayTab(activeSettingsTab, { resetScroll: false });
-      setChatStatus(normalizedMode === "rp" ? t("switchedToRpMode") : t("switchedToChatMode"), "success");
+      setChatStatus(normalizedMode === "rp" ? t("switchedToRpMode") : normalizedMode === "talk" ? t("switchedToTalkMode") : t("switchedToChatMode"), "success");
     }
     function setSettingsOverlayTab(nextTab, options = {}) {
       activeSettingsTab = nextTab === "model" || nextTab === "illustration" ? nextTab : "general";
@@ -6312,6 +6434,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const illustrationSettings = normalizeRpIllustrationSettings(state.rp?.illustration);
       elements.illustrationEnabledInput.checked = illustrationSettings.enabled;
       elements.chatT2iEnabledInput.checked = state.settings.chatT2iEnabled === true;
+      elements.talkT2iEnabledInput.checked = state.settings.talkT2iEnabled === true;
       elements.illustrationIgnoreNonCharacterPeopleInput.checked = illustrationSettings.ignoreNonCharacterPeople;
       elements.illustrationPromptStyleSelect.value = illustrationSettings.promptStyle;
       elements.illustrationArtStyleSelect.value = illustrationSettings.artStyle;
@@ -6403,13 +6526,16 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
     function renderHeader() {
       const rpMode = isRpModeActive();
-      elements.chatModeButton.classList.toggle("active", !rpMode);
-      elements.chatModeButton.setAttribute("aria-selected", rpMode ? "false" : "true");
+      const talkMode = isTalkModeActive();
+      elements.chatModeButton.classList.toggle("active", !rpMode && !talkMode);
+      elements.chatModeButton.setAttribute("aria-selected", !rpMode && !talkMode ? "true" : "false");
       elements.rpModeButton.classList.toggle("active", rpMode);
       elements.rpModeButton.setAttribute("aria-selected", rpMode ? "true" : "false");
-      elements.rpHeaderActions.hidden = !rpMode;
+      elements.talkModeButton.classList.toggle("active", talkMode);
+      elements.talkModeButton.setAttribute("aria-selected", talkMode ? "true" : "false");
+      elements.rpHeaderActions.hidden = !isRpLikeModeActive();
       renderAuthorsNoteButton();
-      const tabTitle = rpMode
+      const tabTitle = isRpLikeModeActive()
         ? t("rpTabTitle", { name: getActiveRpCharacter()?.name || t("character") })
         : t("chatTabTitle");
       elements.desktopTabsTitle.textContent = tabTitle;
@@ -6472,6 +6598,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         descriptionInput.value = draft.description || "";
       }
       if (firstMessageInput) {
+        const firstMessageLabel = firstMessageInput.closest("label");
+        if (firstMessageLabel) {
+          firstMessageLabel.hidden = isTalkModeActive();
+        }
         firstMessageInput.value = draft.firstMessage || "";
       }
     }
@@ -6607,12 +6737,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (!getRpCardCollection(kind).some((card) => card.id === cardId)) {
         return;
       }
+      const rpLikeState = getActiveRpLikeState();
       if (kind === "character") {
-        state.rp.activeCharacterId = cardId;
+        rpLikeState.activeCharacterId = cardId;
         ensureRpModeReady();
         resetModelSettingsDraft();
       } else {
-        state.rp.activePersonaId = cardId;
+        rpLikeState.activePersonaId = cardId;
       }
       resetRpCardDraft(kind);
       renderAppSections({ persist: false, chatList: kind === "character", activeChat: true, modelsPanel: kind === "character", composerControls: true, rpCards: true, header: true });
@@ -6818,11 +6949,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
       elements.chatTitle.textContent = activeChat.title;
       elements.chatTitle.title = activeChat.title;
-      if (isRpModeActive()) {
+      if (isRpLikeModeActive()) {
         const characterName = getActiveRpCharacter()?.name || t("characterUnselected");
         const personaName = getActiveRpPersona()?.name || t("personaUnselected");
         const modelName = state.settings.selectedModel ? t("modelTag", { model: state.settings.selectedModel }) : t("modelMissing");
-        elements.chatSubtitle.textContent = t("rpSubtitle", { character: characterName, persona: personaName, model: modelName });
+        elements.chatSubtitle.textContent = t(isTalkModeActive() ? "talkSubtitle" : "rpSubtitle", { character: characterName, persona: personaName, model: modelName });
       } else {
         elements.chatSubtitle.textContent = state.settings.selectedModel
           ? t("selectedModelPrefix", { model: state.settings.selectedModel })
@@ -7146,6 +7277,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           return match;
         }
       }
+      for (const chats of Object.values(state.talk?.chatsByCharacterId || {})) {
+        const match = Array.isArray(chats) ? chats.find((chat) => chat.id === chatId) : null;
+        if (match) {
+          return match;
+        }
+      }
       return null;
     }
     function clearMessageArticleElementCache() {
@@ -7215,13 +7352,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return article;
     }
     function buildRpMessageAvatar(message) {
-      if (!isRpModeActive()) {
+      if (!isRpLikeModeActive()) {
         return null;
       }
+      const rpLikeState = getActiveRpLikeState();
       const profileImage = message.role === "assistant"
-        ? getRpCardById("character", message.characterCardId || state.rp.activeCharacterId)?.profileImage
+        ? getRpCardById("character", message.characterCardId || rpLikeState.activeCharacterId)?.profileImage
         : message.role === "user"
-          ? getRpCardById("persona", message.personaCardId || state.rp.activePersonaId)?.profileImage
+          ? getRpCardById("persona", message.personaCardId || rpLikeState.activePersonaId)?.profileImage
           : null;
       if (!profileImage?.dataUrl && !profileImage?.mediaId) {
         return null;
@@ -7273,7 +7411,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     function renderComposerControls() {
       const activeChat = getActiveChat();
       const hasPendingMessageEdit = hasEditingMessageInChat(activeChat);
-      const chatMode = !isRpModeActive();
+      const chatMode = !isRpLikeModeActive();
       elements.sendButton.disabled = hasPendingMessageEdit;
       elements.sendButton.textContent = isSending ? t("stop") : t("send");
       elements.sendButton.title = isSending ? t("stopResponse") : t("send");
@@ -7301,10 +7439,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
     function renderComposerAttachments() {
       const container = elements.composerAttachments;
-      const visibleDocumentAttachments = isRpModeActive() ? [] : pendingDocumentAttachments;
+      const visibleDocumentAttachments = isRpLikeModeActive() ? [] : pendingDocumentAttachments;
       const nextSignature = [
         normalizeAppLanguage(state.settings.language),
-        isRpModeActive() ? "rp" : "chat",
+        isRpModeActive() ? "rp" : isTalkModeActive() ? "talk" : "chat",
         isSending ? "1" : "0",
         pendingImageAttachments.map((attachment) => `${attachment.id}:${attachment.name}:${attachment.sizeBytes || 0}`).join("|"),
         visibleDocumentAttachments.map((attachment) => `${attachment.id}:${attachment.name}:${attachment.kind}:${attachment.sizeBytes || 0}`).join("|")
@@ -7470,6 +7608,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       state.settings.smoothStreaming = nextDefaultSettings.smoothStreaming;
       state.settings.autoContinue = nextDefaultSettings.autoContinue;
       state.settings.chatT2iEnabled = nextDefaultSettings.chatT2iEnabled;
+      state.settings.talkT2iEnabled = nextDefaultSettings.talkT2iEnabled;
       if (isRpModeActive() && state.rp) {
         state.rp.responsePerspective = DEFAULT_RP_RESPONSE_PERSPECTIVE;
         state.rp.responseLength = DEFAULT_RP_RESPONSE_LENGTH;
@@ -7547,6 +7686,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
       state.rp.illustration = readIllustrationSettingsForm();
       state.settings.chatT2iEnabled = elements.chatT2iEnabledInput.checked;
+      state.settings.talkT2iEnabled = elements.talkT2iEnabledInput.checked;
       persistState();
       syncIllustrationControls();
       setChatStatus(t("settingsSaved"), "success");
@@ -7567,7 +7707,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     function syncIllustrationControls() {
       const rpEnabled = elements.illustrationEnabledInput.checked;
       const chatT2iEnabled = elements.chatT2iEnabledInput.checked;
-      const enabled = rpEnabled || chatT2iEnabled;
+      const talkT2iEnabled = elements.talkT2iEnabledInput.checked;
+      const enabled = rpEnabled || chatT2iEnabled || talkT2iEnabled;
       [
         elements.illustrationCfgScaleInput,
         elements.illustrationStepsInput,
@@ -8054,14 +8195,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     function createNewRpCard(kind) {
       ensureRpModeReady();
       const card = createRpCardRecord(kind);
+      const rpLikeState = getActiveRpLikeState();
       getRpCardCollection(kind).unshift(card);
       if (kind === "character") {
-        state.rp.activeCharacterId = card.id;
-        state.rp.chatsByCharacterId[card.id] = [createChatRecord({ characterCardId: card.id })];
-        state.rp.activeChatIdsByCharacterId[card.id] = state.rp.chatsByCharacterId[card.id][0].id;
+        rpLikeState.activeCharacterId = card.id;
+        rpLikeState.chatsByCharacterId[card.id] = [createChatRecord({ characterCardId: card.id, chatMode: getActiveRpLikeChatMode() })];
+        rpLikeState.activeChatIdsByCharacterId[card.id] = rpLikeState.chatsByCharacterId[card.id][0].id;
         resetModelSettingsDraft();
       } else {
-        state.rp.activePersonaId = card.id;
+        rpLikeState.activePersonaId = card.id;
       }
       resetRpCardDraft(kind);
       renderAll();
@@ -8082,11 +8224,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       card.name = trimmed(draft.name) || card.name;
       card.description = String(draft.description || "");
       if (kind === "character") {
-        card.isWorldCard = Boolean(draft.isWorldCard);
+        card.isWorldCard = isRpModeActive() && Boolean(draft.isWorldCard);
         card.mainCharacterDescription = card.isWorldCard ? String(draft.mainCharacterDescription || "") : "";
-        card.firstMessage = String(draft.firstMessage || "");
+        card.firstMessage = isRpModeActive() ? String(draft.firstMessage || "") : "";
         await ensureChatsLoaded(getRpChatsForCharacterId(card.id));
-        syncRpCharacterChatsFirstMessage(card.id);
+        if (isRpModeActive()) {
+          syncRpCharacterChatsFirstMessage(card.id);
+        }
       }
       card.profileImage = draft.profileImage ? cloneImageAttachment(draft.profileImage) : null;
       card.updatedAt = new Date().toISOString();
@@ -8110,6 +8254,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       card.profileImage = null;
       card.updatedAt = now;
       if (kind === "character") {
+        const rpLikeState = getActiveRpLikeState();
         card.isWorldCard = false;
         card.mainCharacterDescription = "";
         card.firstMessage = "";
@@ -8120,12 +8265,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             editingChatId = "";
           }
         });
-        state.rp.activeCharacterId = card.id;
-        state.rp.chatsByCharacterId[card.id] = [createChatRecord({ characterCardId: card.id })];
-        state.rp.activeChatIdsByCharacterId[card.id] = state.rp.chatsByCharacterId[card.id][0].id;
+        rpLikeState.activeCharacterId = card.id;
+        rpLikeState.chatsByCharacterId[card.id] = [createChatRecord({ characterCardId: card.id, chatMode: getActiveRpLikeChatMode() })];
+        rpLikeState.activeChatIdsByCharacterId[card.id] = rpLikeState.chatsByCharacterId[card.id][0].id;
         resetModelSettingsDraft();
       } else {
-        state.rp.activePersonaId = card.id;
+        getActiveRpLikeState().activePersonaId = card.id;
       }
     }
     async function deleteRpCard(kind) {
@@ -8154,15 +8299,17 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return;
       }
       if (kind === "character") {
-        state.rp.characterCards = state.rp.characterCards.filter((card) => card.id !== activeCard.id);
-        delete state.rp.chatsByCharacterId[activeCard.id];
-        delete state.rp.activeChatIdsByCharacterId[activeCard.id];
-        state.rp.activeCharacterId = state.rp.characterCards[0].id;
+        const rpLikeState = getActiveRpLikeState();
+        rpLikeState.characterCards = rpLikeState.characterCards.filter((card) => card.id !== activeCard.id);
+        delete rpLikeState.chatsByCharacterId[activeCard.id];
+        delete rpLikeState.activeChatIdsByCharacterId[activeCard.id];
+        rpLikeState.activeCharacterId = rpLikeState.characterCards[0].id;
         ensureRpModeReady();
         resetModelSettingsDraft();
       } else {
-        state.rp.personaCards = state.rp.personaCards.filter((card) => card.id !== activeCard.id);
-        state.rp.activePersonaId = state.rp.personaCards[0].id;
+        const rpLikeState = getActiveRpLikeState();
+        rpLikeState.personaCards = rpLikeState.personaCards.filter((card) => card.id !== activeCard.id);
+        rpLikeState.activePersonaId = rpLikeState.personaCards[0].id;
       }
       resetRpCardDraft(kind);
       renderAll();
@@ -8236,14 +8383,20 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
       try {
         const importedCard = await parseImportedRpCard(file, kind);
+        const rpLikeState = getActiveRpLikeState();
+        if (isTalkModeActive() && kind === "character") {
+          importedCard.isWorldCard = false;
+          importedCard.mainCharacterDescription = "";
+          importedCard.firstMessage = "";
+        }
         getRpCardCollection(kind).unshift(importedCard);
         if (kind === "character") {
-          state.rp.activeCharacterId = importedCard.id;
-          state.rp.chatsByCharacterId[importedCard.id] = [createChatRecord({ characterCardId: importedCard.id })];
-          state.rp.activeChatIdsByCharacterId[importedCard.id] = state.rp.chatsByCharacterId[importedCard.id][0].id;
+          rpLikeState.activeCharacterId = importedCard.id;
+          rpLikeState.chatsByCharacterId[importedCard.id] = [createChatRecord({ characterCardId: importedCard.id, chatMode: getActiveRpLikeChatMode() })];
+          rpLikeState.activeChatIdsByCharacterId[importedCard.id] = rpLikeState.chatsByCharacterId[importedCard.id][0].id;
           resetModelSettingsDraft();
         } else {
-          state.rp.activePersonaId = importedCard.id;
+          rpLikeState.activePersonaId = importedCard.id;
         }
         resetRpCardDraft(kind);
         renderAll();
@@ -8324,7 +8477,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
     function createNewChat() {
       const chats = getCurrentChatCollection();
-      const chat = createChatRecord({ characterCardId: isRpModeActive() ? state.rp.activeCharacterId : "" });
+      const rpLikeState = isRpLikeModeActive() ? getActiveRpLikeState() : null;
+      const chat = createChatRecord({
+        characterCardId: rpLikeState ? rpLikeState.activeCharacterId : "",
+        chatMode: isTalkModeActive() ? "talk" : isRpModeActive() ? "rp" : "chat"
+      });
       chats.unshift(chat);
       setCurrentActiveChatId(chat.id);
       resetModelSettingsDraft();
@@ -8349,8 +8506,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return;
       }
       requestIndexedDbMediaGc(await collectReferencedMediaIdsForStoredChat(chat));
-      if (isRpModeActive()) {
-        state.rp.chatsByCharacterId[state.rp.activeCharacterId] = chats.filter((item) => item.id !== chat.id);
+      if (isRpLikeModeActive()) {
+        const rpLikeState = getActiveRpLikeState();
+        rpLikeState.chatsByCharacterId[rpLikeState.activeCharacterId] = chats.filter((item) => item.id !== chat.id);
       } else {
         state.chats = chats.filter((item) => item.id !== chat.id);
       }
@@ -8488,12 +8646,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return {
         ...normalizedChat,
         id: createId("chat"),
-        characterCardId: isRpModeActive() ? state.rp.activeCharacterId : normalizedChat.characterCardId,
+        characterCardId: isRpLikeModeActive() ? getActiveRpLikeState().activeCharacterId : normalizedChat.characterCardId,
+        chatMode: isTalkModeActive() ? "talk" : isRpModeActive() ? "rp" : normalizedChat.chatMode,
         messages: normalizedChat.messages.map((message) => ({
           ...message,
           id: createId("msg"),
-          characterCardId: isRpModeActive() ? state.rp.activeCharacterId : message.characterCardId,
-          personaCardId: isRpModeActive() ? state.rp.activePersonaId : message.personaCardId
+          characterCardId: isRpLikeModeActive() ? getActiveRpLikeState().activeCharacterId : message.characterCardId,
+          personaCardId: isRpLikeModeActive() ? getActiveRpLikeState().activePersonaId : message.personaCardId
         }))
       };
     }
@@ -9071,11 +9230,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         stopAssistantResponse();
         return;
       }
-      const activeChat = getActiveChat();
+      const activeChat = await ensureChatMessagesLoaded(getActiveChat());
       let content = elements.messageInput.value.trim();
       const wasEmptyRpInput = isRpModeActive() && !content;
       let attachments = pendingImageAttachments.map(cloneImageAttachment);
-      const documents = isRpModeActive() ? [] : pendingDocumentAttachments.map(cloneDocumentAttachment);
+      const documents = isRpLikeModeActive() ? [] : pendingDocumentAttachments.map(cloneDocumentAttachment);
       if (!activeChat) {
         setChatStatus(t("selectChatTabFirst"), "error");
         return;
@@ -9173,9 +9332,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       });
     }
     function shouldCheckChatT2iPrompt(chat, userMessage) {
+      const enabled = isTalkChat(chat)
+        ? state.settings.talkT2iEnabled === true
+        : state.settings.chatT2iEnabled === true;
       return !isRpModeActive()
         && !isRpChat(chat)
-        && state.settings.chatT2iEnabled === true
+        && enabled
         && normalizeApiBase(state.settings.apiBaseUrl)
         && hasAuxiliaryModel()
         && normalizeImageApiBase(state.settings.imageApiBaseUrl)
@@ -9218,7 +9380,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return hasText(state.settings.auxiliaryModel);
     }
     function isRpChat(chat) {
-      return Boolean(chat?.characterCardId);
+      return Boolean(chat?.characterCardId) && chat?.chatMode !== "talk";
+    }
+    function isTalkChat(chat) {
+      return Boolean(chat?.characterCardId) && chat?.chatMode === "talk";
+    }
+    function isRpLikeChat(chat) {
+      return isRpChat(chat) || isTalkChat(chat);
     }
     function shouldUseRpSummary(chat) {
       return isRpModeActive()
@@ -9242,7 +9410,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return summarizedCount > 0 && summarizedCount <= summarizableCount ? summarizedCount : 0;
     }
     function buildMainRequestSourceMessages(chat, sourceMessages) {
-      const messages = Array.isArray(sourceMessages) ? sourceMessages : [];
+      const messages = normalizeChatMessagesForMode(Array.isArray(sourceMessages) ? sourceMessages : [], chat?.chatMode);
       const summarizedCount = getMainRequestRpSummaryBoundary(chat, messages);
       if (!summarizedCount) {
         return messages;
@@ -9341,7 +9509,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         setChatStatus(t("illustrationImageApiRequired"), "error");
         return;
       }
-      const generationStatusKey = isRpChat(activeChat) ? "illustrationGenerating" : "imageGenerating";
+      const generationStatusKey = isRpChat(activeChat)
+        ? "illustrationGenerating"
+        : isTalkChat(activeChat) ? "imageSending" : "imageGenerating";
       setAssistantAuxiliaryStatus(activeChat, targetMessage, generationStatusKey);
       setChatStatus(t(generationStatusKey));
       await generateIllustrationForAssistantMessage(activeChat, targetMessage, {
@@ -9518,6 +9688,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           options.onPromptReady(prompt);
         }
         const image = await detachImageAttachmentMedia(await generateStableDiffusionImage(prompt));
+        if (isTalkChat(chat)) {
+          image.name = t("attachedImage");
+        }
         const latestMessage = findMessageInChat(chat, targetMessage.id);
         if (!latestMessage) {
           return;
@@ -9640,6 +9813,20 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           await maybeGenerateAutomaticChatTitle(chat, assistantMessage);
           return;
         }
+        if (isTalkChat(chat)) {
+          let talkT2iPrompt = options.chatT2iPrompt || "";
+          if (!talkT2iPrompt && shouldCheckTalkPostResponseImage(chat, assistantMessage)) {
+            setAssistantAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing");
+            setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("rpPostProcessing"));
+            talkT2iPrompt = await createTalkPostResponseT2iPrompt(chat, assistantMessage);
+          }
+          if (talkT2iPrompt && !isChatT2iSkipPrompt(talkT2iPrompt)) {
+            setAssistantAuxiliaryStatus(chat, assistantMessage, "imageSending");
+            setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("imageSending"));
+            await generateIllustrationForAssistantMessage(chat, assistantMessage, { prompt: talkT2iPrompt });
+          }
+          return;
+        }
         if (!isRpChat(chat)) {
           return;
         }
@@ -9672,6 +9859,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       } finally {
         setAssistantAuxiliaryStatus(chat, assistantMessage);
       }
+    }
+    function shouldCheckTalkPostResponseImage(chat, assistantMessage) {
+      return isTalkChat(chat)
+        && state.settings.talkT2iEnabled === true
+        && hasAuxiliaryModel()
+        && normalizeImageApiBase(state.settings.imageApiBaseUrl)
+        && assistantMessage?.role === "assistant"
+        && assistantMessage.status === "complete"
+        && hasText(assistantMessage.content);
     }
     async function maybeGenerateAutomaticChatTitle(chat, assistantMessage) {
       if (!shouldGenerateAutomaticChatTitle(chat, assistantMessage)) {
@@ -10027,6 +10223,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       ].filter(Boolean).join("\n");
     }
     function getRpFirstMessageForAuxiliary(chat, rpPlaceholders = null) {
+      if (isTalkChat(chat)) {
+        return "";
+      }
       const firstMessage = Array.isArray(chat?.messages)
         ? chat.messages.find((message) => message?.isFirstMessage && message.role === "assistant")
         : null;
@@ -10130,6 +10329,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const illustrationSettings = normalizeRpIllustrationSettings(state.rp?.illustration);
       const recentMessages = getRecentAuxiliaryMessagesBefore(chat, userMessage?.id, 3);
       const avoidPrompt = trimForAuxiliaryPrompt(options.avoidPrompt || "", 700);
+      const talkVisualContext = isTalkChat(chat) ? buildTalkVisualAuxiliaryContext(chat, userMessage) : "";
       const generatedPrompt = await requestAuxiliaryChatCompletion([
         {
           role: "system",
@@ -10145,6 +10345,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         {
           role: "user",
           content: [
+            talkVisualContext,
             "Recent conversation:",
             formatMessagesForAuxiliary(recentMessages, recentMessages.length, null, 320),
             "Latest user message:",
@@ -10159,6 +10360,53 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return CHAT_T2I_SKIP_TOKEN;
       }
       return applyIllustrationArtStylePrefix(cleanPrompt, illustrationSettings.artStyle);
+    }
+    async function createTalkPostResponseT2iPrompt(chat, assistantMessage, options = {}) {
+      const illustrationSettings = normalizeRpIllustrationSettings(state.rp?.illustration);
+      const previousMessages = getRecentAuxiliaryMessagesBefore(chat, assistantMessage?.id, 6);
+      const userMessage = getLatestUserMessageForChatT2i(previousMessages);
+      const generatedPrompt = await requestAuxiliaryChatCompletion([
+        {
+          role: "system",
+          content: [
+            "Classify whether the latest assistant message in an instant messenger character chat should include an attached photo, picture, selfie, drawing, or other generated image.",
+            `If no image attachment is clearly implied, output exactly ${CHAT_T2I_SKIP_TOKEN}.`,
+            "If an image attachment should be included, output one concise Stable Diffusion prompt in English only.",
+            buildIllustrationPromptStyleInstruction(illustrationSettings.promptStyle),
+            "Use the character card, persona card, latest user request, and assistant response. No markdown, explanations, quotes, watermarks, signatures, or camera metadata."
+          ].filter(Boolean).join("\n")
+        },
+        {
+          role: "user",
+          content: [
+            buildTalkVisualAuxiliaryContext(chat, assistantMessage),
+            "Recent talk messages:",
+            formatMessagesForAuxiliary(previousMessages, previousMessages.length, null, 320),
+            "Latest user message:",
+            trimForAuxiliaryPrompt(userMessage?.content || "", 700),
+            "Latest assistant message:",
+            trimForAuxiliaryPrompt(assistantMessage?.content || "", 900)
+          ].filter(Boolean).join("\n\n")
+        }
+      ], { temperature: 0.1, signal: options.signal });
+      const cleanPrompt = cleanIllustrationPrompt(generatedPrompt);
+      if (!cleanPrompt || isChatT2iSkipPrompt(cleanPrompt)) {
+        return CHAT_T2I_SKIP_TOKEN;
+      }
+      return applyIllustrationArtStylePrefix(cleanPrompt, illustrationSettings.artStyle);
+    }
+    function buildTalkVisualAuxiliaryContext(chat, message = null) {
+      const rpLikeState = getRpLikeStateForChat(chat);
+      const character = getRpCardByIdFromState(rpLikeState, "character", chat?.characterCardId || message?.characterCardId || rpLikeState?.activeCharacterId);
+      const persona = getRpCardByIdFromState(rpLikeState, "persona", message?.personaCardId || rpLikeState?.activePersonaId);
+      const placeholders = createRpPromptPlaceholders({ character, persona });
+      return [
+        "[Messenger Card Context]",
+        character?.name ? `Character: ${character.name}` : "",
+        character?.description ? `Character card: ${trimForAuxiliaryPrompt(replaceRpPromptPlaceholders(character.description, placeholders), 900)}` : "",
+        persona?.name ? `Persona: ${persona.name}` : "",
+        persona?.description ? `Persona card: ${trimForAuxiliaryPrompt(replaceRpPromptPlaceholders(persona.description, placeholders), 500)}` : ""
+      ].filter(Boolean).join("\n");
     }
     async function createChatT2iPromptForAssistantMessage(chat, assistantMessage) {
       const previousPrompt = normalizeMessageIllustration(assistantMessage?.illustration)?.prompt || "";
@@ -10178,7 +10426,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     function buildChatT2iMainModelInstructions(prompt, options = {}) {
       const cleanPrompt = cleanIllustrationPrompt(prompt);
       if (!cleanPrompt) {
-        if (options.chat && !isRpChat(options.chat)) {
+        if (options.chat && !isRpChat(options.chat) && !isTalkChat(options.chat)) {
           return [[
             "[Image Generation Availability]",
             "No image generation is scheduled for this turn, and the main chat model has no image tool such as DALL-E or dalle.text2im.",
@@ -10797,8 +11045,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         status: "complete",
         isThinking: false,
         isFirstMessage: false,
-        characterCardId: isRpModeActive() ? (getActiveRpCharacter()?.id || "") : "",
-        personaCardId: isRpModeActive() ? (getActiveRpPersona()?.id || "") : "",
+        characterCardId: isRpLikeModeActive() ? (getActiveRpCharacter()?.id || "") : "",
+        personaCardId: isRpLikeModeActive() ? (getActiveRpPersona()?.id || "") : "",
         ...overrides
       };
     }
@@ -11038,14 +11286,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (!illustration) {
         return null;
       }
-      const isRpIllustration = isRpChat(chat) || Boolean(message?.characterCardId);
+      const isTalkImage = isTalkChat(chat);
+      const isRpIllustration = !isTalkImage && (isRpChat(chat) || Boolean(message?.characterCardId));
       const container = document.createElement("div");
       container.className = "message-illustration";
       const header = document.createElement("div");
       header.className = "message-illustration-header";
       const title = document.createElement("div");
       title.className = "message-illustration-title";
-      title.textContent = t(isRpIllustration ? "generatedIllustration" : "generatedImage");
+      title.textContent = t(isTalkImage ? "attachedImage" : isRpIllustration ? "generatedIllustration" : "generatedImage");
       header.appendChild(title);
       const regenerateButton = createIconButton({
         className: "message-action-button message-illustration-action",
@@ -11059,7 +11308,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (illustration.status === "generating") {
         const placeholder = document.createElement("div");
         placeholder.className = "message-illustration-placeholder";
-        placeholder.textContent = t(isRpIllustration ? "illustrationGenerating" : "imageGenerating");
+        placeholder.textContent = t(isTalkImage ? "imageSending" : isRpIllustration ? "illustrationGenerating" : "imageGenerating");
         container.appendChild(placeholder);
         return container;
       }
@@ -12155,12 +12404,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       (Array.isArray(extraSystemInstructions) ? extraSystemInstructions : [extraSystemInstructions])
         .filter(Boolean)
         .forEach((instruction) => systemInstructions.push(String(instruction)));
-      if (rpContext?.character && (rpContext.character.name || rpContext.character.description || rpContext.character.mainCharacterDescription)) {
+      if (rpContext?.mode === "talk") {
+        systemInstructions.push(buildTalkModeInstruction(rpContext, rpPlaceholders));
+      } else if (rpContext?.character && (rpContext.character.name || rpContext.character.description || rpContext.character.mainCharacterDescription)) {
         systemInstructions.push(buildRpCharacterCardInstruction(rpContext, rpPlaceholders));
       }
       if (rpContext?.persona && (rpContext.persona.name || rpContext.persona.description)) {
         systemInstructions.push([
-          `[RP Persona Card]`,
+          rpContext?.mode === "talk" ? `[Messenger Persona Card]` : `[RP Persona Card]`,
           `Interpret the user's messages through this persona unless they explicitly change it.`,
           `Name: ${rpContext.persona.name || "Unnamed Persona"}`,
           replaceRpPromptPlaceholders(rpContext.persona.description || "", rpPlaceholders)
@@ -12222,7 +12473,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         .replace(/\{\{\s*user\s*\}\}/gi, placeholders.user);
     }
     function buildRpNarrativeStyleInstruction(rpContext) {
-      if (!rpContext) {
+      if (!rpContext || rpContext.mode === "talk") {
         return "";
       }
       return [
@@ -12257,8 +12508,20 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           : ""
       ].filter(Boolean).join("\n");
     }
+    function buildTalkModeInstruction(rpContext, rpPlaceholders = null) {
+      const character = rpContext?.character;
+      return [
+        `[Messenger Mode]`,
+        `You are chatting with the user as a character in an instant messenger conversation.`,
+        `Write like a direct message thread: concise, reactive, in-character, and natural.`,
+        `Do not write novel-style narration, stage directions, scene prose, or assistant-like explanations unless the user explicitly asks.`,
+        `If sending a photo or drawing is planned by FocusAbove, mention it casually as an attachment being sent, but do not output fake tool calls or image URLs.`,
+        character?.name ? `Character: ${character.name}` : `Character: Unnamed Character`,
+        character?.description ? replaceRpPromptPlaceholders(character.description, rpPlaceholders) : ""
+      ].filter(Boolean).join("\n");
+    }
     function buildRpResponsePerspectiveInstruction(rpContext) {
-      if (!rpContext) {
+      if (!rpContext || rpContext.mode === "talk") {
         return "";
       }
       const perspective = normalizeRpResponsePerspective(rpContext.responsePerspective);
@@ -12286,7 +12549,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       ].join("\n");
     }
     function buildRpResponseLengthInstruction(rpContext) {
-      if (!rpContext) {
+      if (!rpContext || rpContext.mode === "talk") {
         return "";
       }
       const responseLength = normalizeRpResponseLength(rpContext.responseLength);
@@ -12331,7 +12594,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       ].join("\n");
     }
     function buildAuthorsNoteInstruction(rpContext) {
-      if (!rpContext) {
+      if (!rpContext || rpContext.mode === "talk") {
         return "";
       }
       const authorsNote = trimmed(rpContext.authorsNote);
@@ -12345,30 +12608,34 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       ].join("\n");
     }
     function buildRpPromptContext(chat, sourceMessages = null) {
-      if (!isRpModeActive()) {
+      if (!isRpLikeModeActive()) {
         return null;
       }
+      const rpLikeState = getActiveRpLikeState();
       const shouldIncludeSummary = getMainRequestRpSummaryBoundary(chat, sourceMessages || chat?.messages) > 0;
       return {
-        character: getRpCardById("character", chat?.characterCardId || state.rp.activeCharacterId),
+        mode: isTalkModeActive() ? "talk" : "rp",
+        character: getRpCardById("character", chat?.characterCardId || rpLikeState.activeCharacterId),
         persona: getActiveRpPersona(),
-        responsePerspective: normalizeRpResponsePerspective(state.rp.responsePerspective),
-        responseLength: normalizeRpResponseLength(state.rp.responseLength),
-        authorsNote: chat?.authorsNote || "",
-        summary: shouldIncludeSummary ? (chat?.rpSummary || "") : "",
+        responsePerspective: normalizeRpResponsePerspective(state.rp?.responsePerspective),
+        responseLength: normalizeRpResponseLength(state.rp?.responseLength),
+        authorsNote: isRpModeActive() ? (chat?.authorsNote || "") : "",
+        summary: isRpModeActive() && shouldIncludeSummary ? (chat?.rpSummary || "") : "",
         sceneState: ""
       };
     }
     function roleLabel(role, message = null) {
       if (role === "user") {
-        if (isRpModeActive()) {
-          return getRpCardById("persona", message?.personaCardId || state.rp.activePersonaId)?.name || state.settings.userAlias || DEFAULT_SETTINGS.userAlias;
+        if (isRpLikeModeActive()) {
+          const rpLikeState = getActiveRpLikeState();
+          return getRpCardById("persona", message?.personaCardId || rpLikeState.activePersonaId)?.name || state.settings.userAlias || DEFAULT_SETTINGS.userAlias;
         }
         return state.settings.userAlias || DEFAULT_SETTINGS.userAlias;
       }
       if (role === "assistant") {
-        if (isRpModeActive()) {
-          return getRpCardById("character", message?.characterCardId || state.rp.activeCharacterId)?.name || state.settings.modelAlias || DEFAULT_SETTINGS.modelAlias;
+        if (isRpLikeModeActive()) {
+          const rpLikeState = getActiveRpLikeState();
+          return getRpCardById("character", message?.characterCardId || rpLikeState.activeCharacterId)?.name || state.settings.modelAlias || DEFAULT_SETTINGS.modelAlias;
         }
         return state.settings.modelAlias || DEFAULT_SETTINGS.modelAlias;
       }
@@ -13052,9 +13319,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       });
     }
     function getMessageRpPlaceholders(message) {
+      const rpLikeState = getActiveRpLikeState();
       return createRpPromptPlaceholders({
-        character: getRpCardById("character", message?.characterCardId || state.rp.activeCharacterId),
-        persona: getRpCardById("persona", message?.personaCardId || state.rp.activePersonaId) || getActiveRpPersona()
+        character: getRpCardById("character", message?.characterCardId || rpLikeState?.activeCharacterId),
+        persona: getRpCardById("persona", message?.personaCardId || rpLikeState?.activePersonaId) || getActiveRpPersona()
       });
     }
     function getAssistantFirstMessageDisplayContent(message) {
@@ -13221,6 +13489,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       applyTranslatedTextContent([
         [elements.chatModeButton, "chatMode"],
         [elements.rpModeButton, "rpMode"],
+        [elements.talkModeButton, "talkMode"],
         [elements.openCharacterOverlayButton, "character"],
         [elements.openPersonaOverlayButton, "persona"],
         [elements.openSettingsOverlayButton, "settings"],
@@ -13292,6 +13561,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         [elements.thinkingUnlimitedLabel, "unlimited"],
         [elements.illustrationEnabledLabel, "illustrationEnabled"],
         [elements.chatT2iEnabledLabel, "chatT2iEnabled"],
+        [elements.talkT2iEnabledLabel, "talkT2iEnabled"],
         [elements.illustrationIgnorePeopleLabel, "illustrationIgnoreNonCharacterPeople"]
       ].forEach(([label, key]) => setLeadingLabelText(label, t(key)));
       applyTranslatedFieldLabels([
@@ -13403,61 +13673,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     function isDefaultChatTitle(title) {
       return /^새 채팅 \d+$/.test(title) || /^New Chat \d+$/.test(title);
     }
-    function translateStatusToastMessage(message) {
-      if (getUiLanguage() !== "en") {
-        return message;
-      }
-      const cardKind = (value) => value === "캐릭터" ? "character" : value === "페르소나" ? "persona" : value;
-      const exactMatches = {
-        "탭 이름을 변경했습니다.": "Renamed the tab.",
-        "일반 설정을 기본값으로 복원했습니다.": "Restored general settings to defaults.",
-        "작가 노트를 비웠습니다.": "Cleared the Author's Note.",
-        "이미지 자르기를 취소했습니다.": "Canceled image cropping.",
-        "활성 탭에서만 내보내기를 실행할 수 있습니다.": "You can only export from the active tab.",
-        "압축 내보내기 라이브러리를 불러오지 못했습니다.": "Failed to load the zip export library.",
-        "활성 탭에서만 가져오기를 실행할 수 있습니다.": "You can only import from the active tab.",
-        "먼저 채팅 탭을 선택해 주세요.": "Select a chat tab first.",
-        "메시지 수정을 먼저 저장해 주세요.": "Save your message edits first.",
-        "보낼 메시지나 이미지를 추가해 주세요.": "Add a message or image to send.",
-        "API 주소가 비어 있습니다. 왼쪽 설정에서 입력해 주세요.": "API base URL is empty. Enter it in Settings.",
-        "사용할 모델을 선택해 주세요. 필요하면 모델 새로고침을 먼저 실행해 주세요.": "Select a model to use. Refresh the model list first if needed.",
-        "다시 생성할 응답이 없습니다.": "There is no response to reroll.",
-        "응답을 스트리밍하는 중입니다.": "Streaming response.",
-        "응답을 받았습니다.": "Response received.",
-        "응답 생성을 중지했습니다.": "Stopped response generation.",
-        "열어 둔 메시지 수정을 먼저 저장해 주세요.": "Save the open message edit first.",
-        "빈 메시지는 저장할 수 없습니다.": "You cannot save an empty message.",
-        "메시지를 수정했습니다.": "Updated the message.",
-        "RP 모드로 전환했습니다.": "Switched to RP mode.",
-        "채팅 모드로 전환했습니다.": "Switched to chat mode."
-      };
-      if (Object.prototype.hasOwnProperty.call(exactMatches, message)) {
-        return exactMatches[message];
-      }
-      const patterns = [
-        [/^요청 실패: (.+)$/u, (_, error) => `Request failed: ${error}`],
-        [/^이미지 자르기 실패: (.+)$/u, (_, error) => `Image crop failed: ${error}`],
-        [/^이미지 지정 실패: (.+)$/u, (_, error) => `Failed to set image: ${error}`],
-        [/^가져오기 실패: (.+)$/u, (_, error) => `Import failed: ${error}`],
-        [/^이미지 첨부 실패: (.+)$/u, (_, error) => `Failed to attach images: ${error}`],
-        [/^(\d+)개 이미지를 첨부했습니다\.$/u, (_, count) => `Attached ${count} image${Number(count) === 1 ? "" : "s"}.`],
-        [/^(캐릭터|페르소나) 이미지를 정사각형으로 반영했습니다\. 저장해 확정하세요\.$/u, (_, kind) => `Applied the ${cardKind(kind)} image as a square. Save to confirm it.`],
-        [/^(캐릭터|페르소나) 카드를 만들었습니다\.$/u, (_, kind) => `Created the ${cardKind(kind)} card.`],
-        [/^(캐릭터|페르소나) 카드를 찾지 못했습니다\.$/u, (_, kind) => `Could not find the ${cardKind(kind)} card.`],
-        [/^(캐릭터|페르소나) 카드를 저장했습니다\.$/u, (_, kind) => `Saved the ${cardKind(kind)} card.`],
-        [/^(캐릭터|페르소나) 카드를 삭제했습니다\.$/u, (_, kind) => `Deleted the ${cardKind(kind)} card.`],
-        [/^(캐릭터|페르소나) 카드가 없습니다\.$/u, (_, kind) => `There is no ${cardKind(kind)} card.`],
-        [/^(캐릭터|페르소나) 카드를 가져왔습니다\.$/u, (_, kind) => `Imported the ${cardKind(kind)} card.`],
-        [/^(.+) 카드를 \.charcard로 내보냈습니다\.$/u, (_, name) => `Exported ${name} as a .charcard file.`]
-      ];
-      for (const [pattern, formatter] of patterns) {
-        const match = message.match(pattern);
-        if (match) {
-          return formatter(...match);
-        }
-      }
-      return message;
-    }
     function showChatStatusToast(message, tone = "default") {
       const element = elements.chatStatusToast;
       if (!element) {
@@ -13471,7 +13686,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         window.clearTimeout(chatStatusToastTimerId);
         chatStatusToastTimerId = 0;
       }
-      element.textContent = translateStatusToastMessage(String(message ?? ""));
+      element.textContent = String(message ?? "");
       element.className = `status-toast${tone === "default" ? "" : ` ${tone}`}`;
       element.classList.add("open");
       element.setAttribute("aria-hidden", "false");
