@@ -264,11 +264,7 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
     }
-    .rp-assistance-fields {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+    .rp-assistance-fields,
     .talk-group-members {
       display: flex;
       flex-direction: column;
@@ -411,6 +407,14 @@
       background: rgba(var(--primary-rgb), 0.1);
       color: var(--primary-strong);
     }
+    .toolbar-icon-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      min-width: 38px;
+      padding-inline: 0;
+    }
     .danger-button {
       background: rgba(180, 65, 45, 0.12);
       color: var(--danger);
@@ -455,7 +459,8 @@
       background: rgba(var(--primary-rgb), 0.12);
       color: var(--primary-strong);
     }
-    .tab-utility-button svg {
+    .tab-utility-button svg,
+    .toolbar-icon-button svg {
       width: 18px;
       height: 18px;
       stroke: currentColor;
@@ -2398,11 +2403,7 @@
       .desktop-tabs-toolbar .section-title {
         margin: 0;
       }
-      .desktop-tabs-list-section {
-        flex: 1 1 auto;
-        min-height: 0;
-        overflow: visible;
-      }
+      .desktop-tabs-list-section,
       .desktop-chat-list {
         flex: 1 1 auto;
         min-height: 0;
@@ -2500,6 +2501,11 @@
         padding: 8px 10px;
         font-size: 12px;
       }
+      .header-actions .toolbar-icon-button {
+        width: 34px;
+        min-width: 34px;
+        padding-inline: 0;
+      }
       .header-rp-actions {
         gap: 6px;
       }
@@ -2529,23 +2535,18 @@
         justify-content: stretch;
       }
       .overlay-panel {
-        width: 100vw;
-        max-height: none;
-        height: 100vh;
-        height: 100svh;
         border-radius: 0;
         border: 0;
       }
       .media-overlay {
         padding: 0;
       }
+      .overlay-panel,
       .media-overlay-panel {
         width: 100vw;
         max-height: none;
         height: 100vh;
         height: 100svh;
-        border-radius: 0;
-        border: 0;
       }
       .media-overlay-panel .panel-inner {
         gap: 12px;
@@ -2664,6 +2665,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     <symbol id="icon-close" viewBox="0 0 24 24"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></symbol>
     <symbol id="icon-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"></path></symbol>
     <symbol id="icon-reroll" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.34 5.66"></path><path d="M20 4v7h-7"></path></symbol>
+    <symbol id="icon-gear" viewBox="0 0 24 24"><path d="M12 2l1.5 3 3.2-.5.8 3.1 3 1.4-1.7 3 1.7 3-3 1.4-.8 3.1-3.2-.5-1.5 3-1.5-3-3.2.5-.8-3.1-3-1.4 1.7-3-1.7-3 3-1.4.8-3.1 3.2.5z"></path><circle cx="12" cy="12" r="3.2"></circle></symbol>
     <symbol id="icon-brand" viewBox="0 0 64 64"><rect x="8" y="8" width="48" height="48" rx="14" fill="currentColor"></rect><circle cx="32" cy="32" r="13" fill="none" stroke="#fff7ee" stroke-width="6"></circle><circle cx="46" cy="18" r="3" fill="#fff7ee" fill-opacity="0.9"></circle></symbol>
   </svg>
   <div id="appShell" class="app-shell">
@@ -2682,8 +2684,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           <button id="openCharacterOverlayButton" type="button" class="toolbar-button">캐릭터</button>
           <button id="openPersonaOverlayButton" type="button" class="toolbar-button">페르소나</button>
         </div>
-        <button id="openSettingsOverlayButton" type="button" class="toolbar-button">설정</button>
         <button id="openTabsOverlayButton" type="button" class="toolbar-button">탭</button>
+        <button id="openSettingsOverlayButton" type="button" class="toolbar-button toolbar-icon-button" aria-label="설정" title="설정"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-gear"></use></svg></button>
       </div>
     </header>
     <div class="workspace-layout">
@@ -2767,7 +2769,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section class="brand">
               <a class="brand-mark-link" href="https://github.com/furabyss/FocusAbove" target="_blank" rel="noopener noreferrer"><div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#icon-brand"></use></svg><span>FocusAbove</span></div></a>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.7.1, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.7.2, ⓒ 2026 Fur-Abyss</p>
             </section>
             <div class="settings-tab-strip" role="tablist">
               <button id="settingsGeneralTabButton" type="button" class="settings-tab-button active" role="tab" aria-selected="true" aria-controls="settingsGeneralPanel"></button>
@@ -3216,6 +3218,25 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
     function createEmptyState(text) {
       return createElementWithClass("div", "empty-state", text);
+    }
+    function createAttachmentRemoveButton(attachment, onClick) {
+      return createIconButton({
+        className: "composer-attachment-remove",
+        label: `${attachment.name} ${t("remove")}`,
+        title: t("remove"),
+        iconName: "close",
+        disabled: isSending,
+        onClick
+      });
+    }
+    function buildDocumentAttachmentMeta(documentAttachment) {
+      const meta = createElementWithClass("div", "composer-document-meta");
+      meta.append(
+        createElementWithClass("span", "composer-document-badge", documentAttachment.kind || "TXT"),
+        createElementWithClass("span", "composer-attachment-name", documentAttachment.name),
+        createElementWithClass("span", "composer-document-size", formatByteSize(documentAttachment.sizeBytes || 0))
+      );
+      return meta;
     }
     function getRpCardControlButtonId(kind, action) {
       const suffixByAction = {
@@ -4701,6 +4722,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       ], "change");
       elements.talkGroupMembersList.addEventListener("click", handleTalkGroupMembersInput);
       elements.talkGroupMembersList.addEventListener("input", handleTalkGroupMembersInput);
+      elements.talkGroupMembersList.addEventListener("change", handleTalkGroupMembersInput);
       elements.talkGroupMemberCandidateList.addEventListener("click", handleTalkGroupMemberCandidateAction);
       elements.talkGroupMemberCandidateList.addEventListener("keydown", handleTalkGroupMemberCandidateAction);
       bindRpCardEditorEvents("persona", getRpCardEditorEventConfig("persona"));
@@ -6630,6 +6652,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
       const target = event.target;
       const removeTarget = target?.closest?.("[data-group-member-remove-id]");
+      if (event.type === "click" && !removeTarget) {
+        return;
+      }
       const memberId = target?.dataset?.groupMemberWeightId || removeTarget?.dataset?.groupMemberRemoveId || "";
       if (!memberId) {
         return;
@@ -6644,9 +6669,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
       if (existing) {
         existing.weight = normalizeTalkGroupMemberWeight(target.value);
+        if (event.type === "change") {
+          target.value = String(existing.weight);
+        }
       }
       draft.groupMembers = members;
-      renderTalkGroupMembersEditor(draft);
+      if (event.type === "change") {
+        renderTalkGroupMembersEditor(draft);
+      }
     }
     function getTalkGroupAvailableCandidates(draft = getRpCardDraft("character"), members = normalizeTalkGroupMembers(draft?.groupMembers, { excludeId: draft?.cardId || "" })) {
       if (isTalkGroupMemberLimitReached(members)) {
@@ -6960,6 +6990,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         persistState();
       }
     }
+    function renderChatInteractionSections(options = {}) {
+      renderAppSections({
+        chatList: true,
+        activeChat: true,
+        composerControls: true,
+        ...options
+      });
+    }
     function renderHeader() {
       const rpMode = isRpModeActive();
       const talkMode = isTalkModeActive();
@@ -7192,15 +7230,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         rpLikeState.activePersonaId = cardId;
       }
       resetRpCardDraft(kind);
-      renderAppSections({ persist: false, chatList: kind === "character", activeChat: true, modelsPanel: kind === "character", composerControls: true, rpCards: true, header: true });
+      renderChatInteractionSections({ persist: false, chatList: kind === "character", modelsPanel: kind === "character", rpCards: true, header: true });
       if (kind === "character") {
         await ensureCurrentActiveChatLoaded();
       }
-      renderAppSections({
+      renderChatInteractionSections({
         chatList: kind === "character",
-        activeChat: true,
         modelsPanel: kind === "character",
-        composerControls: true,
         rpCards: true,
         header: true
       });
@@ -7337,11 +7373,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (chat) {
         chatTitleDrafts.set(chatId, chat.title);
       }
-      renderAppSections({
-        chatList: true,
-        activeChat: true,
-        composerControls: true
-      });
+      renderChatInteractionSections();
     }
     function commitChatTitleEdit(chatId) {
       const chat = findChatById(chatId);
@@ -7358,22 +7390,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
       editingChatId = "";
       chatTitleDrafts.delete(chatId);
-      renderAppSections({
-        chatList: true,
-        activeChat: true,
-        composerControls: true
-      });
+      renderChatInteractionSections();
     }
     function cancelChatTitleEdit(chatId) {
       if (editingChatId === chatId) {
         editingChatId = "";
       }
       chatTitleDrafts.delete(chatId);
-      renderAppSections({
-        chatList: true,
-        activeChat: true,
-        composerControls: true
-      });
+      renderChatInteractionSections();
     }
     function renderActiveChat() {
       const activeChat = getActiveChat();
@@ -7686,23 +7710,17 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const requestId = currentActiveChatLoadRequestId;
       setCurrentActiveChatId(chatId);
       resetModelSettingsDraft();
-      renderAppSections({
+      renderChatInteractionSections({
         persist: false,
-        chatList: true,
-        activeChat: true,
         modelsPanel: true,
-        composerControls: true,
         header: true
       });
       await ensureCurrentActiveChatLoaded();
       if (requestId !== currentActiveChatLoadRequestId || getCurrentActiveChatId() !== chatId) {
         return;
       }
-      renderAppSections({
-        chatList: true,
-        activeChat: true,
+      renderChatInteractionSections({
         modelsPanel: true,
-        composerControls: true,
         header: true
       });
       if (options.closeOverlayOnSelect) {
@@ -7836,7 +7854,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (isEditableMessage(message)) {
         const isEditing = isEditingMessage(message.id);
         buttonConfigs.push({
-          className: "message-action-button",
           label: isEditing ? t("saveEdit") : t("edit"),
           iconName: isEditing ? "check" : "edit",
           active: isEditing,
@@ -7846,7 +7863,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
       if (canRerollMessage(chat, message.id)) {
         buttonConfigs.push({
-          className: "message-action-button",
           label: t("reroll"),
           iconName: "reroll",
           disabled: isSending || hasPendingMessageEdit,
@@ -7854,7 +7870,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         });
       }
       buttonConfigs.push({
-        className: "message-action-button",
         label: t("delete"),
         iconName: "trash",
         tone: "danger",
@@ -7862,7 +7877,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         onClick: () => deleteMessage(chat.id, message.id)
       });
       buttonConfigs.forEach((config) => {
-        metaActions.appendChild(createIconButton(config));
+        metaActions.appendChild(createIconButton({
+          className: "message-action-button",
+          ...config
+        }));
       });
       return metaActions;
     }
@@ -7914,34 +7932,17 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           image.alt = attachment.name;
           chip.appendChild(image);
           queueImageElementSource(image, attachment);
-          const removeButton = createIconButton({
-            className: "composer-attachment-remove",
-            label: `${attachment.name} ${t("remove")}`,
-            title: t("remove"),
-            iconName: "close",
-            disabled: isSending,
-            onClick: () => removePendingImageAttachment(attachment.id)
-          });
+          const removeButton = createAttachmentRemoveButton(attachment, () => removePendingImageAttachment(attachment.id));
           chip.appendChild(removeButton);
           chip.appendChild(createElementWithClass("span", "composer-attachment-name", attachment.name));
           container.appendChild(chip);
         });
         visibleDocumentAttachments.forEach((attachment) => {
           const chip = createElementWithClass("div", "composer-attachment-chip document");
-          const removeButton = createIconButton({
-            className: "composer-attachment-remove",
-            label: `${attachment.name} ${t("remove")}`,
-            title: t("remove"),
-            iconName: "close",
-            disabled: isSending,
-            onClick: () => removePendingDocumentAttachment(attachment.id)
-          });
-          const meta = createElementWithClass("div", "composer-document-meta");
-          const badge = createElementWithClass("span", "composer-document-badge", attachment.kind || "TXT");
-          const name = createElementWithClass("span", "composer-attachment-name", attachment.name);
-          const size = createElementWithClass("span", "composer-document-size", formatByteSize(attachment.sizeBytes || 0));
-          meta.append(badge, name, size);
-          chip.append(removeButton, meta);
+          chip.append(
+            createAttachmentRemoveButton(attachment, () => removePendingDocumentAttachment(attachment.id)),
+            buildDocumentAttachmentMeta(attachment)
+          );
           container.appendChild(chip);
         });
         composerAttachmentRenderSignature = nextSignature;
@@ -8127,13 +8128,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       state.settings.thinkingUnlimited = modelSettingsDraft.thinkingUnlimited !== false;
       state.settings.thinkingTokenLimit = state.settings.thinkingUnlimited ? null : modelSettingsDraft.thinkingTokenLimit;
       persistState();
-      renderAppSections({
+      renderChatInteractionSections({
         persist: false,
-        chatList: true,
-        activeChat: true,
         modelSelect: true,
         modelsPanel: true,
-        composerControls: true,
         header: true
       });
       resetModelSettingsDraft();
@@ -8987,11 +8985,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       chats.unshift(chat);
       setCurrentActiveChatId(chat.id);
       resetModelSettingsDraft();
-      renderAppSections({
-        chatList: true,
-        activeChat: true,
+      renderChatInteractionSections({
         modelsPanel: true,
-        composerControls: true,
         header: true
       });
       requestInactiveChatUnload();
@@ -9021,10 +9016,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       ensureInitialChat();
       syncChatSelection();
       await ensureCurrentActiveChatLoaded();
-      renderAppSections({
-        chatList: true,
-        activeChat: true,
-        composerControls: true,
+      renderChatInteractionSections({
         header: true
       });
       setChatStatus(t("chatTabDeleted"), "success");
@@ -9096,11 +9088,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         setCurrentActiveChatId(importedChats[0].id);
         syncChatSelection();
         resetModelSettingsDraft();
-        renderAppSections({
-          chatList: true,
-          activeChat: true,
+        renderChatInteractionSections({
           modelsPanel: true,
-          composerControls: true,
           header: true
         });
         requestInactiveChatUnload();
@@ -9481,11 +9470,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       editingMessageId = "";
       activeChat.messages = [];
       activeChat.updatedAt = new Date().toISOString();
-      renderAppSections({
-        chatList: true,
-        activeChat: true,
-        composerControls: true
-      });
+      renderChatInteractionSections();
     }
     function deleteMessage(chatId, messageId) {
       if (isSending) {
@@ -9502,11 +9487,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       requestIndexedDbMediaGc(collectReferencedMediaIdsFromMessages(targetMessage ? [targetMessage] : []));
       chat.messages = chat.messages.filter((message) => message.id !== messageId);
       chat.updatedAt = new Date().toISOString();
-      renderAppSections({
-        chatList: true,
-        activeChat: true,
-        composerControls: true
-      });
+      renderChatInteractionSections();
     }
     function updateSelectedModel() {
       if (!modelSettingsDraft) {
@@ -9775,21 +9756,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       activeChat.updatedAt = new Date().toISOString();
       elements.messageInput.value = "";
       clearPendingComposerAttachments();
-      renderAppSections({
+      renderChatInteractionSections({
         persist: !shouldEnhanceInput,
-        chatList: true,
-        activeChat: true,
         composerAttachments: true,
-        composerControls: true,
         header: true
       });
       if (shouldEnhanceInput) {
         isSending = true;
-        renderAppSections({
+        renderChatInteractionSections({
           persist: false,
-          chatList: true,
-          activeChat: true,
-          composerControls: true,
           header: true
         });
         setChatStatus(t("rpInputEnhancing"));
@@ -9810,10 +9785,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           if (shouldRetitleChat(activeChat)) {
             activeChat.title = suggestChatTitle(activeChat.messages);
           }
-          renderAppSections({
-            chatList: true,
-            activeChat: true,
-            composerControls: true,
+          renderChatInteractionSections({
             header: true
           });
         }
@@ -9895,9 +9867,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
               role: "system",
               content: [
                 "Select which characters should reply in a FocusAbove Messenger Mode Group Chat.",
-                "A directly addressed or clearly mentioned character must reply.",
-                "For characters not addressed, use their weight as the probability that they reply.",
-                "If nobody is directly addressed, select at least one character.",
+                "A character must reply when the latest user message directly calls, asks, commands, greets, or clearly invites that character to answer.",
+                "Do not select a character only because their name is mentioned as a topic, example, comparison, memory, or third-person reference.",
+                "Use the recent messages only to resolve whether the latest user message is addressing someone.",
+                "For characters not directly addressed, use their weight as the probability that they reply.",
+                "If nobody is directly addressed, select at least one character by weight and conversation relevance.",
                 "Return only JSON: {\"speakerIds\":[\"character-id\"]}"
               ].join("\n")
             },
@@ -9913,15 +9887,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
               ].join("\n\n")
             }
           ], { temperature: 0.1, maxTokens: 160 }));
-          usedAuxiliarySelection = selectedIds.length > 0;
         } catch (error) {
           console.error("Group Chat responder selection failed", error);
         }
       }
       const validIds = new Set(members.map((member) => member.characterId));
       selectedIds = selectedIds.filter((id) => validIds.has(id));
-      mentionedIds.forEach((id) => selectedIds.push(id));
+      usedAuxiliarySelection = selectedIds.length > 0;
       if (!usedAuxiliarySelection) {
+        mentionedIds.forEach((id) => selectedIds.push(id));
         members.forEach((member) => {
           if (mentionedIds.has(member.characterId) || selectedIds.includes(member.characterId)) {
             return;
@@ -10081,10 +10055,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         requestIndexedDbMediaGc(collectReferencedMediaIdsFromMessages(activeChat.messages.slice(userIndex + 1)));
         activeChat.messages = activeChat.messages.slice(0, userIndex + 1);
         activeChat.updatedAt = new Date().toISOString();
-        renderAppSections({
-          chatList: true,
-          activeChat: true,
-          composerControls: true,
+        renderChatInteractionSections({
           header: true
         });
         await requestTalkGroupResponses(activeChat, userMessage, {
@@ -10099,10 +10070,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       requestIndexedDbMediaGc(collectReferencedMediaIdsFromMessages(activeChat.messages.slice(assistantIndex)));
       activeChat.messages = activeChat.messages.slice(0, assistantIndex);
       activeChat.updatedAt = new Date().toISOString();
-      renderAppSections({
-        chatList: true,
-        activeChat: true,
-        composerControls: true,
+      renderChatInteractionSections({
         header: true
       });
       await requestAssistantResponse(activeChat, {
@@ -10156,9 +10124,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         : isTalkChat(activeChat) ? "imageSending" : "imageGenerating";
       setAssistantAuxiliaryStatus(activeChat, targetMessage, generationStatusKey);
       setChatStatus(t(generationStatusKey));
+      const previousPrompt = normalizeMessageIllustration(targetMessage.illustration)?.prompt || "";
       await generateIllustrationForAssistantMessage(activeChat, targetMessage, {
         scrollToBottom: false,
-        createPrompt: isRpChat(activeChat) ? null : (message) => createChatT2iPromptForAssistantMessage(activeChat, message)
+        previousPrompt,
+        createPrompt: isRpChat(activeChat) ? null : (message) => createChatT2iPromptForAssistantMessage(activeChat, message, { previousPrompt })
       });
       setAssistantAuxiliaryStatus(activeChat, targetMessage);
       const latestMessage = findMessageInChat(activeChat, messageId);
@@ -10194,10 +10164,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       currentStreamingMessageId = assistantMessage.id;
       currentRequestAbortController = requestAbortController;
       isSending = true;
-      renderAppSections({
-        chatList: true,
-        activeChat: true,
-        composerControls: true,
+      renderChatInteractionSections({
         header: true
       });
       setChatStatus(t("streamingResponseActive"));
@@ -10317,9 +10284,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (targetMessage.illustration?.image?.mediaId) {
         requestIndexedDbMediaGc(targetMessage.illustration.image.mediaId);
       }
+      const previousPrompt = cleanIllustrationPrompt(options.previousPrompt || normalizeMessageIllustration(targetMessage.illustration)?.prompt || "");
       targetMessage.illustration = {
         status: "generating",
-        prompt: "",
+        prompt: previousPrompt,
         image: null,
         error: "",
         createdAt: new Date().toISOString(),
@@ -11057,10 +11025,19 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         persona?.description ? `Persona card: ${trimForAuxiliaryPrompt(replaceRpPromptPlaceholders(persona.description, placeholders), 500)}` : ""
       ].filter(Boolean).join("\n");
     }
-    async function createChatT2iPromptForAssistantMessage(chat, assistantMessage) {
-      const previousPrompt = normalizeMessageIllustration(assistantMessage?.illustration)?.prompt || "";
+    async function createChatT2iPromptForAssistantMessage(chat, assistantMessage, options = {}) {
+      const previousPrompt = cleanIllustrationPrompt(options.previousPrompt || normalizeMessageIllustration(assistantMessage?.illustration)?.prompt || "");
       if (isTalkChat(chat)) {
-        const prompt = await createTalkPostResponseT2iPrompt(chat, assistantMessage, { avoidPrompt: previousPrompt });
+        let prompt = "";
+        try {
+          prompt = await createTalkPostResponseT2iPrompt(chat, assistantMessage, { avoidPrompt: previousPrompt });
+        } catch (error) {
+          if (previousPrompt) {
+            console.warn("Talk image prompt regeneration failed; reusing previous prompt", error);
+            return previousPrompt;
+          }
+          throw error;
+        }
         if ((!prompt || isChatT2iSkipPrompt(prompt)) && previousPrompt) {
           return previousPrompt;
         }
@@ -11478,11 +11455,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (!hasVisibleContent) {
         chat.messages = chat.messages.filter((message) => message.id !== assistantMessage.id);
         chat.updatedAt = new Date().toISOString();
-        renderAppSections({
-          chatList: true,
-          activeChat: true,
-          composerControls: true
-        });
+        renderChatInteractionSections();
         return;
       }
       assistantMessage.status = "complete";
@@ -12065,12 +12038,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       documents.forEach((documentAttachment) => {
         const card = document.createElement("div");
         card.className = "message-image-card message-document-card";
-        const meta = createElementWithClass("div", "composer-document-meta");
-        const badge = createElementWithClass("span", "composer-document-badge", documentAttachment.kind || "TXT");
-        const name = createElementWithClass("span", "composer-attachment-name", documentAttachment.name);
-        const size = createElementWithClass("span", "composer-document-size", formatByteSize(documentAttachment.sizeBytes || 0));
-        meta.append(badge, name, size);
-        card.appendChild(meta);
+        card.appendChild(buildDocumentAttachmentMeta(documentAttachment));
         list.appendChild(card);
       });
       return list;
@@ -14110,19 +14078,35 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     function applyTranslatedRangeFieldLabels(entries) {
       applyTranslatedEntries(entries, setRangeFieldLabel);
     }
+    function applyElementTranslationBindings(bindings) {
+      const setters = {
+        text: setTextContentIfPresent,
+        placeholder: setPlaceholderIfPresent,
+        field: setFieldLabel,
+        title: setButtonTitleAndAria,
+        aria: setAriaLabelIfPresent,
+        leading: setLeadingLabelText,
+        range: setRangeFieldLabel
+      };
+      bindings.forEach(([kind, elementKey, stringKey]) => {
+        const setter = setters[kind];
+        const element = elements[elementKey];
+        if (setter && element) {
+          setter(element, t(stringKey));
+        }
+      });
+    }
     function applyRpCardPanelTranslations(kind) {
       const isCharacter = kind === "character";
       const prefix = isCharacter ? "character" : "persona";
       const titlePrefix = isCharacter ? "Character" : "Persona";
-      const nameInput = elements[`${prefix}CardNameInput`];
-      const descriptionInput = elements[`${prefix}CardDescriptionInput`];
-      applyTranslatedTextContent([
-        [elements[`${prefix}OverlayTitle`], `${prefix}Cards`],
-        [elements[`close${titlePrefix}OverlayButton`], "close"],
-        [elements[`${prefix}NewButton`], "newCard"],
-        [elements[`${prefix}ImportButton`], "import"],
-        [elements[`${prefix}ImageButton`], "chooseImage"],
-        [elements[`${prefix}ImageClearButton`], "clearImage"]
+      applyElementTranslationBindings([
+        ["text", `${prefix}OverlayTitle`, `${prefix}Cards`],
+        ["text", `close${titlePrefix}OverlayButton`, "close"],
+        ["text", `${prefix}NewButton`, "newCard"],
+        ["text", `${prefix}ImportButton`, "import"],
+        ["text", `${prefix}ImageButton`, "chooseImage"],
+        ["text", `${prefix}ImageClearButton`, "clearImage"]
       ]);
       syncTalkGroupCardToolbar();
       setAriaLabelIfPresent(elements[`${prefix}CardList`], t(`${prefix}CardList`));
@@ -14131,134 +14115,108 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         settingsPanel.setAttribute("aria-label", t(`${prefix}SettingsPanel`));
       }
       if (isCharacter) {
-        applyTranslatedTextContent([
-          [elements.characterCardDescriptionLabelText, "characterDescription"],
-          [elements.talkGroupMembersTitle, "groupMembers"],
-          [elements.talkGroupMembersHint, "groupMembersHint"],
-          [elements.openTalkGroupMemberOverlayButton, "addGroupMember"]
-        ]);
-        applyTranslatedFieldLabels([
-          [nameInput, "characterName"],
-          [elements.characterCardFirstMessageInput, "characterFirstMessage"]
+        applyElementTranslationBindings([
+          ["text", "characterCardDescriptionLabelText", "characterDescription"],
+          ["text", "talkGroupMembersTitle", "groupMembers"],
+          ["text", "talkGroupMembersHint", "groupMembersHint"],
+          ["text", "openTalkGroupMemberOverlayButton", "addGroupMember"],
+          ["field", "characterCardNameInput", "characterName"],
+          ["field", "characterCardFirstMessageInput", "characterFirstMessage"],
+          ["placeholder", "characterCardNameInput", "characterNamePlaceholder"],
+          ["placeholder", "characterCardFirstMessageInput", "characterFirstMessagePlaceholder"]
         ]);
         setLeadingLabelText(elements.characterCardIsWorldCardInput.closest("label"), t("characterIsWorldCard"));
         setAriaLabelIfPresent(elements.characterCardDescriptionModeSelect, t("worldCardDescription"));
         setSelectOptionTexts(elements.characterCardDescriptionModeSelect, ["worldCardDescription", "worldCardMainCharacterDescription"]);
-        applyTranslatedPlaceholders([
-          [nameInput, "characterNamePlaceholder"],
-          [elements.characterCardFirstMessageInput, "characterFirstMessagePlaceholder"]
-        ]);
         syncCharacterCardEditorModeControls();
       } else {
-        applyTranslatedFieldLabels([
-          [nameInput, "personaName"],
-          [descriptionInput, "personaDescription"]
-        ]);
-        applyTranslatedPlaceholders([
-          [nameInput, "personaNamePlaceholder"],
-          [descriptionInput, "personaDescriptionPlaceholder"]
+        applyElementTranslationBindings([
+          ["field", "personaCardNameInput", "personaName"],
+          ["field", "personaCardDescriptionInput", "personaDescription"],
+          ["placeholder", "personaCardNameInput", "personaNamePlaceholder"],
+          ["placeholder", "personaCardDescriptionInput", "personaDescriptionPlaceholder"]
         ]);
       }
-      applyTranslatedButtonTitles([
-        [elements[`${prefix}SaveButton`], "save"],
-        [elements[`${prefix}ExportButton`], "export"],
-        [elements[`${prefix}DeleteButton`], "delete"]
+      applyElementTranslationBindings([
+        ["title", `${prefix}SaveButton`, "save"],
+        ["title", `${prefix}ExportButton`, "export"],
+        ["title", `${prefix}DeleteButton`, "delete"]
       ]);
     }
     function applyStaticTranslations() {
       document.documentElement.lang = getUiLanguage();
-      if (elements.modeToggle) {
-        elements.modeToggle.setAttribute("aria-label", t("modeToggleLabel"));
-      }
-      applyTranslatedTextContent([
-        [elements.chatModeButton, "chatMode"],
-        [elements.rpModeButton, "rpMode"],
-        [elements.talkModeButton, "talkMode"],
-        [elements.openCharacterOverlayButton, "characterButton"],
-        [elements.openPersonaOverlayButton, "persona"],
-        [elements.openSettingsOverlayButton, "settings"],
-        [elements.openTabsOverlayButton, "tabs"],
-        [elements.messageInputLabel, "messageSrOnly"]
-      ]);
-      applyTranslatedPlaceholders([
-        [elements.messageInput, "messagePlaceholder"]
+      applyElementTranslationBindings([
+        ["aria", "modeToggle", "modeToggleLabel"],
+        ["text", "chatModeButton", "chatMode"],
+        ["text", "rpModeButton", "rpMode"],
+        ["text", "talkModeButton", "talkMode"],
+        ["text", "openCharacterOverlayButton", "characterButton"],
+        ["text", "openPersonaOverlayButton", "persona"],
+        ["text", "openTabsOverlayButton", "tabs"],
+        ["text", "messageInputLabel", "messageSrOnly"],
+        ["title", "openSettingsOverlayButton", "settings"],
+        ["placeholder", "messageInput", "messagePlaceholder"],
+        ["title", "scrollTopButton", "scrollTop"],
+        ["title", "scrollBottomButton", "scrollBottom"],
+        ["title", "clearMessagesButton", "clearMessages"]
       ]);
       if (elements.scrollJumpStack) {
         elements.scrollJumpStack.setAttribute("aria-label", t("floatingButtons"));
       }
-      applyTranslatedButtonTitles([
-        [elements.scrollTopButton, "scrollTop"],
-        [elements.scrollBottomButton, "scrollBottom"],
-        [elements.clearMessagesButton, "clearMessages"]
-      ]);
-      applyTranslatedTextContent([
-        [elements.authorsNoteOverlayTitle, "authorsNote"],
-        [elements.closeAuthorsNoteOverlayButton, "close"],
-        [elements.clearAuthorsNoteButton, "clear"]
-      ]);
-      applyTranslatedFieldLabels([
-        [elements.authorsNoteInput, "authorsNoteField"]
-      ]);
-      applyTranslatedPlaceholders([
-        [elements.authorsNoteInput, "authorsNotePlaceholder"]
-      ]);
-      applyTranslatedTextContent([
-        [elements.settingsOverlayTitle, "settings"],
-        [elements.closeSettingsOverlayButton, "close"],
-        [elements.settingsGeneralTabButton, "settingsGeneral"],
-        [elements.settingsModelTabButton, "settingsModel"],
-        [elements.settingsIllustrationTabButton, "settingsIllustration"],
-        [elements.settingsConnectionSectionTitle, "connectionSettings"],
-        [elements.settingsGeneralSectionTitle, "generalSettingsSection"],
-        [elements.settingsRpSectionTitle, "rpSettingsSection"],
-        [elements.settingsTalkSectionTitle, "talkSettingsSection"],
-        [elements.settingsBackupSectionTitle, "settingsBackupSection"],
-        [elements.settingsBackupHint, "settingsBackupHint"],
-        [elements.exportFullBackupButton, "exportFullBackup"],
-        [elements.importFullBackupButton, "importFullBackup"],
-        [elements.backupProgressTitle, "backupProgressPreparing"]
+      applyElementTranslationBindings([
+        ["text", "authorsNoteOverlayTitle", "authorsNote"],
+        ["text", "closeAuthorsNoteOverlayButton", "close"],
+        ["text", "clearAuthorsNoteButton", "clear"],
+        ["field", "authorsNoteInput", "authorsNoteField"],
+        ["placeholder", "authorsNoteInput", "authorsNotePlaceholder"],
+        ["text", "settingsOverlayTitle", "settings"],
+        ["text", "closeSettingsOverlayButton", "close"],
+        ["text", "settingsGeneralTabButton", "settingsGeneral"],
+        ["text", "settingsModelTabButton", "settingsModel"],
+        ["text", "settingsIllustrationTabButton", "settingsIllustration"],
+        ["text", "settingsConnectionSectionTitle", "connectionSettings"],
+        ["text", "settingsGeneralSectionTitle", "generalSettingsSection"],
+        ["text", "settingsRpSectionTitle", "rpSettingsSection"],
+        ["text", "settingsTalkSectionTitle", "talkSettingsSection"],
+        ["text", "settingsBackupSectionTitle", "settingsBackupSection"],
+        ["text", "settingsBackupHint", "settingsBackupHint"],
+        ["text", "exportFullBackupButton", "exportFullBackup"],
+        ["text", "importFullBackupButton", "importFullBackup"],
+        ["text", "backupProgressTitle", "backupProgressPreparing"],
+        ["field", "apiBaseUrlInput", "apiBaseUrl"],
+        ["field", "apiKeyInput", "apiKey"],
+        ["field", "imageApiBaseUrlInput", "imageApiBaseUrl"],
+        ["field", "imageApiKeyInput", "imageApiKey"],
+        ["field", "userAliasInput", "userAlias"],
+        ["field", "modelAliasInput", "modelAlias"],
+        ["field", "themeModeSelect", "themeMode"],
+        ["field", "languageSelect", "language"],
+        ["placeholder", "apiBaseUrlInput", "apiBaseUrlPlaceholder"],
+        ["placeholder", "imageApiBaseUrlInput", "imageApiBaseUrlPlaceholder"]
       ]);
       if (elements.settingsTabStrip) {
         elements.settingsTabStrip.setAttribute("aria-label", t("settingsCategory"));
       }
-      applyTranslatedFieldLabels([
-        [elements.apiBaseUrlInput, "apiBaseUrl"],
-        [elements.apiKeyInput, "apiKey"],
-        [elements.imageApiBaseUrlInput, "imageApiBaseUrl"],
-        [elements.imageApiKeyInput, "imageApiKey"],
-        [elements.userAliasInput, "userAlias"],
-        [elements.modelAliasInput, "modelAlias"],
-        [elements.themeModeSelect, "themeMode"],
-        [elements.languageSelect, "language"]
-      ]);
-      applyTranslatedPlaceholders([
-        [elements.apiBaseUrlInput, "apiBaseUrlPlaceholder"],
-        [elements.imageApiBaseUrlInput, "imageApiBaseUrlPlaceholder"]
-      ]);
       setSelectOptionTexts(elements.themeModeSelect, ["themeSystem", "themeDark", "themeLight"]);
       setSelectOptionTexts(elements.languageSelect, ["languageKo", "languageEn"]);
-      [
-        [elements.smoothStreamingLabel, "smoothStreaming"],
-        [elements.autoContinueLabel, "autoContinue"],
-        [elements.backupIncludeSecretsLabel, "backupIncludeSecrets"],
-        [elements.rpSummaryEnabledLabel, "rpSummaryEnabled"],
-        [elements.rpInputEnhancementEnabledLabel, "rpInputEnhancementEnabled"],
-        [elements.talkGroupUnlimitedLabel, "talkGroupUnlimited"],
-        [elements.thinkingUnlimitedLabel, "unlimited"],
-        [elements.illustrationEnabledLabel, "illustrationEnabled"],
-        [elements.chatT2iEnabledLabel, "chatT2iEnabled"],
-        [elements.talkT2iEnabledLabel, "talkT2iEnabled"],
-        [elements.illustrationIgnorePeopleLabel, "illustrationIgnoreNonCharacterPeople"]
-      ].forEach(([label, key]) => setLeadingLabelText(label, t(key)));
-      applyTranslatedFieldLabels([
-        [elements.rpResponsePerspectiveSelect, "rpResponsePerspective"],
-        [elements.rpResponseLengthSelect, "rpResponseLength"],
-        [elements.rpSummaryTokenThresholdInput, "rpSummaryTokenThreshold"],
-        [elements.rpSummaryMaxTokensInput, "rpSummaryMaxTokens"]
-      ]);
-      applyTranslatedPlaceholders([
-        [elements.rpSummaryTokenThresholdInput, "rpSummaryTokenThresholdPlaceholder"],
-        [elements.rpSummaryMaxTokensInput, "rpSummaryMaxTokensPlaceholder"]
+      applyElementTranslationBindings([
+        ["leading", "smoothStreamingLabel", "smoothStreaming"],
+        ["leading", "autoContinueLabel", "autoContinue"],
+        ["leading", "backupIncludeSecretsLabel", "backupIncludeSecrets"],
+        ["leading", "rpSummaryEnabledLabel", "rpSummaryEnabled"],
+        ["leading", "rpInputEnhancementEnabledLabel", "rpInputEnhancementEnabled"],
+        ["leading", "talkGroupUnlimitedLabel", "talkGroupUnlimited"],
+        ["leading", "thinkingUnlimitedLabel", "unlimited"],
+        ["leading", "illustrationEnabledLabel", "illustrationEnabled"],
+        ["leading", "chatT2iEnabledLabel", "chatT2iEnabled"],
+        ["leading", "talkT2iEnabledLabel", "talkT2iEnabled"],
+        ["leading", "illustrationIgnorePeopleLabel", "illustrationIgnoreNonCharacterPeople"],
+        ["field", "rpResponsePerspectiveSelect", "rpResponsePerspective"],
+        ["field", "rpResponseLengthSelect", "rpResponseLength"],
+        ["field", "rpSummaryTokenThresholdInput", "rpSummaryTokenThreshold"],
+        ["field", "rpSummaryMaxTokensInput", "rpSummaryMaxTokens"],
+        ["placeholder", "rpSummaryTokenThresholdInput", "rpSummaryTokenThresholdPlaceholder"],
+        ["placeholder", "rpSummaryMaxTokensInput", "rpSummaryMaxTokensPlaceholder"]
       ]);
       setSelectOptionTexts(elements.rpResponsePerspectiveSelect, ["rpPerspectiveCharacter", "rpPerspectivePersona", "rpPerspectiveThird"]);
       setSelectOptionTexts(elements.rpResponseLengthSelect, [
@@ -14273,81 +14231,65 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       ]);
       applyTranslatedIndexedTextContent(elements.settingsActionButtons, ["saveSettings", "restoreDefaults"]);
       applyTranslatedIndexedTextContent(elements.modelStatLabels, ["modelsCount", "lastSynced"]);
-      applyTranslatedTextContent([
-        [elements.settingsModelHint, "thinkingHint"],
-        [elements.forbiddenWordsHint, "forbiddenWordsHint"],
-        [elements.openPromptPresetOverlayButton, "promptPresetsButton"],
-        [elements.saveModelSettingsButton, "saveSettings"],
-        [elements.refreshModelsButton, "refreshModels"]
-      ]);
-      applyTranslatedFieldLabels([
-        [elements.modelSelect, "modelSelect"],
-        [elements.auxiliaryModelSelect, "auxiliaryModelSelect"],
-        [elements.temperatureInput, "temperature"],
-        [elements.thinkingTokenLimitInput, "thinkingTokenLimit"],
-        [elements.systemPromptInput, "systemPrompt"],
-        [elements.forbiddenWordsInput, "forbiddenWords"]
-      ]);
-      applyTranslatedPlaceholders([
-        [elements.temperatureInput, "thinkingDefaultPlaceholder"],
-        [elements.thinkingTokenLimitInput, "serverDefaultPlaceholder"],
-        [elements.systemPromptInput, "systemPromptPlaceholder"],
-        [elements.forbiddenWordsInput, "forbiddenWordsPlaceholder"]
-      ]);
-      applyTranslatedTextContent([
-        [elements.settingsIllustrationSectionTitle, "illustrationGeneration"],
-        [elements.refreshImageModelsButton, "refreshModels"],
-        [elements.saveIllustrationSettingsButton, "saveSettings"]
-      ]);
-      applyTranslatedFieldLabels([
-        [elements.illustrationPromptStyleSelect, "illustrationPromptStyle"],
-        [elements.illustrationArtStyleSelect, "illustrationArtStyle"],
-        [elements.imageModelSelect, "imageModelSelect"]
+      applyElementTranslationBindings([
+        ["text", "settingsModelHint", "thinkingHint"],
+        ["text", "forbiddenWordsHint", "forbiddenWordsHint"],
+        ["text", "openPromptPresetOverlayButton", "promptPresetsButton"],
+        ["text", "saveModelSettingsButton", "saveSettings"],
+        ["text", "refreshModelsButton", "refreshModels"],
+        ["field", "modelSelect", "modelSelect"],
+        ["field", "auxiliaryModelSelect", "auxiliaryModelSelect"],
+        ["field", "temperatureInput", "temperature"],
+        ["field", "thinkingTokenLimitInput", "thinkingTokenLimit"],
+        ["field", "systemPromptInput", "systemPrompt"],
+        ["field", "forbiddenWordsInput", "forbiddenWords"],
+        ["placeholder", "temperatureInput", "thinkingDefaultPlaceholder"],
+        ["placeholder", "thinkingTokenLimitInput", "serverDefaultPlaceholder"],
+        ["placeholder", "systemPromptInput", "systemPromptPlaceholder"],
+        ["placeholder", "forbiddenWordsInput", "forbiddenWordsPlaceholder"],
+        ["text", "settingsIllustrationSectionTitle", "illustrationGeneration"],
+        ["text", "refreshImageModelsButton", "refreshModels"],
+        ["text", "saveIllustrationSettingsButton", "saveSettings"],
+        ["field", "illustrationPromptStyleSelect", "illustrationPromptStyle"],
+        ["field", "illustrationArtStyleSelect", "illustrationArtStyle"],
+        ["field", "imageModelSelect", "imageModelSelect"]
       ]);
       setSelectOptionTexts(elements.illustrationPromptStyleSelect, ["illustrationPromptStyleTags", "illustrationPromptStyleNatural"]);
       setSelectOptionTexts(elements.illustrationArtStyleSelect, ["illustrationArtStyleNone", "illustrationArtStyleAnime", "illustrationArtStylePhoto"]);
-      applyTranslatedRangeFieldLabels([
-        [elements.illustrationCfgScaleInput, "cfgScale"],
-        [elements.illustrationStepsInput, "steps"],
-        [elements.illustrationWidthInput, "imageWidth"],
-        [elements.illustrationHeightInput, "imageHeight"]
-      ]);
-      applyTranslatedTextContent([
-        [elements.promptPresetOverlayTitle, "promptPresetOverlayTitle"],
-        [elements.closePromptPresetOverlayButton, "close"],
-        [elements.savePromptPresetButton, "saveCurrentPromptPreset"],
-        [elements.promptPresetListTitle, "savedPromptPresets"]
-      ]);
-      applyTranslatedFieldLabels([
-        [elements.promptPresetNameInput, "promptPresetName"]
-      ]);
-      applyTranslatedPlaceholders([
-        [elements.promptPresetNameInput, "promptPresetNamePlaceholder"]
+      applyElementTranslationBindings([
+        ["range", "illustrationCfgScaleInput", "cfgScale"],
+        ["range", "illustrationStepsInput", "steps"],
+        ["range", "illustrationWidthInput", "imageWidth"],
+        ["range", "illustrationHeightInput", "imageHeight"],
+        ["text", "promptPresetOverlayTitle", "promptPresetOverlayTitle"],
+        ["text", "closePromptPresetOverlayButton", "close"],
+        ["text", "savePromptPresetButton", "saveCurrentPromptPreset"],
+        ["text", "promptPresetListTitle", "savedPromptPresets"],
+        ["field", "promptPresetNameInput", "promptPresetName"],
+        ["placeholder", "promptPresetNameInput", "promptPresetNamePlaceholder"]
       ]);
       renderPromptPresetList();
-      applyTranslatedTextContent([
-        [elements.closeTabsOverlayButton, "close"],
-        [elements.talkGroupMemberOverlayTitle, "groupMembers"],
-        [elements.closeTalkGroupMemberOverlayButton, "close"],
-        [elements.talkGroupMemberCandidateTitle, "groupMemberCandidates"]
-      ]);
-      applyTranslatedButtonTitles([
-        [elements.newChatButton, "newTab"],
-        [elements.desktopNewChatButton, "newTab"],
-        [elements.importChatsButton, "importJson"],
-        [elements.desktopImportChatsButton, "importJson"]
+      applyElementTranslationBindings([
+        ["text", "closeTabsOverlayButton", "close"],
+        ["text", "talkGroupMemberOverlayTitle", "groupMembers"],
+        ["text", "closeTalkGroupMemberOverlayButton", "close"],
+        ["text", "talkGroupMemberCandidateTitle", "groupMemberCandidates"],
+        ["title", "newChatButton", "newTab"],
+        ["title", "desktopNewChatButton", "newTab"],
+        ["title", "importChatsButton", "importJson"],
+        ["title", "desktopImportChatsButton", "importJson"]
       ]);
       applyRpCardPanelTranslations("character");
       applyRpCardPanelTranslations("persona");
-      applyTranslatedTextContent([
-        [elements.imagePreviewTitle, "imagePreview"],
-        [elements.closeImagePreviewButton, "close"],
-        [elements.rpImageCropTitle, "cropTitle"],
-        [elements.closeRpImageCropButton, "close"],
-        [elements.rpImageCropHelp, "cropHelp"],
-        [elements.cancelRpImageCropButton, "cancel"],
-        [elements.applyRpImageCropButton, "apply"],
-        [elements.tabLockWarningTitle, "tabLockTitle"]
+      applyElementTranslationBindings([
+        ["text", "imagePreviewTitle", "imagePreview"],
+        ["text", "closeImagePreviewButton", "close"],
+        ["text", "rpImageCropTitle", "cropTitle"],
+        ["text", "closeRpImageCropButton", "close"],
+        ["text", "rpImageCropHelp", "cropHelp"],
+        ["text", "cancelRpImageCropButton", "cancel"],
+        ["text", "applyRpImageCropButton", "apply"],
+        ["text", "tabLockWarningTitle", "tabLockTitle"]
       ]);
       elements.imagePreviewImage.alt = t("imagePreviewAlt");
       setAriaLabelIfPresent(elements.rpImageCropViewport, t("cropViewport"));
