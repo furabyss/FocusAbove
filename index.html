@@ -2769,7 +2769,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section class="brand">
               <a class="brand-mark-link" href="https://github.com/furabyss/FocusAbove" target="_blank" rel="noopener noreferrer"><div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#icon-brand"></use></svg><span>FocusAbove</span></div></a>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.7.2, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.7.3, ⓒ 2026 Fur-Abyss</p>
             </section>
             <div class="settings-tab-strip" role="tablist">
               <button id="settingsGeneralTabButton" type="button" class="settings-tab-button active" role="tab" aria-selected="true" aria-controls="settingsGeneralPanel"></button>
@@ -3416,6 +3416,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     const LAZY_IMAGE_ROOT_MARGIN = "900px 0px";
     const IMAGE_PLACEHOLDER_DATA_URL = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23e9edf1'/%3E%3Cpath d='M14 42l12-13 9 8 7-9 10 14H14z' fill='%23b2bcc6'/%3E%3Ccircle cx='24' cy='22' r='5' fill='%235f6670' fill-opacity='.38'/%3E%3C/svg%3E";
     const CHAT_T2I_SKIP_TOKEN = "FOCUSABOVE_NO_T2I_IMAGE";
+    const AUX_IMAGE_PROMPT_NO_FORMATTING = "No markdown, explanations, quotes, watermarks, signatures, or camera metadata.";
+    const CHAT_T2I_NO_FAKE_TOOL_OUTPUT = [
+      "Do not output tool-call JSON, action/action_input, function calls, XML tool tags, or fake image-tool code blocks/results.",
+      "Never append a JSON object with action, action_input, or thought fields. FocusAbove handles the image API separately."
+    ];
     const MAX_PENDING_DOCUMENT_BYTES = 12 * 1024 * 1024;
     const MATH_RENDER_DELIMITERS = [
       { left: "$$", right: "$$", display: true },
@@ -9932,6 +9937,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         && userMessage?.role === "user"
         && hasText(userMessage.content);
     }
+    function shouldDeferChatT2iPromptUntilPostResponse(chat, userMessage) {
+      if (isTalkChat(chat) || isRpChat(chat) || !shouldCheckChatT2iPrompt(chat, userMessage) || !normalizeImageAttachments(userMessage?.attachments).length) {
+        return false;
+      }
+      const text = String(userMessage?.content || "").toLowerCase();
+      const asksForImage = /(?:그림|이미지|사진|일러스트|삽화|스케치|낙서|그려|만들어|생성|제작|draw|drawing|image|picture|photo|illustration|sketch|paint|generate|create|make)/i.test(text);
+      const refersToAttachedImage = /(?:이\s*(?:사진|이미지|그림)|첨부(?:한|된)?\s*(?:사진|이미지|그림)|업로드(?:한|된)?\s*(?:사진|이미지|그림)|사진과\s*비슷|이미지와\s*비슷|비슷한\s*(?:그림|이미지|사진)|이것|this\s*(?:photo|image|picture)|attached\s*(?:photo|image|picture)|uploaded\s*(?:photo|image|picture)|similar\s*to\s*(?:this|the)\s*(?:photo|image|picture)|like\s*(?:this|the)\s*(?:photo|image|picture))/i.test(text);
+      return asksForImage && refersToAttachedImage;
+    }
     async function prepareChatT2iPrompt(chat, userMessage, options = {}) {
       if (!shouldCheckChatT2iPrompt(chat, userMessage)) {
         return "";
@@ -10169,9 +10183,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       });
       setChatStatus(t("streamingResponseActive"));
       try {
+        const latestUserMessageForT2i = getLatestUserMessageForChatT2i(sourceMessages);
+        const shouldPostResponseChatT2i = shouldDeferChatT2iPromptUntilPostResponse(chat, latestUserMessageForT2i);
         const chatT2iPrompt = typeof options.chatT2iPrompt === "string"
           ? options.chatT2iPrompt
-          : await prepareChatT2iPrompt(chat, getLatestUserMessageForChatT2i(sourceMessages), {
+          : shouldPostResponseChatT2i ? "" : await prepareChatT2iPrompt(chat, latestUserMessageForT2i, {
               avoidPrompt: options.chatT2iAvoidPrompt,
               characterCardId: options.characterCardId || "",
               signal: requestAbortController.signal
@@ -10181,7 +10197,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           state.settings.systemPrompt,
           rpContext,
           [
-            ...buildChatT2iMainModelInstructions(chatT2iPrompt, { chat }),
+            ...buildChatT2iMainModelInstructions(chatT2iPrompt, {
+              chat,
+              deferredPostResponse: shouldPostResponseChatT2i
+            }),
             ...documentOutputInstructions
           ]
         );
@@ -10223,7 +10242,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         persistState();
         replaceMessageArticleDom(chat, assistantMessage, { scrollToBottom: true });
         renderChatList();
-        void finalizePostResponseAuxiliaryTasks(chat, assistantMessage, { ...options, chatT2iPrompt }, requestStatusRunId);
+        void finalizePostResponseAuxiliaryTasks(chat, assistantMessage, {
+          ...options,
+          chatT2iPrompt,
+          chatT2iPostResponse: shouldPostResponseChatT2i
+        }, requestStatusRunId);
       } catch (error) {
         if (isAbortError(error)) {
           finalizeAbortedAssistantMessage(chat, assistantMessage);
@@ -10361,7 +10384,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       try {
         await runPostResponseAuxiliaryTasks(chat, assistantMessage, {
           statusRunId,
-          chatT2iPrompt: options.chatT2iPrompt
+          chatT2iPrompt: options.chatT2iPrompt,
+          chatT2iPostResponse: options.chatT2iPostResponse === true
         });
       } catch (error) {
         console.error("Post-response aux failed", error);
@@ -10416,10 +10440,16 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
       try {
         if (state.chats.some((item) => item.id === chat.id)) {
-          if (options.chatT2iPrompt) {
+          let chatT2iPrompt = options.chatT2iPrompt || "";
+          if (!chatT2iPrompt && options.chatT2iPostResponse && shouldCheckChatPostResponseT2iPrompt(chat, assistantMessage)) {
+            setAssistantAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing");
+            setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("rpPostProcessing"));
+            chatT2iPrompt = await createPostResponseT2iPrompt(chat, assistantMessage, { mode: "chat" });
+          }
+          if (chatT2iPrompt && !isChatT2iSkipPrompt(chatT2iPrompt)) {
             setAssistantAuxiliaryStatus(chat, assistantMessage, "imageGenerating");
             setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("imageGenerating"));
-            await generateIllustrationForAssistantMessage(chat, assistantMessage, { prompt: options.chatT2iPrompt });
+            await generateIllustrationForAssistantMessage(chat, assistantMessage, { prompt: chatT2iPrompt });
           }
           if (shouldGenerateAutomaticChatTitle(chat, assistantMessage)) {
             setAssistantAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing");
@@ -10433,7 +10463,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           if (!talkT2iPrompt && shouldCheckTalkPostResponseImage(chat, assistantMessage)) {
             setAssistantAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing");
             setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("rpPostProcessing"));
-            talkT2iPrompt = await createTalkPostResponseT2iPrompt(chat, assistantMessage);
+            talkT2iPrompt = await createPostResponseT2iPrompt(chat, assistantMessage, { mode: "talk" });
           }
           if (talkT2iPrompt && !isChatT2iSkipPrompt(talkT2iPrompt)) {
             setAssistantAuxiliaryStatus(chat, assistantMessage, "imageSending");
@@ -10478,6 +10508,16 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     function shouldCheckTalkPostResponseImage(chat, assistantMessage) {
       return isTalkChat(chat)
         && state.settings.talkT2iEnabled === true
+        && hasAuxiliaryModel()
+        && normalizeImageApiBase(state.settings.imageApiBaseUrl)
+        && assistantMessage?.role === "assistant"
+        && assistantMessage.status === "complete"
+        && hasText(assistantMessage.content);
+    }
+    function shouldCheckChatPostResponseT2iPrompt(chat, assistantMessage) {
+      return !isRpChat(chat)
+        && !isTalkChat(chat)
+        && state.settings.chatT2iEnabled === true
         && hasAuxiliaryModel()
         && normalizeImageApiBase(state.settings.imageApiBaseUrl)
         && assistantMessage?.role === "assistant"
@@ -10954,7 +10994,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             "If it does, output one concise Stable Diffusion prompt in English only.",
             buildIllustrationPromptStyleInstruction(illustrationSettings.promptStyle),
             avoidPrompt ? "If an earlier image prompt is provided, create meaningfully different composition and details while preserving the user's request." : "",
-            "Use the latest user request as the primary source. No markdown, explanations, quotes, watermarks, signatures, or camera metadata."
+            `Use the latest user request as the primary source. ${AUX_IMAGE_PROMPT_NO_FORMATTING}`
           ].filter(Boolean).join("\n")
         },
         {
@@ -10978,33 +11018,46 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         ? CHAT_T2I_SKIP_TOKEN
         : applyIllustrationArtStylePrefix(cleanPrompt, illustrationSettings.artStyle);
     }
-    async function createTalkPostResponseT2iPrompt(chat, assistantMessage, options = {}) {
+    async function createPostResponseT2iPrompt(chat, assistantMessage, options = {}) {
       const illustrationSettings = normalizeRpIllustrationSettings(state.rp?.illustration);
       const previousMessages = getRecentAuxiliaryMessagesBefore(chat, assistantMessage?.id, 6);
       const userMessage = getLatestUserMessageForChatT2i(previousMessages);
       const avoidPrompt = trimForAuxiliaryPrompt(options.avoidPrompt || "", 700);
+      const isTalkPrompt = options.mode === "talk";
       const generatedPrompt = await requestAuxiliaryChatCompletion([
         {
           role: "system",
           content: [
-            "Classify whether the latest assistant message in an instant messenger character chat should include an attached photo, picture, selfie, drawing, or other generated image.",
-            `If no image attachment is clearly implied, output exactly ${CHAT_T2I_SKIP_TOKEN}.`,
-            "If an image attachment should be included, output one concise Stable Diffusion prompt in English only.",
+            isTalkPrompt
+              ? "Classify whether the latest assistant message in an instant messenger character chat should include an attached photo, picture, selfie, drawing, or other generated image."
+              : "The latest user message attached one or more images and asked for a new generated image based on that visual reference.",
+            isTalkPrompt
+              ? `If no image attachment is clearly implied, output exactly ${CHAT_T2I_SKIP_TOKEN}.`
+              : "The assistant response contains the main model's visual understanding of the attachment.",
+            isTalkPrompt
+              ? "If an image attachment should be included, output one concise Stable Diffusion prompt in English only."
+              : "Output one concise Stable Diffusion prompt in English only for the image API.",
             buildIllustrationPromptStyleInstruction(illustrationSettings.promptStyle),
-            avoidPrompt ? "If an earlier image prompt is provided, create meaningfully different composition and details while preserving the attachment implied by the assistant response." : "",
-            "Use the character card, persona card, latest user request, and assistant response. No markdown, explanations, quotes, watermarks, signatures, or camera metadata."
+            avoidPrompt
+              ? `If an earlier image prompt is provided, create meaningfully different composition and details while preserving ${isTalkPrompt ? "the attachment implied by the assistant response" : "the user's request"}.`
+              : "",
+            isTalkPrompt
+              ? `Use the character card, persona card, latest user request, and assistant response. ${AUX_IMAGE_PROMPT_NO_FORMATTING}`
+              : `Use the latest user request and assistant visual description as the primary source. Do not copy text asking for an explanation. ${AUX_IMAGE_PROMPT_NO_FORMATTING}`
           ].filter(Boolean).join("\n")
         },
         {
           role: "user",
           content: [
-            buildTalkVisualAuxiliaryContext(chat, assistantMessage),
-            "Recent talk messages:",
-            formatMessagesForAuxiliary(previousMessages, previousMessages.length, null, 320),
+            isTalkPrompt
+              ? buildTalkVisualAuxiliaryContext(chat, assistantMessage)
+              : `Attached image count: ${normalizeImageAttachments(userMessage?.attachments).length}`,
+            isTalkPrompt ? "Recent talk messages:" : "Recent conversation:",
+            formatMessagesForAuxiliary(previousMessages, previousMessages.length, null, isTalkPrompt ? 320 : 360),
             "Latest user message:",
-            trimForAuxiliaryPrompt(userMessage?.content || "", 700),
-            "Latest assistant message:",
-            trimForAuxiliaryPrompt(assistantMessage?.content || "", 900),
+            trimForAuxiliaryPrompt(userMessage?.content || "", isTalkPrompt ? 700 : 900),
+            isTalkPrompt ? "Latest assistant message:" : "Assistant visual description / response:",
+            trimForAuxiliaryPrompt(assistantMessage?.content || "", isTalkPrompt ? 900 : 1300),
             avoidPrompt ? "Earlier image prompt to avoid:" : "",
             avoidPrompt
           ].filter(Boolean).join("\n\n")
@@ -11030,7 +11083,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (isTalkChat(chat)) {
         let prompt = "";
         try {
-          prompt = await createTalkPostResponseT2iPrompt(chat, assistantMessage, { avoidPrompt: previousPrompt });
+          prompt = await createPostResponseT2iPrompt(chat, assistantMessage, { mode: "talk", avoidPrompt: previousPrompt });
         } catch (error) {
           if (previousPrompt) {
             console.warn("Talk image prompt regeneration failed; reusing previous prompt", error);
@@ -11041,16 +11094,20 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         if ((!prompt || isChatT2iSkipPrompt(prompt)) && previousPrompt) {
           return previousPrompt;
         }
-        if (!prompt || isChatT2iSkipPrompt(prompt)) {
-          throw new Error(t("missingResponseContent"));
-        }
-        return prompt;
+        return requireUsableChatT2iPrompt(prompt);
       }
       const previousMessages = getRecentAuxiliaryMessagesBefore(chat, assistantMessage?.id, 12);
       const userMessage = getLatestUserMessageForChatT2i(previousMessages);
+      if (shouldDeferChatT2iPromptUntilPostResponse(chat, userMessage)) {
+        const prompt = await createPostResponseT2iPrompt(chat, assistantMessage, { mode: "chat", avoidPrompt: previousPrompt });
+        return requireUsableChatT2iPrompt(prompt);
+      }
       const prompt = userMessage
         ? await createChatT2iPrompt(chat, userMessage, { avoidPrompt: previousPrompt })
         : "";
+      return requireUsableChatT2iPrompt(prompt);
+    }
+    function requireUsableChatT2iPrompt(prompt) {
       if (!prompt || isChatT2iSkipPrompt(prompt)) {
         throw new Error(t("missingResponseContent"));
       }
@@ -11061,8 +11118,19 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
     function buildChatT2iMainModelInstructions(prompt, options = {}) {
       const cleanPrompt = cleanIllustrationPrompt(prompt);
+      const isPlainChat = options.chat && !isRpChat(options.chat) && !isTalkChat(options.chat);
+      if (options.deferredPostResponse && isPlainChat) {
+        return [[
+          "[Deferred Image Generation]",
+          "The latest user message includes an attached image and asks for a new generated image based on that visual reference.",
+          "FocusAbove will decide and generate the image after your text response, using your visual understanding of the attachment.",
+          "Describe the reference image details that matter for the requested generation in normal prose.",
+          ...CHAT_T2I_NO_FAKE_TOOL_OUTPUT,
+          "Do not claim the generated image already exists in the text response."
+        ].join("\n")];
+      }
       if (!cleanPrompt) {
-        if (options.chat && !isRpChat(options.chat) && !isTalkChat(options.chat)) {
+        if (isPlainChat) {
           return [[
             "[Image Generation Availability]",
             "No image generation is scheduled for this turn, and the main chat model has no image tool such as DALL-E or dalle.text2im.",
@@ -11076,7 +11144,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         "[Planned Image Generation]",
         "The latest user message includes an image generation request.",
         "FocusAbove will generate the image after your text response. The main chat model has no callable image tool in this turn.",
-        "Do not output tool-call JSON, action/action_input, function calls, XML tool tags, or fake image-tool code blocks/results.",
+        ...CHAT_T2I_NO_FAKE_TOOL_OUTPUT,
         "After your response, FocusAbove will generate an image with the image API using this prompt:",
         cleanPrompt,
         "Respond in normal prose only. Acknowledge that image generation is being handled, but do not claim the image already exists in the text response."
@@ -13422,11 +13490,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         return nextContent;
       }
       nextContent = nextContent.replace(/^\s*```(?:json|xml|yaml|tool)?\s*[\s\S]*?(?:dalle\.text2im|dall-e|tool_calls|function_call|action_input|<tool\b|<function_calls?\b)[\s\S]*?```\s*/i, "");
+      nextContent = nextContent.replace(/\s*```(?:json|xml|yaml|tool)?\s*[\s\S]*?(?:dalle\.text2im|dall-e|tool_calls|function_call|action_input|<tool\b|<function_calls?\b)[\s\S]*?```\s*$/i, "");
       nextContent = nextContent.replace(/^\s*(?:<tool\b[\s\S]*?<\/tool>|<function_calls?\b[\s\S]*?<\/function_calls?>)\s*/i, "");
+      nextContent = nextContent.replace(/\s*(?:<tool\b[\s\S]*?<\/tool>|<function_calls?\b[\s\S]*?<\/function_calls?>)\s*$/i, "");
       nextContent = nextContent.replace(/^\s*(?:\{[\s\S]{0,1600}?\}|\[[\s\S]{0,1600}?\])\s*/i, (match) => structuredToolPattern.test(match) ? "" : match);
+      nextContent = nextContent.replace(/\s*(?:\{[\s\S]{0,1600}?\}|\[[\s\S]{0,1600}?\])\s*$/i, (match) => structuredToolPattern.test(match) ? "" : match);
       nextContent = nextContent.replace(/^\s*(?:(?:action|action_input|tool_calls|function_call)\s*:?\s*[^\n]*\n+)+/i, "");
       nextContent = nextContent.replace(/^\s*dalle\.text2im\s*\([^)]*\)\s*/i, "");
-      return nextContent.trimStart();
+      nextContent = nextContent.replace(/\s*dalle\.text2im\s*\([^)]*\)\s*$/i, "");
+      return nextContent.trim();
     }
     function applyTokenUsageToMessage(message, usage, options = {}) {
       const normalizedUsage = normalizeTokenUsage(usage);
