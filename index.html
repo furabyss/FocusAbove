@@ -2769,7 +2769,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section class="brand">
               <a class="brand-mark-link" href="https://github.com/furabyss/FocusAbove" target="_blank" rel="noopener noreferrer"><div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#icon-brand"></use></svg><span>FocusAbove</span></div></a>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.7.3, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.7.4, ⓒ 2026 Fur-Abyss</p>
             </section>
             <div class="settings-tab-strip" role="tablist">
               <button id="settingsGeneralTabButton" type="button" class="settings-tab-button active" role="tab" aria-selected="true" aria-controls="settingsGeneralPanel"></button>
@@ -9967,6 +9967,27 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         .reverse()
         .find((message) => message?.role === "user") || null;
     }
+    function hasExplicitTalkImageRequest(message) {
+      const text = String(message?.content || "").toLowerCase();
+      if (!text.trim()) {
+        return false;
+      }
+      const imageSubjectPattern = /(?:사진|셀카|이미지|그림|일러스트|삽화|스케치|낙서|photo|picture|image|selfie|drawing|illustration|sketch|pic)/i;
+      const requestActionPattern = /(?:보내|보여|찍어|그려|만들|생성|제작|첨부|공유|올려|줘|줄래|부탁|send|show|share|take|attach|upload|draw|generate|create|make|paint|let me see|can i see|could i see)/i;
+      return imageSubjectPattern.test(text) && requestActionPattern.test(text);
+    }
+    function hasExplicitTalkAssistantImageAttachment(message) {
+      const text = String(message?.content || "").toLowerCase();
+      if (!text.trim()) {
+        return false;
+      }
+      const imageSubjectPattern = /(?:사진|셀카|이미지|그림|일러스트|삽화|스케치|낙서|photo|picture|image|selfie|drawing|illustration|sketch|pic)/i;
+      const attachmentActionPattern = /(?:보낼게|보내줄게|보여줄게|찍어서|찍어봤|그려봤|첨부|공유할게|올릴게|send|sending|showing|attach|attaching|share|sharing|uploading|drew|drawn|sketched|here'?s|here is)/i;
+      const vagueAttachmentPattern = /^(?:사진|셀카|이미지|그림|photo|picture|image|selfie|drawing)[\s.!?~]*$/i;
+      return imageSubjectPattern.test(text)
+        && attachmentActionPattern.test(text)
+        && !vagueAttachmentPattern.test(text);
+    }
     function shouldNotifyMissingAuxiliaryIllustrationModel() {
       return isRpModeActive()
         && normalizeRpIllustrationSettings(state.rp?.illustration).enabled
@@ -10422,6 +10443,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
       refreshAssistantFooterDom(assistantMessage);
     }
+    function setPostResponseAuxiliaryStatus(chat, assistantMessage, statusKey, options = {}) {
+      setAssistantAuxiliaryStatus(chat, assistantMessage, statusKey);
+      setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t(statusKey));
+    }
     function refreshAssistantFooterDom(message) {
       const refs = getMessageArticleElements(message?.id);
       if (!refs?.footerElement) {
@@ -10442,18 +10467,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         if (state.chats.some((item) => item.id === chat.id)) {
           let chatT2iPrompt = options.chatT2iPrompt || "";
           if (!chatT2iPrompt && options.chatT2iPostResponse && shouldCheckChatPostResponseT2iPrompt(chat, assistantMessage)) {
-            setAssistantAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing");
-            setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("rpPostProcessing"));
+            setPostResponseAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing", options);
             chatT2iPrompt = await createPostResponseT2iPrompt(chat, assistantMessage, { mode: "chat" });
           }
           if (chatT2iPrompt && !isChatT2iSkipPrompt(chatT2iPrompt)) {
-            setAssistantAuxiliaryStatus(chat, assistantMessage, "imageGenerating");
-            setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("imageGenerating"));
+            setPostResponseAuxiliaryStatus(chat, assistantMessage, "imageGenerating", options);
             await generateIllustrationForAssistantMessage(chat, assistantMessage, { prompt: chatT2iPrompt });
           }
           if (shouldGenerateAutomaticChatTitle(chat, assistantMessage)) {
-            setAssistantAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing");
-            setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("rpPostProcessing"));
+            setPostResponseAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing", options);
           }
           await maybeGenerateAutomaticChatTitle(chat, assistantMessage);
           return;
@@ -10461,13 +10483,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         if (isTalkChat(chat)) {
           let talkT2iPrompt = options.chatT2iPrompt || "";
           if (!talkT2iPrompt && shouldCheckTalkPostResponseImage(chat, assistantMessage)) {
-            setAssistantAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing");
-            setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("rpPostProcessing"));
+            setPostResponseAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing", options);
             talkT2iPrompt = await createPostResponseT2iPrompt(chat, assistantMessage, { mode: "talk" });
           }
           if (talkT2iPrompt && !isChatT2iSkipPrompt(talkT2iPrompt)) {
-            setAssistantAuxiliaryStatus(chat, assistantMessage, "imageSending");
-            setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("imageSending"));
+            setPostResponseAuxiliaryStatus(chat, assistantMessage, "imageSending", options);
             await generateIllustrationForAssistantMessage(chat, assistantMessage, { prompt: talkT2iPrompt });
           }
           return;
@@ -10477,8 +10497,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         }
         let illustrationTask = null;
         if (shouldGenerateIllustrationForResponse(chat, assistantMessage)) {
-          setAssistantAuxiliaryStatus(chat, assistantMessage, "illustrationGenerating");
-          setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("illustrationGenerating"));
+          setPostResponseAuxiliaryStatus(chat, assistantMessage, "illustrationGenerating", options);
           let resolveIllustrationPromptReady = null;
           const illustrationPromptReady = new Promise((resolve) => {
             resolveIllustrationPromptReady = resolve;
@@ -10489,13 +10508,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           await illustrationPromptReady;
         }
         if (!assistantMessage.isFirstMessage) {
-          setAssistantAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing");
-          setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("rpPostProcessing"));
+          setPostResponseAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing", options);
         }
         await maybeUpdateRpSceneState(chat, assistantMessage);
         if (shouldUpdateRpSummary(chat)) {
-          setAssistantAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing");
-          setPostResponseChatStatus(options.statusRunId, assistantMessage.id, t("rpPostProcessing"));
+          setPostResponseAuxiliaryStatus(chat, assistantMessage, "rpPostProcessing", options);
           await maybeUpdateRpSummary(chat);
         }
         if (illustrationTask) {
@@ -10506,13 +10523,16 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
     }
     function shouldCheckTalkPostResponseImage(chat, assistantMessage) {
+      const previousMessages = getRecentAuxiliaryMessagesBefore(chat, assistantMessage?.id, 6);
+      const userMessage = getLatestUserMessageForChatT2i(previousMessages);
       return isTalkChat(chat)
         && state.settings.talkT2iEnabled === true
         && hasAuxiliaryModel()
         && normalizeImageApiBase(state.settings.imageApiBaseUrl)
         && assistantMessage?.role === "assistant"
         && assistantMessage.status === "complete"
-        && hasText(assistantMessage.content);
+        && hasText(assistantMessage.content)
+        && (hasExplicitTalkImageRequest(userMessage) || hasExplicitTalkAssistantImageAttachment(assistantMessage));
     }
     function shouldCheckChatPostResponseT2iPrompt(chat, assistantMessage) {
       return !isRpChat(chat)
@@ -10985,16 +11005,24 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const recentMessages = getRecentAuxiliaryMessagesBefore(chat, userMessage?.id, 3);
       const avoidPrompt = trimForAuxiliaryPrompt(options.avoidPrompt || "", 700);
       const talkVisualContext = isTalkChat(chat) ? buildTalkVisualAuxiliaryContext(chat, userMessage, { characterCardId: options.characterCardId || "" }) : "";
+      const isTalkPrompt = isTalkChat(chat);
       const generatedPrompt = await requestAuxiliaryChatCompletion([
         {
           role: "system",
           content: [
-            "Classify whether the latest user message asks to create, draw, or generate an image.",
+            isTalkPrompt
+              ? "Classify whether the latest user message explicitly asks the character to send, show, take, attach, draw, create, or generate a photo, picture, selfie, drawing, or other image."
+              : "Classify whether the latest user message asks to create, draw, or generate an image.",
             `If it does not, output exactly ${CHAT_T2I_SKIP_TOKEN}.`,
+            isTalkPrompt
+              ? "Default to the skip token for casual visual descriptions, mentions of photos/images, roleplay atmosphere, character-card details, or implicit opportunities to send a picture."
+              : "",
             "If it does, output one concise Stable Diffusion prompt in English only.",
             buildIllustrationPromptStyleInstruction(illustrationSettings.promptStyle),
             avoidPrompt ? "If an earlier image prompt is provided, create meaningfully different composition and details while preserving the user's request." : "",
-            `Use the latest user request as the primary source. ${AUX_IMAGE_PROMPT_NO_FORMATTING}`
+            isTalkPrompt
+              ? `Use only the explicit image request and relevant character/persona visual context. Do not invent an attachment the user did not request. ${AUX_IMAGE_PROMPT_NO_FORMATTING}`
+              : `Use the latest user request as the primary source. ${AUX_IMAGE_PROMPT_NO_FORMATTING}`
           ].filter(Boolean).join("\n")
         },
         {
@@ -11029,11 +11057,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           role: "system",
           content: [
             isTalkPrompt
-              ? "Classify whether the latest assistant message in an instant messenger character chat should include an attached photo, picture, selfie, drawing, or other generated image."
+              ? "Classify whether FocusAbove should generate an image attachment for the latest assistant message in an instant messenger character chat."
               : "The latest user message attached one or more images and asked for a new generated image based on that visual reference.",
             isTalkPrompt
-              ? `If no image attachment is clearly implied, output exactly ${CHAT_T2I_SKIP_TOKEN}.`
+              ? `Output exactly ${CHAT_T2I_SKIP_TOKEN} unless either the latest user message explicitly requested a photo, picture, selfie, drawing, or other image, or the latest assistant message explicitly says it is sending, showing, attaching, drawing, or sharing a specific image now for a clear conversation-grounded reason.`
               : "The assistant response contains the main model's visual understanding of the attachment.",
+            isTalkPrompt
+              ? "Default to the skip token. Without an explicit user request, require a concrete visual subject and an explicit attachment action in the assistant message. Skip generic attachment claims, vague photo mentions, mood, setting, outfit, appearance, character-card details, or a visually describable moment alone."
+              : "",
             isTalkPrompt
               ? "If an image attachment should be included, output one concise Stable Diffusion prompt in English only."
               : "Output one concise Stable Diffusion prompt in English only for the image API.",
@@ -11042,7 +11073,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
               ? `If an earlier image prompt is provided, create meaningfully different composition and details while preserving ${isTalkPrompt ? "the attachment implied by the assistant response" : "the user's request"}.`
               : "",
             isTalkPrompt
-              ? `Use the character card, persona card, latest user request, and assistant response. ${AUX_IMAGE_PROMPT_NO_FORMATTING}`
+              ? `Use the explicit user image request or the assistant's concrete stated attachment as the primary source. ${AUX_IMAGE_PROMPT_NO_FORMATTING}`
               : `Use the latest user request and assistant visual description as the primary source. Do not copy text asking for an explanation. ${AUX_IMAGE_PROMPT_NO_FORMATTING}`
           ].filter(Boolean).join("\n")
         },
@@ -11119,6 +11150,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     function buildChatT2iMainModelInstructions(prompt, options = {}) {
       const cleanPrompt = cleanIllustrationPrompt(prompt);
       const isPlainChat = options.chat && !isRpChat(options.chat) && !isTalkChat(options.chat);
+      const isTalkModeChat = options.chat && isTalkChat(options.chat);
       if (options.deferredPostResponse && isPlainChat) {
         return [[
           "[Deferred Image Generation]",
@@ -11136,6 +11168,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             "No image generation is scheduled for this turn, and the main chat model has no image tool such as DALL-E or dalle.text2im.",
             "Do not output tool-call JSON, action/action_input, function calls, or claim an image was generated.",
             "If asked for an image, reply in normal prose that image generation is unavailable here and offer a text prompt or description instead."
+          ].join("\n")];
+        }
+        if (isTalkModeChat) {
+          return [[
+            "[Messenger Image Attachment Availability]",
+            "No image attachment is pre-scheduled for this turn.",
+            "Do not casually invent or imply that you are sending, showing, attaching, uploading, drawing, or sharing a photo, picture, selfie, drawing, image file, or image URL.",
+            "Only when the conversation makes an image attachment plainly necessary or especially natural, state a concrete attachment action and subject in normal instant-message prose. FocusAbove may then decide after your response whether to attach an image."
           ].join("\n")];
         }
         return [];
@@ -12751,36 +12791,29 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       };
     }
     function resizeImageDataUrl(image, mimeType, width, height) {
+      const { canvas, context } = createImageTransformCanvas(width, height, "resizeCanvasUnavailable");
+      context.drawImage(image, 0, 0, width, height);
+      return buildImageDataUrlResult(canvas, mimeType);
+    }
+    function cropImageDataUrl(image, mimeType, sourceX, sourceY, sourceSize, outputSize) {
+      const safeOutputSize = Math.max(1, Math.round(outputSize));
+      const { canvas, context } = createImageTransformCanvas(safeOutputSize, safeOutputSize, "cropCanvasUnavailable");
+      context.drawImage(image, sourceX, sourceY, sourceSize, sourceSize, 0, 0, safeOutputSize, safeOutputSize);
+      return buildImageDataUrlResult(canvas, mimeType);
+    }
+    function createImageTransformCanvas(width, height, errorKey) {
       const canvas = document.createElement("canvas");
       canvas.width = width;
       canvas.height = height;
       const context = canvas.getContext("2d", { alpha: true });
       if (!context) {
-        throw new Error(t("resizeCanvasUnavailable"));
+        throw new Error(t(errorKey));
       }
       context.imageSmoothingEnabled = true;
       context.imageSmoothingQuality = "high";
-      context.drawImage(image, 0, 0, width, height);
-      const safeMimeType = /^image\/(png|jpeg|webp)$/i.test(mimeType) ? mimeType.toLowerCase() : "image/png";
-      const dataUrl = canvas.toDataURL(safeMimeType);
-      return {
-        mimeType: safeMimeType,
-        sizeBytes: estimateImageAttachmentBytes(dataUrl),
-        dataUrl
-      };
+      return { canvas, context };
     }
-    function cropImageDataUrl(image, mimeType, sourceX, sourceY, sourceSize, outputSize) {
-      const safeOutputSize = Math.max(1, Math.round(outputSize));
-      const canvas = document.createElement("canvas");
-      canvas.width = safeOutputSize;
-      canvas.height = safeOutputSize;
-      const context = canvas.getContext("2d", { alpha: true });
-      if (!context) {
-        throw new Error(t("cropCanvasUnavailable"));
-      }
-      context.imageSmoothingEnabled = true;
-      context.imageSmoothingQuality = "high";
-      context.drawImage(image, sourceX, sourceY, sourceSize, sourceSize, 0, 0, safeOutputSize, safeOutputSize);
+    function buildImageDataUrlResult(canvas, mimeType) {
       const safeMimeType = /^image\/(png|jpeg|webp)$/i.test(mimeType) ? mimeType.toLowerCase() : "image/png";
       const dataUrl = canvas.toDataURL(safeMimeType);
       return {
