@@ -7,6 +7,8 @@ JS-based local LLM frontend powered by a single HTML file.
 
 Live Web App: https://chat.furabyss.com
 
+<a href='https://ko-fi.com/I2I41WXL3D' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi6.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+
 # What you can do
 - Chatting with your own local LLM/VLM
 - Roleplaying with your own local LLM/VLM
