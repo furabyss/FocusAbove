@@ -49,4 +49,3 @@ Live Web App: https://chat.furabyss.com
 
 # Acknowledgments
 - [KaTeX](https://github.com/KaTeX/KaTeX)
-- [JSZip](https://github.com/Stuk/jszip): Under MIT  License
