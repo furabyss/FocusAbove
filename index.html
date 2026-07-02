@@ -394,7 +394,8 @@
       cursor: pointer;
       transition: transform 120ms ease, filter 120ms ease, background 120ms ease;
     }
-    button:hover:not(:disabled) {
+    button:hover:not(:disabled),
+    .composer-upload-button:hover {
       transform: translateY(-1px);
       filter: brightness(1.04);
     }
@@ -460,15 +461,22 @@
       color: var(--primary-strong);
     }
     .tab-utility-button svg,
-    .toolbar-icon-button svg {
-      width: 18px;
-      height: 18px;
+    .toolbar-icon-button svg,
+    .chat-item-icon-button svg,
+    .message-action-button svg,
+    .composer-upload-button svg,
+    .scroll-jump-button svg {
       stroke: currentColor;
       fill: none;
       stroke-width: 1.8;
       stroke-linecap: round;
       stroke-linejoin: round;
       pointer-events: none;
+    }
+    .tab-utility-button svg,
+    .toolbar-icon-button svg {
+      width: 18px;
+      height: 18px;
     }
     .chat-list {
       display: flex;
@@ -571,12 +579,6 @@
     .chat-item-icon-button svg {
       width: 16px;
       height: 16px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 1.8;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      pointer-events: none;
     }
     .chat-item-title {
       margin: 0 0 4px;
@@ -831,7 +833,8 @@
       opacity: 0.85;
     }
     .message-meta-main,
-    .message-meta-actions {
+    .message-meta-actions,
+    .thinking-limit-row {
       display: flex;
       align-items: center;
       gap: 10px;
@@ -839,7 +842,6 @@
     }
     .message-meta-main {
       flex: 1 1 auto;
-      min-width: 0;
     }
     .message-meta-label,
     .message-meta-time {
@@ -886,12 +888,6 @@
     .message-action-button svg {
       width: 15px;
       height: 15px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 1.8;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      pointer-events: none;
     }
     .message-footer {
       display: flex;
@@ -1156,19 +1152,9 @@
     :root[data-resolved-theme="dark"] .composer-upload-button {
       background: rgba(var(--primary-rgb), 0.12);
     }
-    .composer-upload-button:hover {
-      transform: translateY(-1px);
-      filter: brightness(1.04);
-    }
     .composer-upload-button svg {
       width: 22px;
       height: 22px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 1.8;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      pointer-events: none;
     }
     .composer-upload-group {
       display: grid;
@@ -1895,12 +1881,7 @@
     .scroll-jump-button svg {
       width: 18px;
       height: 18px;
-      stroke: currentColor;
-      fill: none;
       stroke-width: 2.4;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      pointer-events: none;
     }
     .scroll-bottom-button svg {
       transform: rotate(180deg);
@@ -2014,12 +1995,6 @@
     }
     .model-tuning-field,
     .range-field {
-      min-width: 0;
-    }
-    .thinking-limit-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
       min-width: 0;
     }
     .thinking-limit-row input[type="number"] {
@@ -2711,7 +2686,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           <textarea id="messageInput"></textarea>
         </label>
         <input id="imageUploadInput" type="file" accept="image/*" multiple hidden>
-        <input id="documentUploadInput" type="file" accept=".txt,.epub" multiple hidden>
+        <input id="documentUploadInput" type="file" accept=".txt,.epub,.docx,.pdf" multiple hidden>
         <span id="imageUploadHint" class="composer-attachment-hint" hidden aria-hidden="true"></span>
         <div id="composerAttachments" class="composer-attachments" hidden></div>
       </div>
@@ -2769,7 +2744,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <section class="brand">
               <a class="brand-mark-link" href="https://github.com/furabyss/FocusAbove" target="_blank" rel="noopener noreferrer"><div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#icon-brand"></use></svg><span>FocusAbove</span></div></a>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.7.5, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.8.0, ⓒ 2026 Fur-Abyss</p>
             </section>
             <div class="settings-tab-strip" role="tablist">
               <button id="settingsGeneralTabButton" type="button" class="settings-tab-button active" role="tab" aria-selected="true" aria-controls="settingsGeneralPanel"></button>
@@ -3669,13 +3644,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         stop: "정지",
         stopResponse: "응답 정지",
         fileUpload: "파일 업로드",
-        fileUploadTitle: ({ bytes }) => `텍스트 또는 EPUB 업로드 (총 ${bytes}까지.)`,
+        fileUploadTitle: ({ bytes }) => `텍스트, EPUB, DOCX, PDF 업로드 (총 ${bytes}까지.)`,
         fileOnly: "파일만 전송됨",
         addMessageOrImage: "보낼 메시지, 이미지, 또는 파일을 추가해 주세요.",
         documentsAttached: ({ count }) => `${count}개 파일을 첨부했습니다.`,
         documentAttachFailed: ({ error }) => `파일 첨부 실패: ${error}`,
-        documentFilesOnly: "txt와 epub 파일만 업로드할 수 있습니다.",
-        documentLibraryMissing: "EPUB 처리를 위한 압축 라이브러리를 불러오지 못했습니다.",
+        documentFilesOnly: "txt, epub, docx, pdf 파일만 업로드할 수 있습니다.",
+        documentLibraryMissing: "EPUB/DOCX/PDF 처리를 위한 압축 라이브러리를 불러오지 못했습니다.",
         documentTooLarge: ({ bytes }) => `파일 크기 제한을 초과했습니다. 총 ${bytes}까지 업로드할 수 있습니다.`,
         attachedFileLabel: ({ name }) => `첨부 파일: ${name}`,
         attachedDocumentBlockTitle: ({ name, kind }) => `[첨부 파일: ${name} | 형식: ${kind}]`,
@@ -4016,13 +3991,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         stop: "Stop",
         stopResponse: "Stop response",
         fileUpload: "Upload file",
-        fileUploadTitle: ({ bytes }) => `Upload text or EPUB (${bytes} total max).`,
+        fileUploadTitle: ({ bytes }) => `Upload text, EPUB, DOCX, or PDF (${bytes} total max).`,
         fileOnly: "Files only",
         addMessageOrImage: "Add a message, image, or file to send.",
         documentsAttached: ({ count }) => `Attached ${count} file${count === 1 ? "" : "s"}.`,
         documentAttachFailed: ({ error }) => `Failed to attach files: ${error}`,
-        documentFilesOnly: "Only txt and epub files can be uploaded.",
-        documentLibraryMissing: "Failed to load the zip library required for EPUB processing.",
+        documentFilesOnly: "Only txt, epub, docx, and pdf files can be uploaded.",
+        documentLibraryMissing: "Failed to load the zip library required for EPUB/DOCX/PDF processing.",
         documentTooLarge: ({ bytes }) => `File size limit exceeded. You can upload up to ${bytes} total.`,
         attachedFileLabel: ({ name }) => `Attached file: ${name}`,
         attachedDocumentBlockTitle: ({ name, kind }) => `[Attached file: ${name} | Format: ${kind}]`,
@@ -12347,7 +12322,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         name: typeof attachment?.name === "string" && attachment.name ? attachment.name : "document",
         mimeType: typeof attachment?.mimeType === "string" && attachment.mimeType
           ? attachment.mimeType
-          : kind === "EPUB" ? "application/epub+zip" : "text/plain",
+          : getDocumentMimeType(kind),
         kind,
         sizeBytes: normalizeOptionalInteger(attachment?.sizeBytes, { min: 0 }) ?? 0,
         text: typeof attachment?.text === "string" ? attachment.text : "",
@@ -12431,7 +12406,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
     }
     function getDocumentKind(file) {
-      return normalizeDocumentKind(file?.kind || file?.type || file?.mimeType || file?.name || "");
+      const candidates = [file?.kind, file?.type, file?.mimeType, file?.name];
+      for (const candidate of candidates) {
+        const kind = normalizeDocumentKind(candidate);
+        if (kind) {
+          return kind;
+        }
+      }
+      return "";
     }
     function normalizeDocumentKind(value) {
       const text = String(value || "").trim().toLowerCase();
@@ -12441,11 +12423,29 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (text === "epub" || text.endsWith(".epub") || text === "application/epub+zip") {
         return "EPUB";
       }
+      if (text === "docx" || text.endsWith(".docx") || text === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+        return "DOCX";
+      }
+      if (text === "pdf" || text.endsWith(".pdf") || text === "application/pdf") {
+        return "PDF";
+      }
       return "";
+    }
+    function getDocumentMimeType(kind) {
+      if (kind === "EPUB") {
+        return "application/epub+zip";
+      }
+      if (kind === "DOCX") {
+        return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+      }
+      if (kind === "PDF") {
+        return "application/pdf";
+      }
+      return "text/plain";
     }
     function normalizeGeneratedDocumentFormat(value) {
       const format = String(value || "").trim().toLowerCase();
-      return format === "txt" || format === "epub" ? format : "";
+      return /^(txt|epub|docx|pdf)$/.test(format) ? format : "";
     }
     async function prepareDocumentAttachment(file) {
       const kind = getDocumentKind(file);
@@ -12455,13 +12455,17 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       const epub = kind === "EPUB" ? await extractEpubTemplate(file) : null;
       const text = kind === "EPUB"
         ? buildEpubPromptText(epub)
-        : await file.text();
+        : kind === "DOCX"
+          ? await extractDocxText(file)
+          : kind === "PDF"
+            ? await extractPdfText(file)
+            : await file.text();
       const normalizedText = String(text || "").replace(/\r\n?/g, "\n").trim();
       if (!normalizedText) {
         throw new Error(t("missingResponseContent"));
       }
       return {
-        mimeType: kind === "EPUB" ? "application/epub+zip" : "text/plain",
+        mimeType: getDocumentMimeType(kind),
         kind,
         sizeBytes: normalizeOptionalInteger(file.size, { min: 0 }) ?? normalizedText.length,
         text: normalizedText,
@@ -12543,6 +12547,255 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         entry.title ? `Title: ${entry.title}` : "",
         entry.text
       ].filter(Boolean).join("\n")).join("\n\n");
+    }
+    async function extractDocxText(file) {
+      if (typeof window.JSZip !== "function") {
+        throw new Error(t("documentLibraryMissing"));
+      }
+      const arrayBuffer = await file.arrayBuffer();
+      const zip = await window.JSZip.loadAsync(arrayBuffer);
+      const documentEntry = zip.file("word/document.xml");
+      const parser = typeof DOMParser === "function" ? new DOMParser() : null;
+      if (!documentEntry || !parser) {
+        throw new Error(t("missingResponseContent"));
+      }
+      const documentMarkup = await documentEntry.async("string");
+      const documentNode = parser.parseFromString(documentMarkup, "application/xml");
+      const body = findXmlFirstElementByLocalName(documentNode, "body") || documentNode.documentElement;
+      const paragraphs = getXmlElementsByLocalName(body, "p")
+        .map(extractDocxParagraphText)
+        .map((paragraph) => paragraph.replace(/[ \t]+\n/g, "\n").replace(/[ \t]{2,}/g, " ").trim())
+        .filter(Boolean);
+      if (!paragraphs.length) {
+        throw new Error(t("missingResponseContent"));
+      }
+      return paragraphs.join("\n\n");
+    }
+    function extractDocxParagraphText(paragraphNode) {
+      const parts = [];
+      const visit = (node) => {
+        if (!node) {
+          return;
+        }
+        const localName = String(node.localName || node.nodeName || "").toLowerCase();
+        if (localName === "t") {
+          parts.push(node.textContent || "");
+          return;
+        }
+        if (localName === "tab") {
+          parts.push("\t");
+          return;
+        }
+        if (localName === "br" || localName === "cr") {
+          parts.push("\n");
+          return;
+        }
+        Array.from(node.childNodes || []).forEach(visit);
+      };
+      visit(paragraphNode);
+      return parts.join("");
+    }
+    async function extractPdfText(file) {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      const binary = decodePdfBinary(bytes);
+      const streamTexts = await extractPdfStreamTexts(binary, bytes);
+      const text = normalizeExtractedPdfText(streamTexts.join("\n\n") || extractPdfContentText(binary));
+      if (!text) {
+        throw new Error(t("missingResponseContent"));
+      }
+      return text;
+    }
+    async function extractPdfStreamTexts(binary, bytes) {
+      const streamTexts = [];
+      const streamPattern = /stream\r?\n/g;
+      let match = null;
+      while ((match = streamPattern.exec(binary))) {
+        const streamStart = streamPattern.lastIndex;
+        const streamEnd = binary.indexOf("endstream", streamStart);
+        if (streamEnd < 0) {
+          break;
+        }
+        const dictStart = Math.max(0, match.index - 1200);
+        const dictionary = binary.slice(dictStart, match.index);
+        const streamBytes = trimPdfStreamBytes(bytes.slice(streamStart, streamEnd));
+        let streamContent = "";
+        if (/\/FlateDecode\b/.test(dictionary)) {
+          streamContent = await inflatePdfStreamText(streamBytes);
+        } else if (!/\/Filter\b/.test(dictionary)) {
+          streamContent = decodePdfBinary(streamBytes);
+        }
+        const extracted = extractPdfContentText(streamContent);
+        if (extracted) {
+          streamTexts.push(extracted);
+        }
+        streamPattern.lastIndex = streamEnd + "endstream".length;
+      }
+      return streamTexts;
+    }
+    function trimPdfStreamBytes(bytes) {
+      let start = 0;
+      let end = bytes.length;
+      while (start < end && (bytes[start] === 0x0d || bytes[start] === 0x0a)) {
+        start += 1;
+      }
+      while (end > start && (bytes[end - 1] === 0x0d || bytes[end - 1] === 0x0a)) {
+        end -= 1;
+      }
+      return bytes.slice(start, end);
+    }
+    async function inflatePdfStreamText(bytes) {
+      if (typeof DecompressionStream !== "function") {
+        return "";
+      }
+      try {
+        const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate"));
+        return decodePdfBinary(new Uint8Array(await new Response(stream).arrayBuffer()));
+      } catch {
+        return "";
+      }
+    }
+    function decodePdfBinary(bytes) {
+      const chunks = [];
+      const chunkSize = 0x8000;
+      for (let index = 0; index < bytes.length; index += chunkSize) {
+        chunks.push(String.fromCharCode(...bytes.slice(index, index + chunkSize)));
+      }
+      return chunks.join("");
+    }
+    function extractPdfContentText(content) {
+      const value = String(content || "");
+      const output = [];
+      let pending = [];
+      let index = 0;
+      while (index < value.length) {
+        const char = value[index];
+        if (char === "(") {
+          const result = readPdfLiteralString(value, index);
+          pending.push(result.text);
+          index = result.index;
+          continue;
+        }
+        if (char === "<" && value[index + 1] !== "<") {
+          const result = readPdfHexString(value, index);
+          if (result.text) {
+            pending.push(result.text);
+          }
+          index = result.index;
+          continue;
+        }
+        if (/[A-Za-z"'*]/.test(char)) {
+          const start = index;
+          while (index < value.length && /[A-Za-z"'*]/.test(value[index])) {
+            index += 1;
+          }
+          const token = value.slice(start, index);
+          if (token === "Tj" || token === "TJ" || token === "'" || token === "\"") {
+            if (pending.length) {
+              output.push(pending.join(""));
+              pending = [];
+            }
+          } else if (token === "T*" || token === "Td" || token === "TD" || token === "ET") {
+            if (output.length && output[output.length - 1] !== "\n") {
+              output.push("\n");
+            }
+            pending = [];
+          }
+          continue;
+        }
+        index += 1;
+      }
+      return normalizeExtractedPdfText(output.join("\n"));
+    }
+    function readPdfLiteralString(value, startIndex) {
+      let depth = 1;
+      let escaped = false;
+      let text = "";
+      let index = startIndex + 1;
+      while (index < value.length && depth > 0) {
+        const char = value[index];
+        if (escaped) {
+          if (/[0-7]/.test(char)) {
+            const match = value.slice(index, index + 3).match(/^[0-7]{1,3}/);
+            const octal = match?.[0] || char;
+            text += String.fromCharCode(parseInt(octal, 8));
+            index += octal.length;
+            escaped = false;
+            continue;
+          }
+          if (char === "\r" && value[index + 1] === "\n") {
+            index += 1;
+          } else {
+            text += decodePdfEscapedCharacter(char);
+          }
+          escaped = false;
+          index += 1;
+          continue;
+        }
+        if (char === "\\") {
+          escaped = true;
+          index += 1;
+          continue;
+        }
+        if (char === "(") {
+          depth += 1;
+        } else if (char === ")") {
+          depth -= 1;
+          if (depth === 0) {
+            index += 1;
+            break;
+          }
+        }
+        if (depth > 0) {
+          text += char;
+        }
+        index += 1;
+      }
+      return { text, index };
+    }
+    function decodePdfEscapedCharacter(char) {
+      return char === "\r" || char === "\n" ? "" : ({ n: "\n", r: "\r", t: "\t", b: "\b", f: "\f" })[char] ?? char;
+    }
+    function readPdfHexString(value, startIndex) {
+      const endIndex = value.indexOf(">", startIndex + 1);
+      if (endIndex < 0) {
+        return { text: "", index: value.length };
+      }
+      let hex = value.slice(startIndex + 1, endIndex).replace(/\s+/g, "");
+      if (hex.length % 2) {
+        hex += "0";
+      }
+      const bytes = [];
+      for (let index = 0; index < hex.length; index += 2) {
+        const byte = parseInt(hex.slice(index, index + 2), 16);
+        if (Number.isFinite(byte)) {
+          bytes.push(byte);
+        }
+      }
+      return { text: decodePdfTextBytes(bytes), index: endIndex + 1 };
+    }
+    function decodePdfTextBytes(bytes) {
+      if (bytes[0] === 0xfe && bytes[1] === 0xff) {
+        return decodePdfUtf16Bytes(bytes, 2);
+      }
+      if (bytes.length > 1 && bytes.length % 2 === 0 && bytes.some((byte, index) => index % 2 === 0 && byte > 0)) {
+        return decodePdfUtf16Bytes(bytes, 0);
+      }
+      return bytes.map((byte) => String.fromCharCode(byte)).join("");
+    }
+    function decodePdfUtf16Bytes(bytes, startIndex = 0) {
+      let text = "";
+      for (let index = startIndex; index + 1 < bytes.length; index += 2) {
+        text += String.fromCharCode((bytes[index] << 8) | bytes[index + 1]);
+      }
+      return text;
+    }
+    function normalizeExtractedPdfText(text) {
+      return String(text || "")
+        .replace(/\r\n?/g, "\n")
+        .replace(/[ \t]+\n/g, "\n")
+        .replace(/\n{3,}/g, "\n\n")
+        .replace(/[ \t]{2,}/g, " ")
+        .trim();
     }
     function getEpubSpineTextEntryPaths(packageDocument, packagePath, zip) {
       const manifestItems = new Map();
@@ -13681,7 +13934,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         `Return only the final file content itself with no assistant preface, no explanations, no markdown fences, and no limitation notes.`,
         outputRequest.format === "epub"
           ? `Write clean plain text suitable for EPUB packaging. Preserve headings and paragraph breaks in normal text; FocusAbove will build the EPUB container.`
-          : `Write clean plain text suitable for direct TXT download.`,
+          : outputRequest.format === "docx"
+            ? `Write clean plain text suitable for DOCX packaging. Preserve headings and paragraph breaks in normal text; FocusAbove will build a new DOCX container.`
+            : outputRequest.format === "pdf"
+              ? `Write clean plain text suitable for PDF packaging. Preserve headings and paragraph breaks in normal text; FocusAbove will build a new text-only PDF container.`
+              : `Write clean plain text suitable for direct TXT download.`,
         `If the user requested a translation, output only the translated document content.`
       ];
       if (outputRequest.format === "epub" && outputRequest.sourceDocument?.epub?.textEntries?.length) {
@@ -13691,26 +13948,42 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           ...outputRequest.sourceDocument.epub.textEntries.map((entry) => `- ${entry.path}`)
         );
       }
+      if (!outputRequest.sourceDocument && outputRequest.sourceGeneratedDocument?.rawContent) {
+        instructions.push(
+          `Use this previously generated document content as the source unless the user's latest request explicitly asks for changes:`,
+          outputRequest.sourceGeneratedDocument.rawContent
+        );
+      }
       return [instructions.join("\n")];
     }
     function getLatestDocumentOutputRequest(messages) {
-      const latestUserDocumentMessage = (Array.isArray(messages) ? messages : [])
-        .slice()
-        .reverse()
-        .find((message) => message?.role === "user" && normalizeDocumentAttachments(message.documents).length);
-      if (!latestUserDocumentMessage) {
+      const normalizedMessages = Array.isArray(messages) ? messages : [];
+      let latestUserIndex = -1;
+      for (let index = normalizedMessages.length - 1; index >= 0; index -= 1) {
+        if (normalizedMessages[index]?.role === "user") {
+          latestUserIndex = index;
+          break;
+        }
+      }
+      const latestUserMessage = latestUserIndex >= 0 ? normalizedMessages[latestUserIndex] : null;
+      if (!latestUserMessage) {
         return null;
       }
-      const userText = String(latestUserDocumentMessage.content || "");
+      const userText = String(latestUserMessage.content || "");
       if (!isDocumentFileOutputRequested(userText)) {
         return null;
       }
-      const firstDocument = normalizeDocumentAttachments(latestUserDocumentMessage.documents)[0];
-      const format = inferRequestedGeneratedDocumentFormat(userText, firstDocument);
+      const firstDocument = normalizeDocumentAttachments(latestUserMessage.documents)[0] || null;
+      const sourceGeneratedDocument = firstDocument ? null : findLatestGeneratedDocumentBefore(normalizedMessages, latestUserIndex);
+      if (!firstDocument && !sourceGeneratedDocument) {
+        return null;
+      }
+      const format = inferRequestedGeneratedDocumentFormat(userText, firstDocument || sourceGeneratedDocument);
       if (!format) {
         return null;
       }
-      const baseName = sanitizeDownloadFileName((firstDocument?.name || "document").replace(/\.[^.]+$/u, ""), "document");
+      const sourceName = firstDocument?.name || sourceGeneratedDocument?.title || sourceGeneratedDocument?.fileName || "document";
+      const baseName = sanitizeDownloadFileName(sourceName.replace(/\.[^.]+$/u, ""), "document");
       const outputKind = /(번역|translate)/i.test(userText)
         ? "translated"
         : /(요약|summary|summar)/i.test(userText)
@@ -13720,24 +13993,54 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         format,
         fileName: `${baseName}-${outputKind}.${format}`,
         title: baseName,
-        sourceMessageId: latestUserDocumentMessage.id,
+        sourceMessageId: firstDocument ? latestUserMessage.id : sourceGeneratedDocument?.sourceMessageId || "",
         sourceDocumentId: firstDocument?.id || "",
-        sourceDocument: firstDocument || null
+        sourceDocument: firstDocument || null,
+        sourceGeneratedDocument
       };
+    }
+    function findLatestGeneratedDocumentBefore(messages, beforeIndex) {
+      const limit = Math.min(Math.max(0, beforeIndex), Array.isArray(messages) ? messages.length : 0);
+      for (let index = limit - 1; index >= 0; index -= 1) {
+        const generatedDocument = normalizeGeneratedDocument(messages[index]?.generatedDocument);
+        if (generatedDocument?.rawContent) {
+          return generatedDocument;
+        }
+      }
+      return null;
     }
     function isDocumentFileOutputRequested(text) {
       const value = String(text || "");
+      if (/(epub|docx|pdf|txt)/i.test(value) && /(\uCD9C\uB825|\uB0B4\uBCF4\uB0B4|\uC800\uC7A5|\uD30C\uC77C|\uB2E4\uC6B4\uB85C\uB4DC|download|save|export|output)/i.test(value)) {
+        return true;
+      }
+      if (/(epub|docx|pdf|txt)/i.test(value) && /(출력|내보내|저장|파일|다운로드|download|save|export|output)/i.test(value)) {
+        return true;
+      }
+      if (/(pdf.*(download|save|export|output|file|다운로드|파일|저장|내보내|출력)|(download|save|export|output|file|다운로드|파일|저장|내보내|출력).*pdf)/i.test(value)) {
+        return true;
+      }
+      if (/(docx.*(download|save|export|output|file|다운로드|파일|저장|내보내|출력)|(download|save|export|output|file|다운로드|파일|저장|내보내|출력).*docx)/i.test(value)) {
+        return true;
+      }
       return /(다운로드|파일로|파일 형태|파일 형식|파일로 다시|파일로 저장|출력해|내보내|저장해|export|download|save|output as|epub 파일|txt 파일|epub로|txt로)/i.test(value);
     }
     function inferRequestedGeneratedDocumentFormat(text, documentAttachment) {
       const value = String(text || "");
+      if (/docx/i.test(value)) {
+        return "docx";
+      }
+      if (/pdf/i.test(value)) {
+        return "pdf";
+      }
       if (/epub/i.test(value)) {
         return "epub";
       }
       if (/(^|\W)txt(\W|$)|text file/i.test(value)) {
         return "txt";
       }
-      return String(documentAttachment?.kind || "").toLowerCase() === "epub" ? "epub" : "txt";
+      const sourceKind = String(documentAttachment?.kind || "").toLowerCase();
+      return isGeneratedPackagedDocumentFormat(sourceKind) ? sourceKind : "txt";
     }
     async function createGeneratedDocumentMetadata(messages, assistantMessage) {
       const outputRequest = getLatestDocumentOutputRequest(messages);
@@ -13756,12 +14059,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         sourceDocumentId: outputRequest.sourceDocumentId,
         rawContent,
         epubTemplate: outputRequest.format === "epub"
-          ? normalizeEpubTemplate(outputRequest.sourceDocument?.epub)
+          ? normalizeEpubTemplate(outputRequest.sourceDocument?.epub || outputRequest.sourceGeneratedDocument?.epubTemplate)
           : null,
         displayContent: ""
       };
-      if (metadata.format === "epub") {
-        const prebuiltBlob = await createGeneratedEpubBlob(rawContent, metadata, outputRequest.sourceDocument);
+      if (isGeneratedPackagedDocumentFormat(metadata.format)) {
+        const prebuiltBlob = await createGeneratedPackagedDocumentBlob(rawContent, metadata, outputRequest.sourceDocument);
         metadata.archiveBase64 = arrayBufferToBase64(await prebuiltBlob.arrayBuffer());
       }
       return metadata;
@@ -13776,10 +14079,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       try {
         const sourceDocument = resolveGeneratedDocumentSourceDocument(activeChat, generatedDocument);
         const fileContent = generatedDocument.rawContent || message.content;
-        const blob = generatedDocument.format === "epub"
+        const blob = isGeneratedPackagedDocumentFormat(generatedDocument.format)
           ? generatedDocument.archiveBase64
-            ? new Blob([base64ToArrayBuffer(generatedDocument.archiveBase64)], { type: "application/epub+zip" })
-            : await createGeneratedEpubBlob(fileContent, generatedDocument, sourceDocument)
+            ? new Blob([base64ToArrayBuffer(generatedDocument.archiveBase64)], { type: getDocumentMimeType(generatedDocument.format.toUpperCase()) })
+            : await createGeneratedPackagedDocumentBlob(fileContent, generatedDocument, sourceDocument)
           : new Blob([fileContent], { type: "text/plain;charset=utf-8" });
         triggerBlobDownload(blob, generatedDocument.fileName);
       } catch (error) {
@@ -13795,6 +14098,21 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         || sourceDocuments[0]
         || null;
     }
+    function isGeneratedPackagedDocumentFormat(format) {
+      return /^(epub|docx|pdf)$/.test(format);
+    }
+    async function createGeneratedPackagedDocumentBlob(text, generatedDocument, sourceDocument = null) {
+      if (generatedDocument?.format === "epub") {
+        return createGeneratedEpubBlob(text, generatedDocument, sourceDocument);
+      }
+      if (generatedDocument?.format === "docx") {
+        return createGeneratedDocxBlob(text, generatedDocument);
+      }
+      if (generatedDocument?.format === "pdf") {
+        return createGeneratedPdfBlob(text, generatedDocument);
+      }
+      throw new Error(t("missingResponseContent"));
+    }
     async function createGeneratedEpubBlob(text, generatedDocument, sourceDocument = null) {
       if (typeof window.JSZip !== "function") {
         throw new Error(t("documentLibraryMissing"));
@@ -13809,7 +14127,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       }
       const zip = new window.JSZip();
       zip.file("mimetype", "application/epub+zip", { compression: "STORE" });
-      zip.file("META-INF/container.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">\n  <rootfiles>\n    <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/>\n  </rootfiles>\n</container>`);
+      zip.file("META-INF/container.xml", `<?xml version="1.0" encoding="UTF-8"?><container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>`);
       zip.file("OEBPS/content.opf", buildGeneratedEpubPackageDocument(generatedDocument));
       zip.file("OEBPS/chapter1.xhtml", buildGeneratedEpubChapterDocument(text, generatedDocument, null));
       return zip.generateAsync({ type: "blob", mimeType: "application/epub+zip" });
@@ -13832,18 +14150,246 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
     function buildGeneratedEpubPackageDocument(generatedDocument) {
       const safeTitle = escapeHtml(generatedDocument.title || "document");
-      return `<?xml version="1.0" encoding="UTF-8"?>\n<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="bookid" version="3.0">\n  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">\n    <dc:identifier id="bookid">urn:uuid:${createId("generated-epub")}</dc:identifier>\n    <dc:title>${safeTitle}</dc:title>\n    <dc:language>${getUiLanguage()}</dc:language>\n  </metadata>\n  <manifest>\n    <item id="chapter1" href="chapter1.xhtml" media-type="application/xhtml+xml"/>\n  </manifest>\n  <spine>\n    <itemref idref="chapter1"/>\n  </spine>\n</package>`;
+      return `<?xml version="1.0" encoding="UTF-8"?><package xmlns="http://www.idpf.org/2007/opf" unique-identifier="bookid" version="3.0"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:identifier id="bookid">urn:uuid:${createId("generated-epub")}</dc:identifier><dc:title>${safeTitle}</dc:title><dc:language>${getUiLanguage()}</dc:language></metadata><manifest><item id="chapter1" href="chapter1.xhtml" media-type="application/xhtml+xml"/></manifest><spine><itemref idref="chapter1"/></spine></package>`;
     }
     function buildGeneratedEpubChapterDocument(text, generatedDocument, section = null) {
       const title = escapeHtml(section?.title || generatedDocument.title || "document");
-      const paragraphs = String(text || "")
+      const paragraphs = splitGeneratedDocumentParagraphs(text)
+        .map((paragraph) => `<p>${escapeHtml(paragraph).replace(/\n/g, "<br/>")}</p>`)
+        .join("");
+      return `<?xml version="1.0" encoding="UTF-8"?><html xmlns="http://www.w3.org/1999/xhtml" lang="${escapeHtml(getUiLanguage())}"><head><title>${title}</title></head><body><h1>${title}</h1>${paragraphs || `<p>${escapeHtml(String(text || ""))}</p>`}</body></html>`;
+    }
+    async function createGeneratedDocxBlob(text, generatedDocument) {
+      if (typeof window.JSZip !== "function") {
+        throw new Error(t("documentLibraryMissing"));
+      }
+      const zip = new window.JSZip();
+      zip.file("[Content_Types].xml", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`);
+      zip.file("_rels/.rels", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`);
+      zip.file("word/document.xml", buildGeneratedDocxDocument(text, generatedDocument));
+      return zip.generateAsync({ type: "blob", mimeType: getDocumentMimeType("DOCX") });
+    }
+    function buildGeneratedDocxDocument(text, generatedDocument) {
+      const title = trimmed(generatedDocument?.title);
+      const titleParagraph = title ? buildGeneratedDocxParagraph(title) : "";
+      const bodyParagraphs = splitGeneratedDocumentParagraphs(text)
+        .map(buildGeneratedDocxParagraph)
+        .join("");
+      return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${titleParagraph}${bodyParagraphs || buildGeneratedDocxParagraph(String(text || ""))}<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="720" w:footer="720" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+    }
+    function splitGeneratedDocumentParagraphs(text) {
+      return String(text || "")
         .replace(/\r\n?/g, "\n")
         .split(/\n{2,}/)
         .map((paragraph) => paragraph.trim())
-        .filter(Boolean)
-        .map((paragraph) => `<p>${escapeHtml(paragraph).replace(/\n/g, "<br/>")}</p>`)
-        .join("\n    ");
-      return `<?xml version="1.0" encoding="UTF-8"?>\n<html xmlns="http://www.w3.org/1999/xhtml" lang="${escapeHtml(getUiLanguage())}">\n  <head>\n    <title>${title}</title>\n  </head>\n  <body>\n    <h1>${title}</h1>\n    ${paragraphs || `<p>${escapeHtml(String(text || ""))}</p>`}\n  </body>\n</html>`;
+        .filter(Boolean);
+    }
+    function buildGeneratedDocxParagraph(text) {
+      const runs = String(text || "")
+        .replace(/\r\n?/g, "\n")
+        .split("\n")
+        .map((line, index) => {
+          const breakTag = index > 0 ? "<w:br/>" : "";
+          return `<w:r>${breakTag}<w:t xml:space="preserve">${escapeHtml(line)}</w:t></w:r>`;
+        })
+        .join("");
+      return `<w:p>${runs || `<w:r><w:t></w:t></w:r>`}</w:p>`;
+    }
+    async function createGeneratedPdfBlob(text, generatedDocument) {
+      const pdfText = [trimmed(generatedDocument?.title), String(text || "").trim()].filter(Boolean).join("\n\n");
+      if (/[^\x09\x0a\x0d\x20-\x7e]/.test(pdfText) && typeof document !== "undefined" && typeof document.createElement === "function") {
+        return createGeneratedCanvasPdfBlob(pdfText);
+      }
+      const lines = wrapGeneratedPdfLines(pdfText);
+      const linesPerPage = 48;
+      const pages = [];
+      for (let index = 0; index < lines.length || index === 0; index += linesPerPage) {
+        pages.push(lines.slice(index, index + linesPerPage));
+      }
+      const objects = [];
+      const pageObjectIds = [];
+      objects[1] = "<< /Type /Catalog /Pages 2 0 R >>";
+      objects[3] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>";
+      objects[4] = "<< /Type /Font /Subtype /Type0 /BaseFont /NotoSansCJKkr-Regular /Encoding /Identity-H /DescendantFonts [5 0 R] >>";
+      objects[5] = "<< /Type /Font /Subtype /CIDFontType0 /BaseFont /NotoSansCJKkr-Regular /CIDSystemInfo << /Registry (Adobe) /Ordering (Identity) /Supplement 0 >> /DW 1000 >>";
+      pages.forEach((pageLines, pageIndex) => {
+        const pageObjectId = 6 + pageIndex * 2;
+        const contentObjectId = pageObjectId + 1;
+        pageObjectIds.push(pageObjectId);
+        objects[pageObjectId] = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${contentObjectId} 0 R >>`;
+        objects[contentObjectId] = buildGeneratedPdfContentStream(pageLines);
+      });
+      objects[2] = `<< /Type /Pages /Kids [${pageObjectIds.map((id) => `${id} 0 R`).join(" ")}] /Count ${pageObjectIds.length} >>`;
+      return new Blob([buildPdfDocumentBytes(objects)], { type: getDocumentMimeType("PDF") });
+    }
+    async function createGeneratedCanvasPdfBlob(text) {
+      const pageWidth = 612;
+      const pageHeight = 792;
+      const scale = 2;
+      const margin = 72;
+      const fontSize = 11;
+      const lineHeight = 14;
+      const canvas = document.createElement("canvas");
+      canvas.width = pageWidth * scale;
+      canvas.height = pageHeight * scale;
+      const context = canvas.getContext("2d");
+      if (!context) {
+        return createGeneratedPdfBlob(text.replace(/[^\x09\x0a\x0d\x20-\x7e]/g, "?"), {});
+      }
+      context.font = `${fontSize * scale}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+      const lines = wrapGeneratedPdfLinesWithMeasure(text, (pageWidth - margin * 2) * scale, (value) => context.measureText(value).width);
+      const linesPerPage = Math.max(1, Math.floor((pageHeight - margin * 2) / lineHeight));
+      const pageImages = [];
+      for (let index = 0; index < lines.length || index === 0; index += linesPerPage) {
+        const pageLines = lines.slice(index, index + linesPerPage);
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.fillStyle = "#111111";
+        context.font = `${fontSize * scale}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+        context.textBaseline = "top";
+        pageLines.forEach((line, lineIndex) => {
+          context.fillText(line || " ", margin * scale, (margin + lineIndex * lineHeight) * scale);
+        });
+        pageImages.push(await canvasToJpegBytes(canvas));
+      }
+      return new Blob([buildImagePdfDocumentBytes(pageImages, pageWidth, pageHeight, canvas.width, canvas.height)], { type: getDocumentMimeType("PDF") });
+    }
+    function canvasToJpegBytes(canvas) {
+      return new Promise((resolve, reject) => {
+        if (typeof canvas.toBlob === "function") {
+          canvas.toBlob((blob) => {
+            if (!blob) {
+              reject(new Error(t("missingResponseContent")));
+              return;
+            }
+            blob.arrayBuffer().then((buffer) => resolve(new Uint8Array(buffer)), reject);
+          }, "image/jpeg", 0.92);
+          return;
+        }
+        resolve(base64ToBytes(extractBase64Payload(canvas.toDataURL("image/jpeg", 0.92))));
+      });
+    }
+    function buildImagePdfDocumentBytes(pageImages, pageWidth, pageHeight, imageWidth, imageHeight) {
+      const objects = [];
+      const pageObjectIds = [];
+      objects[1] = "<< /Type /Catalog /Pages 2 0 R >>";
+      pageImages.forEach((imageBytes, pageIndex) => {
+        const pageObjectId = 3 + pageIndex * 3;
+        const contentObjectId = pageObjectId + 1;
+        const imageObjectId = pageObjectId + 2;
+        pageObjectIds.push(pageObjectId);
+        objects[pageObjectId] = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageWidth} ${pageHeight}] /Resources << /XObject << /Im1 ${imageObjectId} 0 R >> >> /Contents ${contentObjectId} 0 R >>`;
+        objects[contentObjectId] = buildPdfStreamObject(`q ${pageWidth} 0 0 ${pageHeight} 0 0 cm /Im1 Do Q`);
+        objects[imageObjectId] = {
+          dictionary: `<< /Type /XObject /Subtype /Image /Width ${imageWidth} /Height ${imageHeight} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${imageBytes.length} >>`,
+          stream: imageBytes
+        };
+      });
+      objects[2] = `<< /Type /Pages /Kids [${pageObjectIds.map((id) => `${id} 0 R`).join(" ")}] /Count ${pageObjectIds.length} >>`;
+      return buildPdfDocumentBytes(objects);
+    }
+    function buildGeneratedPdfContentStream(lines) {
+      const commands = [
+        "BT",
+        "/F1 11 Tf",
+        "14 TL",
+        "72 748 Td",
+        ...lines.map(buildGeneratedPdfLineCommand),
+        "ET"
+      ].join("\n");
+      return buildPdfStreamObject(commands);
+    }
+    function buildPdfStreamObject(content) {
+      return `<< /Length ${content.length} >>\nstream\n${content}\nendstream`;
+    }
+    function buildGeneratedPdfLineCommand(line, index) {
+      const value = line || " ";
+      const prefix = index ? "T* " : "";
+      if (/^[\x09\x0a\x0d\x20-\x7e]*$/.test(value)) {
+        return `${prefix}/F1 11 Tf (${escapePdfLiteralString(value)}) Tj`;
+      }
+      return `${prefix}/F2 11 Tf <${encodePdfUtf16Hex(value)}> Tj`;
+    }
+    function wrapGeneratedPdfLines(text) {
+      return wrapGeneratedPdfLinesWithMeasure(text, 468, estimateGeneratedPdfLineWidth);
+    }
+    function wrapGeneratedPdfLinesWithMeasure(text, maxWidth, measure) {
+      const lines = [];
+      String(text || "")
+        .replace(/\r\n?/g, "\n")
+        .split("\n")
+        .forEach((paragraph) => {
+          const words = paragraph.trim().split(/\s+/).filter(Boolean);
+          if (!words.length) {
+            lines.push("");
+            return;
+          }
+          let line = "";
+          words.forEach((word) => {
+            const nextLine = line ? `${line} ${word}` : word;
+            if (measure(nextLine) > maxWidth && line) {
+              lines.push(line);
+              line = word;
+            } else {
+              line = nextLine;
+            }
+          });
+          if (line) {
+            lines.push(line);
+          }
+        });
+      return lines;
+    }
+    function estimateGeneratedPdfLineWidth(text) {
+      return String(text || "").split("").reduce((width, char) => {
+        if (char === "\t") return width + 24;
+        if (char === " ") return width + 3;
+        if (/[\x20-\x7e]/.test(char)) return width + 5.7;
+        return width + 11;
+      }, 0);
+    }
+    function encodePdfUtf16Hex(text) {
+      const hex = [];
+      String(text || "").split("").forEach((char) => {
+        hex.push(char.charCodeAt(0).toString(16).padStart(4, "0").toUpperCase());
+      });
+      return hex.join("");
+    }
+    function escapePdfLiteralString(text) {
+      return String(text || "").replace(/([\\()])/g, "\\$1").replace(/\r/g, "\\r").replace(/\n/g, "\\n");
+    }
+    function buildPdfDocumentBytes(objects) {
+      const encoder = new TextEncoder();
+      const chunks = [encoder.encode("%PDF-1.4\n")];
+      const offsets = [0];
+      let byteLength = chunks[0].length;
+      for (let id = 1; id < objects.length; id += 1) {
+        offsets[id] = byteLength;
+        const object = objects[id];
+        if (ArrayBuffer.isView(object?.stream)) {
+          const header = encoder.encode(`${id} 0 obj\n${object.dictionary}\nstream\n`);
+          const footer = encoder.encode("\nendstream\nendobj\n");
+          chunks.push(header, object.stream, footer);
+          byteLength += header.length + object.stream.length + footer.length;
+        } else {
+          const chunk = encoder.encode(`${id} 0 obj\n${object}\nendobj\n`);
+          chunks.push(chunk);
+          byteLength += chunk.length;
+        }
+      }
+      const xrefOffset = byteLength;
+      const xrefRows = ["xref", `0 ${objects.length}`, "0000000000 65535 f "];
+      for (let id = 1; id < objects.length; id += 1) {
+        xrefRows.push(`${String(offsets[id]).padStart(10, "0")} 00000 n `);
+      }
+      chunks.push(encoder.encode(`${xrefRows.join("\n")}\ntrailer\n<< /Size ${objects.length} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF\n`));
+      const output = new Uint8Array(chunks.reduce((total, chunk) => total + chunk.length, 0));
+      let offset = 0;
+      chunks.forEach((chunk) => {
+        output.set(chunk, offset);
+        offset += chunk.length;
+      });
+      return output;
     }
     function buildGeneratedEpubSectionMap(text, templateEntries) {
       const entries = Array.isArray(templateEntries) ? templateEntries : [];
@@ -13879,11 +14425,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
     function splitGeneratedEpubSections(text, count) {
       const normalizedCount = Math.max(1, normalizeOptionalInteger(count, { min: 1 }) ?? 1);
-      const paragraphs = String(text || "")
-        .replace(/\r\n?/g, "\n")
-        .split(/\n{2,}/)
-        .map((paragraph) => paragraph.trim())
-        .filter(Boolean);
+      const paragraphs = splitGeneratedDocumentParagraphs(text);
       if (!paragraphs.length) {
         return new Array(normalizedCount).fill("");
       }
