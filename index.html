@@ -2178,6 +2178,12 @@
     .overlay-header .section-title {
       margin: 0;
     }
+    .overlay-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
     .settings-tab-strip {
       display: flex;
       gap: 8px;
@@ -2712,7 +2718,7 @@
             <section class="brand">
               <a class="brand-mark-link" href="https://github.com/furabyss/FocusAbove" target="_blank" rel="noopener noreferrer"><div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#icon-brand"></use></svg><span>FocusAbove</span></div></a>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.8.1, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.8.2, ⓒ 2026 Fur-Abyss</p>
             </section>
             <div class="settings-tab-strip" role="tablist">
               <button id="settingsGeneralTabButton" type="button" class="settings-tab-button active" role="tab" aria-selected="true" aria-controls="settingsGeneralPanel"></button>
@@ -3025,7 +3031,7 @@
     <div id="imagePreviewOverlay" class="overlay-shell image-preview-overlay media-overlay" aria-hidden="true">
       <aside class="panel image-preview-panel media-overlay-panel" role="dialog" aria-modal="true" aria-labelledby="imagePreviewTitle">
         <div class="panel-inner">
-          <div class="overlay-header" data-overlay-title-id="imagePreviewTitle" data-overlay-close-id="closeImagePreviewButton"></div>
+          <div class="overlay-header" data-overlay-title-id="imagePreviewTitle" data-overlay-action-id="downloadImagePreviewButton" data-overlay-action-icon="export" data-overlay-close-id="closeImagePreviewButton"></div>
           <div class="image-preview-body">
             <img id="imagePreviewImage">
           </div>
@@ -3286,6 +3292,21 @@
             id: header.dataset.overlayCloseId || ""
           }
         });
+        if (header.dataset.overlayActionId) {
+          const actions = createDiv("overlay-header-actions");
+          actions.append(
+            createIconButton({
+              className: "toolbar-icon-button ghost-button",
+              iconName: header.dataset.overlayActionIcon || "",
+              attributes: {
+                id: header.dataset.overlayActionId
+              }
+            }),
+            closeButton
+          );
+          header.append(title, actions);
+          return;
+        }
         header.append(title, closeButton);
       });
     }
@@ -3599,6 +3620,8 @@
         clearImage: "이미지 삭제",
         imagePreview: "이미지 미리보기",
         imagePreviewAlt: "확대된 첨부 이미지",
+        downloadImage: "이미지 다운로드",
+        imageDownloadFailed: ({ error }) => `이미지 다운로드 실패: ${error}`,
         cropTitle: "정사각형 이미지 자르기",
         cropViewport: "정사각형 자르기 영역",
         cropPreviewAlt: "자르기 미리보기",
@@ -3946,6 +3969,8 @@
         clearImage: "Remove image",
         imagePreview: "Image preview",
         imagePreviewAlt: "Expanded attachment preview",
+        downloadImage: "Download image",
+        imageDownloadFailed: ({ error }) => `Failed to download image: ${error}`,
         cropTitle: "Square image crop",
         cropViewport: "Square crop area",
         cropPreviewAlt: "Crop preview",
@@ -4233,6 +4258,7 @@
       closeCharacterOverlayButton: document.getElementById("closeCharacterOverlayButton"),
       closePersonaOverlayButton: document.getElementById("closePersonaOverlayButton"),
       closeTalkGroupMemberOverlayButton: document.getElementById("closeTalkGroupMemberOverlayButton"),
+      downloadImagePreviewButton: document.getElementById("downloadImagePreviewButton"),
       closeImagePreviewButton: document.getElementById("closeImagePreviewButton"),
       closeRpImageCropButton: document.getElementById("closeRpImageCropButton"),
       settingsSection: document.getElementById("settingsSection"),
@@ -4454,6 +4480,7 @@
     const assistantMessageHtmlCache = new WeakMap();
     const messageArticleElementCache = new Map();
     const mediaDataUrlCache = new Map();
+    let imagePreviewDownload = null;
     const rpCardListRenderSignatures = {
       character: "",
       persona: ""
@@ -4585,6 +4612,7 @@
         [elements.closeCharacterOverlayButton, () => closeOverlay(elements.characterOverlay)],
         [elements.closePersonaOverlayButton, () => closeOverlay(elements.personaOverlay)],
         [elements.closeTalkGroupMemberOverlayButton, () => closeOverlay(elements.talkGroupMemberOverlay)],
+        [elements.downloadImagePreviewButton, downloadImagePreview],
         [elements.closeImagePreviewButton, closeImagePreview],
         [elements.closeRpImageCropButton, () => cancelRpImageCrop({ silent: true })],
         [elements.settingsGeneralTabButton, () => setSettingsOverlayTab("general")],
@@ -8311,13 +8339,33 @@
       elements.imagePreviewImage.src = dataUrl;
       elements.imagePreviewImage.alt = attachment.name || "확대된 첨부 이미지";
       elements.imagePreviewCaption.textContent = attachment.name || "";
+      imagePreviewDownload = {
+        dataUrl,
+        mimeType: attachment.mimeType || "image/png"
+      };
       openOverlay(elements.imagePreviewOverlay);
+    }
+    function downloadImagePreview() {
+      if (!imagePreviewDownload?.dataUrl) {
+        return;
+      }
+      try {
+        const parsedImage = parseSupportedImageDataUrl(imagePreviewDownload.dataUrl);
+        const extension = getImageFileExtension(parsedImage.mimeType || imagePreviewDownload.mimeType);
+        const fileName = `${buildTimestampForFilename({ includeMilliseconds: true })}.${extension}`;
+        const blob = new Blob([base64ToBytes(extractBase64Payload(parsedImage.dataUrl))], { type: parsedImage.mimeType });
+        triggerBlobDownload(blob, fileName);
+      } catch (error) {
+        console.error("Image preview download failed", error);
+        setChatStatus(t("imageDownloadFailed", { error: error.message }), "error");
+      }
     }
     function closeImagePreview() {
       closeOverlay(elements.imagePreviewOverlay);
       elements.imagePreviewImage.removeAttribute("src");
       elements.imagePreviewImage.alt = "확대된 첨부 이미지";
       elements.imagePreviewCaption.textContent = "";
+      imagePreviewDownload = null;
     }
     async function openRpImageCrop(kind, file) {
       validateImageUploadFile(file);
@@ -14878,6 +14926,7 @@
       applyRpCardPanelTranslations("persona");
       applyElementTranslationBindings([
         ["text", "imagePreviewTitle", "imagePreview"],
+        ["title", "downloadImagePreviewButton", "downloadImage"],
         ["text", "closeImagePreviewButton", "close"],
         ["text", "rpImageCropTitle", "cropTitle"],
         ["text", "closeRpImageCropButton", "close"],
@@ -14971,8 +15020,8 @@
       const diffDays = Math.floor(diffHours / 24);
       return t("daysAgo", { count: diffDays });
     }
-    function buildTimestampForFilename() {
-      const date = new Date();
+    function buildTimestampForFilename(options = {}) {
+      const date = options.date instanceof Date ? options.date : new Date();
       const datePart = [
         date.getFullYear(),
         String(date.getMonth() + 1).padStart(2, "0"),
@@ -14983,7 +15032,10 @@
         String(date.getMinutes()).padStart(2, "0"),
         String(date.getSeconds()).padStart(2, "0")
       ].join("");
-      return `${datePart}-${timePart}`;
+      const millisecondPart = options.includeMilliseconds
+        ? `-${String(date.getMilliseconds()).padStart(3, "0")}`
+        : "";
+      return `${datePart}-${timePart}${millisecondPart}`;
     }
     function sanitizeDownloadFileName(value, fallback = "download") {
       const normalized = String(value || "")
