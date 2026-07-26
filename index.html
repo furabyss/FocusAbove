@@ -3023,6 +3023,9 @@
                   <label>
                     <input id="ttsTemperatureInput" type="number" min="0.1" max="2" step="0.1">
                   </label>
+                  <label>
+                    <input id="ttsChunkLengthInput" type="number" min="100" max="4000" step="50" inputmode="numeric">
+                  </label>
                   <div class="tts-profile-preset-row">
                     <label>
                       <select id="ttsProfilePresetSelect"></select>
@@ -3654,6 +3657,7 @@
         ttsVoicePlaceholder: "예: alloy",
         ttsCustomVoiceId: "커스텀 음성 ID",
         ttsTemperature: "TTS 온도",
+        ttsChunkLength: "청크당 최대 글자 수",
         ttsAudioProfile: "오디오 프로필",
         ttsAudioProfilePlaceholder: "화자의 성별, 나이대, 성격, 직업적 페르소나, 말투와 속도 등을 작성하세요. 모델이 지원하는 경우 instructions로 전달됩니다.",
         ttsProfilePreset: "오디오 프로필 프리셋",
@@ -4042,6 +4046,7 @@
         ttsVoicePlaceholder: "e.g. alloy",
         ttsCustomVoiceId: "Custom voice ID",
         ttsTemperature: "TTS temperature",
+        ttsChunkLength: "Maximum characters per chunk",
         ttsAudioProfile: "Audio profile",
         ttsAudioProfilePlaceholder: "Describe the speaker's gender, age range, personality, professional persona, delivery, and pace. Sent as instructions when supported by the model.",
         ttsProfilePreset: "Audio profile preset",
@@ -4298,6 +4303,9 @@
     function getDefaultModelAlias(language = DEFAULT_APP_LANGUAGE) {
       return DEFAULT_MODEL_ALIASES[normalizeAppLanguage(language)] || DEFAULT_MODEL_ALIASES.ko;
     }
+    const TTS_TEXT_CHUNK_MIN_LENGTH = 100;
+    const TTS_TEXT_CHUNK_MAX_LENGTH = 4000;
+    const TTS_TEXT_CHUNK_DEFAULT_LENGTH = 300;
     function createDefaultSettings(language = DEFAULT_APP_LANGUAGE) {
       const normalizedLanguage = normalizeAppLanguage(language);
       return {
@@ -4312,7 +4320,8 @@
         ttsModel: "",
         ttsVoice: "",
         ttsCustomVoiceEnabled: false,
-        ttsTemperature: null,
+        ttsTemperature: 0.2,
+        ttsChunkLength: TTS_TEXT_CHUNK_DEFAULT_LENGTH,
         ttsAudioProfile: "",
         ttsProfilePresetId: "",
         ttsProfilePresets: [],
@@ -4348,6 +4357,7 @@
       ["kokoro", /kokoro/i, "af_heart", "af_heart af_alloy af_aoede af_bella af_jessica af_kore af_nicole af_nova af_river af_sarah af_sky am_adam am_echo am_eric am_fenrir am_liam am_michael am_onyx am_puck am_santa bf_alice bf_emma bf_isabella bf_lily bm_daniel bm_fable bm_george bm_lewis jf_alpha jf_gongitsune jf_nezumi jf_tebukuro jm_kumo zf_xiaobei zf_xiaoni zf_xiaoxiao zf_xiaoyi zm_yunjian zm_yunxi zm_yunxia zm_yunyang ef_dora em_alex em_santa ff_siwis hf_alpha hf_beta hm_omega hm_psi if_sara im_nicola pf_dora pm_alex pm_santa"],
       ["orpheus", /orpheus/i, "tara", "tara leah jess leo dan mia zac zoe"]
     ].map(([id, modelPattern, defaultVoice, voices]) => ({ id, modelPattern, defaultVoice, voices: voices.split(" ") }));
+    const TTS_PACING_INSTRUCTIONS = "Use natural conversational pacing. Keep pauses brief and do not generate prolonged silence, including around ellipses or paragraph breaks.";
     const DEFAULT_RP_RESPONSE_PERSPECTIVE = "character-first-person";
     const DEFAULT_RP_RESPONSE_LENGTH = "";
     const DEFAULT_RP_ILLUSTRATION_SETTINGS = {
@@ -4392,26 +4402,8 @@
       activeMode: "chat",
       activeChatId: "",
       chats: [],
-      rp: {
-        characterCards: [],
-        activeCharacterId: "",
-        personaCards: [],
-        activePersonaId: "",
-        responsePerspective: DEFAULT_RP_RESPONSE_PERSPECTIVE,
-        responseLength: DEFAULT_RP_RESPONSE_LENGTH,
-        illustration: { ...DEFAULT_RP_ILLUSTRATION_SETTINGS },
-        assistance: { ...DEFAULT_RP_ASSISTANCE_SETTINGS },
-        chatsByCharacterId: {},
-        activeChatIdsByCharacterId: {}
-      },
-      talk: {
-        characterCards: [],
-        activeCharacterId: "",
-        personaCards: [],
-        activePersonaId: "",
-        chatsByCharacterId: {},
-        activeChatIdsByCharacterId: {}
-      }
+      rp: createDefaultRpState(),
+      talk: createDefaultTalkState()
     };
     const elements = {
       appShell: document.getElementById("appShell"),
@@ -4602,6 +4594,7 @@
       ttsVoiceCustomField: document.getElementById("ttsVoiceCustomField"),
       ttsVoiceInput: document.getElementById("ttsVoiceInput"),
       ttsTemperatureInput: document.getElementById("ttsTemperatureInput"),
+      ttsChunkLengthInput: document.getElementById("ttsChunkLengthInput"),
       ttsProfilePresetSelect: document.getElementById("ttsProfilePresetSelect"),
       deleteTtsProfilePresetButton: document.getElementById("deleteTtsProfilePresetButton"),
       ttsAudioProfileInput: document.getElementById("ttsAudioProfileInput"),
@@ -4667,7 +4660,7 @@
     let isRefreshingTtsModels = false;
     let ttsPlaybackRunId = 0;
     let ttsPlaybackMessageId = "";
-    let ttsPlaybackAbortController = null;
+    let ttsRequestAbortController = null;
     let ttsPlaybackAudio = null;
     let ttsPlaybackObjectUrl = "";
     let currentStreamingMessageId = "";
@@ -5139,7 +5132,10 @@
         ttsModel: typeof parsed?.settings?.ttsModel === "string" ? parsed.settings.ttsModel : DEFAULT_SETTINGS.ttsModel,
         ttsVoice: typeof parsed?.settings?.ttsVoice === "string" && parsed.settings.ttsVoice.trim() ? parsed.settings.ttsVoice.trim() : DEFAULT_SETTINGS.ttsVoice,
         ttsCustomVoiceEnabled: normalizeTtsCustomVoiceEnabled(parsed?.settings),
-        ttsTemperature: normalizeOptionalNumber(parsed?.settings?.ttsTemperature, { min: 0.1, max: 2 }),
+        ttsTemperature: Object.prototype.hasOwnProperty.call(parsed?.settings || {}, "ttsTemperature")
+          ? normalizeOptionalNumber(parsed.settings.ttsTemperature, { min: 0.1, max: 2 })
+          : DEFAULT_SETTINGS.ttsTemperature,
+        ttsChunkLength: normalizeTtsChunkLength(parsed?.settings?.ttsChunkLength),
         ttsAudioProfile: typeof parsed?.settings?.ttsAudioProfile === "string" ? parsed.settings.ttsAudioProfile : DEFAULT_SETTINGS.ttsAudioProfile,
         ttsProfilePresetId: normalizeTtsProfilePresetId(parsed?.settings?.ttsProfilePresetId, ttsProfilePresets),
         ttsProfilePresets,
@@ -7251,6 +7247,7 @@
       elements.ttsVoiceInput.value = state.settings.ttsVoice || DEFAULT_SETTINGS.ttsVoice;
       elements.ttsCustomVoiceInput.checked = state.settings.ttsCustomVoiceEnabled === true;
       elements.ttsTemperatureInput.value = state.settings.ttsTemperature ?? "";
+      elements.ttsChunkLengthInput.value = normalizeTtsChunkLength(state.settings.ttsChunkLength);
       elements.ttsAudioProfileInput.value = state.settings.ttsAudioProfile || "";
       elements.ttsProfilePresetNameInput.value = "";
       renderTtsModelOptions();
@@ -7318,6 +7315,7 @@
       [
         elements.ttsModelInput,
         elements.ttsTemperatureInput,
+        elements.ttsChunkLengthInput,
         elements.ttsProfilePresetSelect,
         elements.ttsAudioProfileInput,
         elements.ttsProfilePresetNameInput,
@@ -8492,7 +8490,7 @@
       state.settings.imageApiKey = nextDefaultSettings.imageApiKey;
       [
         "ttsEnabled", "ttsUseLlmApi", "ttsApiBaseUrl", "ttsApiKey", "ttsModel", "ttsVoice",
-        "ttsCustomVoiceEnabled", "ttsTemperature", "ttsAudioProfile", "ttsProfilePresetId", "ttsProfilePresets"
+        "ttsCustomVoiceEnabled", "ttsTemperature", "ttsChunkLength", "ttsAudioProfile", "ttsProfilePresetId", "ttsProfilePresets"
       ].forEach((key) => {
         state.settings[key] = nextDefaultSettings[key];
       });
@@ -8606,6 +8604,8 @@
         ? elements.ttsCustomVoiceInput.checked
         : true;
       state.settings.ttsTemperature = normalizeOptionalNumber(elements.ttsTemperatureInput.value, { min: 0.1, max: 2 });
+      state.settings.ttsChunkLength = normalizeTtsChunkLength(elements.ttsChunkLengthInput.value);
+      elements.ttsChunkLengthInput.value = state.settings.ttsChunkLength;
       state.settings.ttsAudioProfile = elements.ttsAudioProfileInput.value.trim();
       state.settings.ttsProfilePresetId = normalizeTtsProfilePresetId(elements.ttsProfilePresetSelect.value, getCustomTtsProfilePresets());
       try {
@@ -9229,10 +9229,7 @@
       const rpLikeState = getActiveRpLikeState();
       getRpCardCollection(kind).unshift(card);
       if (kind === "character") {
-        rpLikeState.activeCharacterId = card.id;
-        rpLikeState.chatsByCharacterId[card.id] = [createChatRecord({ characterCardId: card.id, chatMode: getActiveRpLikeChatMode() })];
-        rpLikeState.activeChatIdsByCharacterId[card.id] = rpLikeState.chatsByCharacterId[card.id][0].id;
-        resetModelSettingsDraft();
+        activateNewRpCharacterChat(rpLikeState, card);
       } else {
         rpLikeState.activePersonaId = card.id;
       }
@@ -9262,10 +9259,7 @@
         updatedAt: createdAt
       };
       rpLikeState.characterCards.unshift(card);
-      rpLikeState.activeCharacterId = card.id;
-      rpLikeState.chatsByCharacterId[card.id] = [createChatRecord({ characterCardId: card.id, chatMode: "talk" })];
-      rpLikeState.activeChatIdsByCharacterId[card.id] = rpLikeState.chatsByCharacterId[card.id][0].id;
-      resetModelSettingsDraft();
+      activateNewRpCharacterChat(rpLikeState, card, "talk");
       resetRpCardDraft("character");
       renderAll();
       setChatStatus(t("rpCardCreated", { kind: t("groupChat") }), "success");
@@ -9313,6 +9307,13 @@
       draft.profileImage = null;
       void saveRpCard(kind);
     }
+    function activateNewRpCharacterChat(rpLikeState, card, chatMode = getActiveRpLikeChatMode()) {
+      const chat = createChatRecord({ characterCardId: card.id, chatMode });
+      rpLikeState.activeCharacterId = card.id;
+      rpLikeState.chatsByCharacterId[card.id] = [chat];
+      rpLikeState.activeChatIdsByCharacterId[card.id] = chat.id;
+      resetModelSettingsDraft();
+    }
     function resetLastRpCardToDefault(kind, card) {
       if (!card) {
         return;
@@ -9336,10 +9337,7 @@
             editingChatId = "";
           }
         });
-        rpLikeState.activeCharacterId = card.id;
-        rpLikeState.chatsByCharacterId[card.id] = [createChatRecord({ characterCardId: card.id, chatMode: getActiveRpLikeChatMode() })];
-        rpLikeState.activeChatIdsByCharacterId[card.id] = rpLikeState.chatsByCharacterId[card.id][0].id;
-        resetModelSettingsDraft();
+        activateNewRpCharacterChat(rpLikeState, card);
       } else {
         getActiveRpLikeState().activePersonaId = card.id;
       }
@@ -10154,28 +10152,41 @@
         setChatStatus(t("ttsModelRequired"), "error");
         return;
       }
-      const chunks = splitTtsText(prepareMessageTextForTts(message));
+      const chunks = splitTtsText(prepareMessageTextForTts(message), state.settings.ttsChunkLength);
       if (!chunks.length) {
         return;
       }
       const runId = ++ttsPlaybackRunId;
+      const requestAbortController = new AbortController();
+      const audioAbortController = new AbortController();
+      const abortAudioPlayback = () => audioAbortController.abort();
+      requestAbortController.signal.addEventListener("abort", abortAudioPlayback, { once: true });
       ttsPlaybackMessageId = messageId;
-      ttsPlaybackAbortController = new AbortController();
+      ttsRequestAbortController = requestAbortController;
       refreshActiveMessageMetaActions();
       setChatStatus(t("ttsPreparing"));
+      const requestChunkAudio = (chunk) => requestTtsAudioBlob(apiBase, chunk, requestAbortController.signal)
+        .then((audioBlob) => ({ audioBlob, error: null }), (error) => ({ audioBlob: null, error }));
+      let pendingAudioResult = requestChunkAudio(chunks[0]);
       try {
-        for (const chunk of chunks) {
+        for (let chunkIndex = 0; chunkIndex < chunks.length; chunkIndex += 1) {
           if (runId !== ttsPlaybackRunId) {
             return;
           }
-          const audioBlob = await requestTtsAudioBlob(apiBase, chunk, ttsPlaybackAbortController.signal);
+          const { audioBlob, error } = await pendingAudioResult;
+          if (error) {
+            throw error;
+          }
           if (runId !== ttsPlaybackRunId) {
             return;
           }
+          pendingAudioResult = chunkIndex + 1 < chunks.length
+            ? requestChunkAudio(chunks[chunkIndex + 1])
+            : null;
           releaseTtsPlaybackAudio();
           ttsPlaybackObjectUrl = URL.createObjectURL(audioBlob);
           ttsPlaybackAudio = new Audio(ttsPlaybackObjectUrl);
-          await playTtsAudioToEnd(ttsPlaybackAudio, ttsPlaybackAbortController.signal);
+          await playTtsAudioToEnd(ttsPlaybackAudio, audioAbortController.signal);
           releaseTtsPlaybackAudio();
         }
       } catch (error) {
@@ -10184,9 +10195,20 @@
           setChatStatus(t("ttsPlaybackFailed", { error: error.message }), "error");
         }
       } finally {
+        requestAbortController.signal.removeEventListener("abort", abortAudioPlayback);
+        audioAbortController.abort();
+        const clearRequestAbortController = () => {
+          if (ttsRequestAbortController === requestAbortController) {
+            ttsRequestAbortController = null;
+          }
+        };
+        if (pendingAudioResult) {
+          void pendingAudioResult.then(clearRequestAbortController);
+        } else {
+          clearRequestAbortController();
+        }
         if (runId === ttsPlaybackRunId) {
           releaseTtsPlaybackAudio();
-          ttsPlaybackAbortController = null;
           ttsPlaybackMessageId = "";
           refreshActiveMessageMetaActions();
         }
@@ -10194,8 +10216,8 @@
     }
     function stopTtsPlayback() {
       ttsPlaybackRunId += 1;
-      ttsPlaybackAbortController?.abort();
-      ttsPlaybackAbortController = null;
+      ttsRequestAbortController?.abort();
+      ttsRequestAbortController = null;
       releaseTtsPlaybackAudio();
       const hadActiveMessage = Boolean(ttsPlaybackMessageId);
       ttsPlaybackMessageId = "";
@@ -10216,30 +10238,79 @@
     }
     function playTtsAudioToEnd(audio, signal) {
       return new Promise((resolve, reject) => {
+        let settled = false;
+        let resumeAttempted = false;
+        let watchdogTimerId = 0;
         const cleanup = () => {
+          clearTimeout(watchdogTimerId);
           audio.removeEventListener("ended", handleEnded);
           audio.removeEventListener("error", handleError);
+          audio.removeEventListener("pause", handlePause);
+          audio.removeEventListener("loadedmetadata", scheduleWatchdog);
+          audio.removeEventListener("durationchange", scheduleWatchdog);
           signal?.removeEventListener("abort", handleAbort);
         };
-        const handleEnded = () => {
+        const settle = (callback, value) => {
+          if (settled) {
+            return;
+          }
+          settled = true;
           cleanup();
-          resolve();
+          callback(value);
+        };
+        const isAtPlaybackEnd = () => audio.ended || (
+          Number.isFinite(audio.duration)
+          && audio.duration > 0
+          && audio.currentTime >= Math.max(0, audio.duration - 0.15)
+        );
+        function scheduleWatchdog() {
+          clearTimeout(watchdogTimerId);
+          const remainingSeconds = Number.isFinite(audio.duration) && audio.duration > 0
+            ? Math.max(0, audio.duration - audio.currentTime)
+            : 180;
+          const timeoutMs = Math.max(30_000, remainingSeconds * 1_500 + 15_000);
+          watchdogTimerId = setTimeout(() => {
+            if (isAtPlaybackEnd()) {
+              settle(resolve);
+              return;
+            }
+            settle(reject, new Error("Audio playback timed out"));
+          }, timeoutMs);
+        }
+        const handleEnded = () => {
+          settle(resolve);
         };
         const handleError = () => {
-          cleanup();
-          reject(new Error(audio.error?.message || "Audio playback failed"));
+          settle(reject, new Error(audio.error?.message || "Audio playback failed"));
         };
         const handleAbort = () => {
-          cleanup();
-          reject(new DOMException("Aborted", "AbortError"));
+          settle(reject, new DOMException("Aborted", "AbortError"));
+        };
+        const handlePause = () => {
+          if (isAtPlaybackEnd()) {
+            settle(resolve);
+            return;
+          }
+          if (signal?.aborted) {
+            handleAbort();
+            return;
+          }
+          if (resumeAttempted) {
+            settle(reject, new Error("Audio playback stopped before completion"));
+            return;
+          }
+          resumeAttempted = true;
+          scheduleWatchdog();
+          Promise.resolve(audio.play()).catch((error) => settle(reject, error));
         };
         audio.addEventListener("ended", handleEnded, { once: true });
         audio.addEventListener("error", handleError, { once: true });
+        audio.addEventListener("pause", handlePause);
+        audio.addEventListener("loadedmetadata", scheduleWatchdog);
+        audio.addEventListener("durationchange", scheduleWatchdog);
         signal?.addEventListener("abort", handleAbort, { once: true });
-        Promise.resolve(audio.play()).catch((error) => {
-          cleanup();
-          reject(error);
-        });
+        scheduleWatchdog();
+        Promise.resolve(audio.play()).catch((error) => settle(reject, error));
       });
     }
     async function requestTtsAudioBlob(apiBase, input, signal) {
@@ -10256,10 +10327,9 @@
       if (temperature !== null) {
         requestBody.temperature = temperature;
       }
-      const instructions = trimmed(state.settings.ttsAudioProfile);
-      if (instructions) {
-        requestBody.instructions = instructions;
-      }
+      requestBody.instructions = [trimmed(state.settings.ttsAudioProfile), TTS_PACING_INSTRUCTIONS]
+        .filter(Boolean)
+        .join("\n");
       const response = await fetch(`${apiBase}/audio/speech`, {
         method: "POST",
         headers: {
@@ -10285,7 +10355,7 @@
       return blob;
     }
     function prepareMessageTextForTts(message) {
-      return replaceRpPromptPlaceholders(String(message?.content || ""), getMessageRpPlaceholders(message))
+      const text = replaceRpPromptPlaceholders(String(message?.content || ""), getMessageRpPlaceholders(message))
         .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
         .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
         .replace(/^\s*```[^\n]*$/gm, "")
@@ -10294,11 +10364,24 @@
         .replace(/^\s*[-*+]\s+/gm, "")
         .replace(/^\s*\d+[.)]\s+/gm, "")
         .replace(/[*_~]+/g, "")
-        .replace(/<[^>]+>/g, " ")
-        .replace(/\n{3,}/g, "\n\n")
+        .replace(/<[^>]+>/g, " ");
+      return normalizeTtsSpeechPunctuation(text);
+    }
+    function normalizeTtsSpeechPunctuation(value) {
+      return String(value || "")
+        .replace(/(?:\.{2,}|。{2,}|[…⋯]+)/g, ", ")
+        .replace(/[!?！？]{2,}/g, (sequence) => sequence.slice(-1))
+        .replace(/[—–]+/g, ", ")
+        .replace(/\s+--+\s+/g, ", ")
+        .replace(/\s*\n+\s*/g, " ")
+        .replace(/(?:,\s*){2,}/g, ", ")
+        .replace(/,\s*([!?！？])/g, "$1")
+        .replace(/([.!?。！？])\s*,\s*/g, "$1 ")
+        .replace(/[ \t]{2,}/g, " ")
         .trim();
     }
-    function splitTtsText(value, maxLength = 3800) {
+    function splitTtsText(value, maxLength = TTS_TEXT_CHUNK_DEFAULT_LENGTH) {
+      maxLength = normalizeTtsChunkLength(maxLength);
       let remaining = trimmed(value);
       const chunks = [];
       while (remaining) {
@@ -10308,12 +10391,20 @@
         }
         const minimumSplit = Math.floor(maxLength * 0.6);
         const windowText = remaining.slice(0, maxLength + 1);
-        const boundaryMatches = [...windowText.matchAll(/[.!?。！？]\s+|\n+/g)]
+        const boundaryMatches = [...windowText.matchAll(/[.!?。！？]+["'”’」』)\]}]*(?:\s+)?|\n+/g)]
           .map((match) => match.index + match[0].length)
-          .filter((index) => index >= minimumSplit && index <= maxLength);
-        let splitAt = boundaryMatches[boundaryMatches.length - 1] || windowText.lastIndexOf(" ", maxLength);
-        if (splitAt < minimumSplit) {
+          .filter((index) => index > 0 && index <= maxLength);
+        const preferredBoundaryMatches = boundaryMatches.filter((index) => index >= minimumSplit);
+        let splitAt = preferredBoundaryMatches[preferredBoundaryMatches.length - 1]
+          || boundaryMatches[boundaryMatches.length - 1]
+          || windowText.lastIndexOf(" ", maxLength);
+        if (splitAt <= 0) {
           splitAt = maxLength;
+        }
+        const previousCodeUnit = remaining.charCodeAt(splitAt - 1);
+        const nextCodeUnit = remaining.charCodeAt(splitAt);
+        if (previousCodeUnit >= 0xD800 && previousCodeUnit <= 0xDBFF && nextCodeUnit >= 0xDC00 && nextCodeUnit <= 0xDFFF) {
+          splitAt -= 1;
         }
         chunks.push(remaining.slice(0, splitAt).trim());
         remaining = remaining.slice(splitAt).trim();
@@ -10559,9 +10650,7 @@
         setChatStatus(t("selectChatTabFirst"), "error");
         return;
       }
-      if (hasEditingMessageInChat(activeChat)) {
-        setChatStatus(t("saveMessageEditsFirst"), "error");
-        focusMessageEditor(editingMessageId);
+      if (preventActionWhileEditingMessage(activeChat)) {
         return;
       }
       if (wasEmptyRpInput) {
@@ -10803,24 +10892,23 @@
         .reverse()
         .find((message) => message?.role === "user") || null;
     }
+    const TALK_IMAGE_SUBJECT_PATTERN = /(?:사진|셀카|이미지|그림|일러스트|삽화|스케치|낙서|photo|picture|image|selfie|drawing|illustration|sketch|pic)/i;
     function hasExplicitTalkImageRequest(message) {
       const text = String(message?.content || "").toLowerCase();
       if (!text.trim()) {
         return false;
       }
-      const imageSubjectPattern = /(?:사진|셀카|이미지|그림|일러스트|삽화|스케치|낙서|photo|picture|image|selfie|drawing|illustration|sketch|pic)/i;
       const requestActionPattern = /(?:보내|보여|찍어|그려|만들|생성|제작|첨부|공유|올려|줘|줄래|부탁|send|show|share|take|attach|upload|draw|generate|create|make|paint|let me see|can i see|could i see)/i;
-      return imageSubjectPattern.test(text) && requestActionPattern.test(text);
+      return TALK_IMAGE_SUBJECT_PATTERN.test(text) && requestActionPattern.test(text);
     }
     function hasExplicitTalkAssistantImageAttachment(message) {
       const text = String(message?.content || "").toLowerCase();
       if (!text.trim()) {
         return false;
       }
-      const imageSubjectPattern = /(?:사진|셀카|이미지|그림|일러스트|삽화|스케치|낙서|photo|picture|image|selfie|drawing|illustration|sketch|pic)/i;
       const attachmentActionPattern = /(?:보낼게|보내줄게|보여줄게|찍어서|찍어봤|그려봤|첨부|공유할게|올릴게|send|sending|showing|attach|attaching|share|sharing|uploading|drew|drawn|sketched|here'?s|here is)/i;
       const vagueAttachmentPattern = /^(?:사진|셀카|이미지|그림|photo|picture|image|selfie|drawing)[\s.!?~]*$/i;
-      return imageSubjectPattern.test(text)
+      return TALK_IMAGE_SUBJECT_PATTERN.test(text)
         && attachmentActionPattern.test(text)
         && !vagueAttachmentPattern.test(text);
     }
@@ -10892,9 +10980,7 @@
       }
       stopTtsPlayback();
       const activeChat = getActiveChat();
-      if (hasEditingMessageInChat(activeChat)) {
-        setChatStatus(t("saveMessageEditsFirst"), "error");
-        focusMessageEditor(editingMessageId);
+      if (preventActionWhileEditingMessage(activeChat)) {
         return;
       }
       const assistantIndex = activeChat?.messages.findIndex((message) => message.id === messageId) ?? -1;
@@ -10966,9 +11052,7 @@
         return;
       }
       const activeChat = getActiveChat();
-      if (hasEditingMessageInChat(activeChat)) {
-        setChatStatus(t("saveMessageEditsFirst"), "error");
-        focusMessageEditor(editingMessageId);
+      if (preventActionWhileEditingMessage(activeChat)) {
         return;
       }
       const targetMessage = findMessageInChat(activeChat, messageId);
@@ -11714,22 +11798,14 @@
       const persona = getRpCardById("persona", message?.personaCardId || state.rp.activePersonaId);
       const rpPlaceholders = createRpPromptPlaceholders({ character, persona });
       const settings = normalizeRpIllustrationSettings(illustrationSettings);
-      if (isWorldRpCard(character)) {
-        return [
-          "[Visual World Card Details]",
-          character?.name ? `World: ${character.name}` : "",
-          character?.description ? `World settings: ${trimForAuxiliaryPrompt(replaceRpPromptPlaceholders(character.description, rpPlaceholders), 1100)}` : "",
-          character?.mainCharacterDescription
-            ? `Major characters: ${trimForAuxiliaryPrompt(replaceRpPromptPlaceholders(character.mainCharacterDescription, rpPlaceholders), 900)}`
-            : "",
-          !settings.ignoreNonCharacterPeople && persona?.name ? `Persona: ${persona.name}` : "",
-          !settings.ignoreNonCharacterPeople && persona?.description ? `Persona card: ${trimForAuxiliaryPrompt(replaceRpPromptPlaceholders(persona.description, rpPlaceholders), 700)}` : ""
-        ].filter(Boolean).join("\n");
-      }
+      const worldCard = isWorldRpCard(character);
       return [
-        "[Visual Card Details]",
-        character?.name ? `Character: ${character.name}` : "",
-        character?.description ? `Character card: ${trimForAuxiliaryPrompt(replaceRpPromptPlaceholders(character.description, rpPlaceholders), 1100)}` : "",
+        worldCard ? "[Visual World Card Details]" : "[Visual Card Details]",
+        character?.name ? `${worldCard ? "World" : "Character"}: ${character.name}` : "",
+        character?.description ? `${worldCard ? "World settings" : "Character card"}: ${trimForAuxiliaryPrompt(replaceRpPromptPlaceholders(character.description, rpPlaceholders), 1100)}` : "",
+        worldCard && character?.mainCharacterDescription
+          ? `Major characters: ${trimForAuxiliaryPrompt(replaceRpPromptPlaceholders(character.mainCharacterDescription, rpPlaceholders), 900)}`
+          : "",
         !settings.ignoreNonCharacterPeople && persona?.name ? `Persona: ${persona.name}` : "",
         !settings.ignoreNonCharacterPeople && persona?.description ? `Persona card: ${trimForAuxiliaryPrompt(replaceRpPromptPlaceholders(persona.description, rpPlaceholders), 700)}` : ""
       ].filter(Boolean).join("\n");
@@ -12531,30 +12607,34 @@
         performStreamingMessageDomUpdate(nextMessage);
       });
     }
+    function updateMessageArticleContent(refs, message, chat) {
+      if (refs.timeElement) {
+        refs.timeElement.textContent = formatDate(message.timestamp, true);
+      }
+      if (refs.contentElement) {
+        renderMessageContent(refs.contentElement, message, chat);
+      }
+    }
+    function refreshAssistantMessageFooter(refs, message) {
+      if (message.role !== "assistant") {
+        return;
+      }
+      const nextFooter = createAssistantFooter(message);
+      if (refs.footerElement) {
+        refs.footerElement.replaceWith(nextFooter);
+      } else {
+        refs.article.appendChild(nextFooter);
+      }
+      refs.footerElement = nextFooter;
+    }
     function performStreamingMessageDomUpdate(message) {
       const refs = getMessageArticleElements(message.id);
       if (!refs?.article) {
         renderActiveChat();
         return;
       }
-      const timeElement = refs.timeElement;
-      if (timeElement) {
-        timeElement.textContent = formatDate(message.timestamp, true);
-      }
-      const contentElement = refs.contentElement;
-      if (contentElement) {
-        renderMessageContent(contentElement, message, getActiveChat());
-      }
-      if (message.role === "assistant") {
-        const footer = refs.footerElement;
-        const nextFooter = createAssistantFooter(message);
-        if (footer) {
-          footer.replaceWith(nextFooter);
-        } else {
-          refs.article.appendChild(nextFooter);
-        }
-        refs.footerElement = nextFooter;
-      }
+      updateMessageArticleContent(refs, message, getActiveChat());
+      refreshAssistantMessageFooter(refs, message);
       if (shouldAutoScrollDuringStreaming()) {
         scheduleStreamingAutoScroll();
       }
@@ -12572,30 +12652,14 @@
         cacheMessageArticleElements(article);
       } else {
         refs.article.classList.toggle("editing", isEditingMessage(message.id));
-        const timeElement = refs.timeElement;
-        if (timeElement) {
-          timeElement.textContent = formatDate(message.timestamp, true);
-        }
-        const contentElement = refs.contentElement;
-        if (contentElement) {
-          renderMessageContent(contentElement, message, chat);
-        }
+        updateMessageArticleContent(refs, message, chat);
         const metaActions = refs.metaActionsElement;
         if (metaActions) {
           const nextMetaActions = buildMessageMetaActions(chat, message);
           metaActions.replaceWith(nextMetaActions);
           refs.metaActionsElement = nextMetaActions;
         }
-        if (message.role === "assistant") {
-          const footer = refs.footerElement;
-          const nextFooter = createAssistantFooter(message);
-          if (footer) {
-            footer.replaceWith(nextFooter);
-          } else {
-            refs.article.appendChild(nextFooter);
-          }
-          refs.footerElement = nextFooter;
-        }
+        refreshAssistantMessageFooter(refs, message);
       }
       if (!scrollToBottom) {
         return;
@@ -13011,6 +13075,14 @@
     function hasEditingMessageInChat(chat) {
       return Boolean(chat && editingMessageId && chat.messages.some((message) => message.id === editingMessageId));
     }
+    function preventActionWhileEditingMessage(chat, statusKey = "saveMessageEditsFirst") {
+      if (!hasEditingMessageInChat(chat)) {
+        return false;
+      }
+      setChatStatus(t(statusKey), "error");
+      focusMessageEditor(editingMessageId);
+      return true;
+    }
     function toggleMessageEditing(chatId, messageId) {
       if (isSending) {
         return;
@@ -13027,9 +13099,7 @@
       if (ttsPlaybackMessageId === messageId) {
         stopTtsPlayback();
       }
-      if (hasEditingMessageInChat(chat)) {
-        setChatStatus(t("saveOpenMessageEditFirst"), "error");
-        focusMessageEditor(editingMessageId);
+      if (preventActionWhileEditingMessage(chat, "saveOpenMessageEditFirst")) {
         return;
       }
       const previousEditingMessageId = editingMessageId;
@@ -15405,6 +15475,12 @@
       const parsed = normalizeOptionalNumber(value, options);
       return typeof parsed === "number" ? Math.trunc(parsed) : null;
     }
+    function normalizeTtsChunkLength(value) {
+      return normalizeOptionalInteger(value, {
+        min: TTS_TEXT_CHUNK_MIN_LENGTH,
+        max: TTS_TEXT_CHUNK_MAX_LENGTH
+      }) ?? TTS_TEXT_CHUNK_DEFAULT_LENGTH;
+    }
     function normalizeThemeMode(value) {
       return ["system", "dark", "light"].includes(value) ? value : DEFAULT_SETTINGS.themeMode;
     }
@@ -15565,26 +15641,8 @@
         }
       });
     }
-    function applyTranslatedEntries(entries, setter) {
-      entries.forEach(([element, key]) => setter(element, t(key)));
-    }
-    function applyTranslatedTextContent(entries) {
-      applyTranslatedEntries(entries, setTextContentIfPresent);
-    }
-    function applyTranslatedPlaceholders(entries) {
-      applyTranslatedEntries(entries, setPlaceholderIfPresent);
-    }
-    function applyTranslatedFieldLabels(entries) {
-      applyTranslatedEntries(entries, setFieldLabel);
-    }
-    function applyTranslatedButtonTitles(entries) {
-      applyTranslatedEntries(entries, setButtonTitleAndAria);
-    }
     function applyTranslatedIndexedTextContent(elementsList, keys) {
       keys.forEach((key, index) => setTextContentIfPresent(elementsList[index], t(key)));
-    }
-    function applyTranslatedRangeFieldLabels(entries) {
-      applyTranslatedEntries(entries, setRangeFieldLabel);
     }
     function applyElementTranslationBindings(bindings) {
       const setters = {
@@ -15779,6 +15837,7 @@
         ["field", "ttsVoiceSelect", "ttsVoice"],
         ["field", "ttsVoiceInput", "ttsVoice"],
         ["field", "ttsTemperatureInput", "ttsTemperature"],
+        ["field", "ttsChunkLengthInput", "ttsChunkLength"],
         ["field", "ttsProfilePresetSelect", "ttsProfilePreset"],
         ["field", "ttsAudioProfileInput", "ttsAudioProfile"],
         ["field", "ttsProfilePresetNameInput", "ttsProfilePresetName"],
