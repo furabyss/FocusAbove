@@ -2192,10 +2192,14 @@
     }
     .settings-tab-button {
       flex: 1 1 0;
-      padding: 8px 14px;
+      min-width: 0;
+      padding: 8px clamp(6px, 2vw, 14px);
       border-radius: 14px;
       background: rgba(var(--primary-rgb), 0.1);
       color: var(--primary-strong);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .settings-tab-button.active {
       background: var(--primary);
@@ -2224,6 +2228,37 @@
       padding-right: 0;
       padding-bottom: 0;
       background: var(--panel-solid);
+    }
+    .tts-general-settings,
+    .tts-api-settings,
+    .tts-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .tts-api-settings[aria-disabled="true"] {
+      opacity: 0.58;
+    }
+    .tts-profile-preset-row,
+    .tts-profile-save-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: end;
+    }
+    .tts-voice-controls,
+    .tts-voice-source-fields {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    #ttsAudioProfileInput {
+      min-height: 150px;
+    }
+    #ttsAudioProfileInput[readonly] {
+      cursor: not-allowed;
+      opacity: 0.72;
+      resize: none;
     }
     .settings-section {
       display: flex;
@@ -2614,6 +2649,8 @@
     <symbol id="icon-close" viewBox="0 0 24 24"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></symbol>
     <symbol id="icon-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"></path></symbol>
     <symbol id="icon-reroll" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.34 5.66"></path><path d="M20 4v7h-7"></path></symbol>
+    <symbol id="icon-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10-6.5z" fill="currentColor" stroke="none"></path></symbol>
+    <symbol id="icon-stop" viewBox="0 0 24 24"><rect x="6.5" y="6.5" width="11" height="11" rx="1" fill="currentColor" stroke="none"></rect></symbol>
     <symbol id="icon-gear" viewBox="0 0 24 24"><path d="M12 2l1.5 3 3.2-.5.8 3.1 3 1.4-1.7 3 1.7 3-3 1.4-.8 3.1-3.2-.5-1.5 3-1.5-3-3.2.5-.8-3.1-3-1.4 1.7-3-1.7-3 3-1.4.8-3.1 3.2.5z"></path><circle cx="12" cy="12" r="3.2"></circle></symbol>
     <symbol id="icon-brand" viewBox="0 0 64 64"><rect x="8" y="8" width="48" height="48" rx="14" fill="currentColor"></rect><circle cx="32" cy="32" r="13" fill="none" stroke="#fff7ee" stroke-width="6"></circle><circle cx="46" cy="18" r="3" fill="#fff7ee" fill-opacity="0.9"></circle></symbol>
   </svg>
@@ -2718,12 +2755,13 @@
             <section class="brand">
               <a class="brand-mark-link" href="https://github.com/furabyss/FocusAbove" target="_blank" rel="noopener noreferrer"><div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#icon-brand"></use></svg><span>FocusAbove</span></div></a>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.8.2, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.9.0, ⓒ 2026 Fur-Abyss</p>
             </section>
             <div class="settings-tab-strip" role="tablist">
               <button id="settingsGeneralTabButton" type="button" class="settings-tab-button active" role="tab" aria-selected="true" aria-controls="settingsGeneralPanel"></button>
               <button id="settingsModelTabButton" type="button" class="settings-tab-button" role="tab" aria-selected="false" aria-controls="settingsModelPanel"></button>
               <button id="settingsIllustrationTabButton" type="button" class="settings-tab-button" role="tab" aria-selected="false" aria-controls="settingsIllustrationPanel" hidden></button>
+              <button id="settingsTtsTabButton" type="button" class="settings-tab-button" role="tab" aria-selected="false" aria-controls="settingsTtsPanel"></button>
             </div>
             <section id="settingsGeneralPanel" class="settings-tab-panel" role="tabpanel" aria-labelledby="settingsGeneralTabButton">
               <section id="settingsSection" class="settings-section">
@@ -2741,6 +2779,23 @@
                   <label>
                     <input id="imageApiKeyInput" name="imageApiKey" type="password" placeholder="API Key" autocomplete="off">
                   </label>
+                  <hr class="settings-divider" aria-hidden="true">
+                  <div class="tts-general-settings">
+                    <label class="inline-checkbox" for="ttsEnabledInput">
+                      <input id="ttsEnabledInput" type="checkbox">
+                    </label>
+                    <label class="inline-checkbox sub-option" for="ttsUseLlmApiInput">
+                      <input id="ttsUseLlmApiInput" type="checkbox">
+                    </label>
+                    <div id="ttsApiSettings" class="tts-api-settings">
+                      <label>
+                        <input id="ttsApiBaseUrlInput" type="text" autocomplete="off">
+                      </label>
+                      <label>
+                        <input id="ttsApiKeyInput" type="password" placeholder="API Key" autocomplete="off">
+                      </label>
+                    </div>
+                  </div>
                   <hr class="settings-divider" aria-hidden="true">
                   <h2 id="settingsGeneralSectionTitle" class="section-title"></h2>
                   <div class="settings-inline-grid">
@@ -2943,6 +2998,51 @@
               <div class="button-row settings-tab-actions">
                 <button id="saveIllustrationSettingsButton" type="button"></button>
                 <button id="refreshImageModelsButton" type="button" class="ghost-button"></button>
+              </div>
+            </section>
+            <section id="settingsTtsPanel" class="settings-tab-panel" role="tabpanel" aria-labelledby="settingsTtsTabButton" hidden>
+              <section>
+                <h2 id="settingsTtsSectionTitle" class="section-title"></h2>
+                <div class="tts-controls">
+                  <label>
+                    <select id="ttsModelInput"></select>
+                  </label>
+                  <div class="tts-voice-controls">
+                    <label id="ttsCustomVoiceLabel" class="inline-checkbox" for="ttsCustomVoiceInput">
+                      <input id="ttsCustomVoiceInput" type="checkbox">
+                    </label>
+                    <div class="tts-voice-source-fields">
+                      <label id="ttsVoicePresetField">
+                        <select id="ttsVoiceSelect"></select>
+                      </label>
+                      <label id="ttsVoiceCustomField">
+                        <input id="ttsVoiceInput" type="text" autocomplete="off">
+                      </label>
+                    </div>
+                  </div>
+                  <label>
+                    <input id="ttsTemperatureInput" type="number" min="0.1" max="2" step="0.1">
+                  </label>
+                  <div class="tts-profile-preset-row">
+                    <label>
+                      <select id="ttsProfilePresetSelect"></select>
+                    </label>
+                    <button id="deleteTtsProfilePresetButton" type="button" class="ghost-button"></button>
+                  </div>
+                  <label>
+                    <textarea id="ttsAudioProfileInput"></textarea>
+                  </label>
+                  <div class="tts-profile-save-row">
+                    <label>
+                      <input id="ttsProfilePresetNameInput" type="text" autocomplete="off">
+                    </label>
+                    <button id="saveTtsProfilePresetButton" type="button" class="ghost-button"></button>
+                  </div>
+                </div>
+              </section>
+              <div class="button-row settings-tab-actions">
+                <button id="saveTtsSettingsButton" type="button"></button>
+                <button id="refreshTtsModelsButton" type="button" class="ghost-button"></button>
               </div>
             </section>
           </div>
@@ -3445,6 +3545,7 @@
         settingsGeneral: "일반",
         settingsModel: "모델",
         settingsIllustration: "이미지",
+        settingsTts: "TTS",
         connectionSettings: "연결 설정",
         generalSettingsSection: "일반 설정",
         apiBaseUrl: "API 주소",
@@ -3453,6 +3554,11 @@
         imageApiBaseUrl: "이미지 API 주소",
         imageApiBaseUrlPlaceholder: "예: http://127.0.0.1:7860",
         imageApiKey: "이미지 API 키",
+        ttsEnabled: "TTS 사용",
+        ttsUseLlmApi: "LLM API 정보 사용",
+        ttsApiBaseUrl: "TTS API 주소",
+        ttsApiBaseUrlPlaceholder: "예: http://127.0.0.1:8880/v1",
+        ttsApiKey: "TTS API 키",
         userAlias: "사용자 별명",
         modelAlias: "모델 별명",
         themeMode: "다크 모드",
@@ -3541,6 +3647,39 @@
         promptPresetDeleted: ({ name }) => `'${name}' 프리셋을 삭제했습니다.`,
         confirmDeletePromptPreset: ({ name }) => `'${name}' 프리셋을 삭제할까요?`,
         refreshModels: "모델 새로고침",
+        ttsSettingsTitle: "텍스트 음성 변환",
+        ttsModel: "TTS 모델",
+        noTtsModel: "TTS 모델을 선택하세요",
+        ttsVoice: "음성 ID",
+        ttsVoicePlaceholder: "예: alloy",
+        ttsCustomVoiceId: "커스텀 음성 ID",
+        ttsTemperature: "TTS 온도",
+        ttsAudioProfile: "오디오 프로필",
+        ttsAudioProfilePlaceholder: "화자의 성별, 나이대, 성격, 직업적 페르소나, 말투와 속도 등을 작성하세요. 모델이 지원하는 경우 instructions로 전달됩니다.",
+        ttsProfilePreset: "오디오 프로필 프리셋",
+        ttsCustomProfile: "직접 작성",
+        ttsPresetIntellectualMale: "지적인 남성",
+        ttsPresetAthleticMale: "운동계 남성",
+        ttsPresetIntellectualFemale: "지적인 여성",
+        ttsPresetKindFemale: "다정한 여성",
+        ttsProfilePresetName: "새 프리셋 이름",
+        ttsProfilePresetNamePlaceholder: "커스텀 프리셋 이름",
+        saveTtsProfilePreset: "프리셋 추가",
+        deleteTtsProfilePreset: "프리셋 제거",
+        ttsProfilePresetNameRequired: "프리셋 이름을 입력해 주세요.",
+        ttsProfileRequired: "저장할 오디오 프로필을 작성해 주세요.",
+        ttsProfilePresetSaved: ({ name }) => `'${name}' 오디오 프로필 프리셋을 저장했습니다.`,
+        ttsProfilePresetDeleted: ({ name }) => `'${name}' 오디오 프로필 프리셋을 삭제했습니다.`,
+        confirmDeleteTtsProfilePreset: ({ name }) => `'${name}' 오디오 프로필 프리셋을 삭제할까요?`,
+        ttsModelsLoading: "TTS 모델 목록을 불러오는 중입니다.",
+        ttsModelsLoaded: ({ count }) => `TTS 모델 ${count}개를 불러왔습니다.`,
+        ttsModelsFailed: ({ error }) => `TTS 모델 조회 실패: ${error}`,
+        ttsApiRequired: "TTS API 주소를 설정해 주세요.",
+        ttsModelRequired: "TTS 모델을 선택하거나 입력해 주세요.",
+        playSpeech: "음성 재생",
+        stopSpeech: "음성 정지",
+        ttsPreparing: "음성을 생성하는 중입니다.",
+        ttsPlaybackFailed: ({ error }) => `TTS 재생 실패: ${error}`,
         illustrationGeneration: "이미지 생성",
         illustrationEnabled: "RP 모드에서 자동으로 삽화 생성 [보조 모델, 이미지 API]",
         chatT2iEnabled: "채팅 모드에서 T2I 이미지 생성 사용 [보조 모델, 이미지 API]",
@@ -3794,6 +3933,7 @@
         settingsGeneral: "General",
         settingsModel: "Model",
         settingsIllustration: "Image",
+        settingsTts: "TTS",
         connectionSettings: "Connection settings",
         generalSettingsSection: "General",
         apiBaseUrl: "API base URL",
@@ -3802,6 +3942,11 @@
         imageApiBaseUrl: "Image API base URL",
         imageApiBaseUrlPlaceholder: "e.g. http://127.0.0.1:7860",
         imageApiKey: "Image API key",
+        ttsEnabled: "Enable TTS",
+        ttsUseLlmApi: "Use LLM API connection",
+        ttsApiBaseUrl: "TTS API base URL",
+        ttsApiBaseUrlPlaceholder: "e.g. http://127.0.0.1:8880/v1",
+        ttsApiKey: "TTS API key",
         userAlias: "User alias",
         modelAlias: "Model alias",
         themeMode: "Dark mode",
@@ -3890,6 +4035,39 @@
         promptPresetDeleted: ({ name }) => `Deleted the preset '${name}'.`,
         confirmDeletePromptPreset: ({ name }) => `Delete the preset '${name}'?`,
         refreshModels: "Refresh models",
+        ttsSettingsTitle: "Text to speech",
+        ttsModel: "TTS model",
+        noTtsModel: "Select a TTS model",
+        ttsVoice: "Voice ID",
+        ttsVoicePlaceholder: "e.g. alloy",
+        ttsCustomVoiceId: "Custom voice ID",
+        ttsTemperature: "TTS temperature",
+        ttsAudioProfile: "Audio profile",
+        ttsAudioProfilePlaceholder: "Describe the speaker's gender, age range, personality, professional persona, delivery, and pace. Sent as instructions when supported by the model.",
+        ttsProfilePreset: "Audio profile preset",
+        ttsCustomProfile: "Custom",
+        ttsPresetIntellectualMale: "Intellectual man",
+        ttsPresetAthleticMale: "Athletic man",
+        ttsPresetIntellectualFemale: "Intellectual woman",
+        ttsPresetKindFemale: "Kind woman",
+        ttsProfilePresetName: "New preset name",
+        ttsProfilePresetNamePlaceholder: "Custom preset name",
+        saveTtsProfilePreset: "Add preset",
+        deleteTtsProfilePreset: "Remove preset",
+        ttsProfilePresetNameRequired: "Enter a preset name.",
+        ttsProfileRequired: "Write an audio profile to save.",
+        ttsProfilePresetSaved: ({ name }) => `Saved the audio profile preset '${name}'.`,
+        ttsProfilePresetDeleted: ({ name }) => `Deleted the audio profile preset '${name}'.`,
+        confirmDeleteTtsProfilePreset: ({ name }) => `Delete the audio profile preset '${name}'?`,
+        ttsModelsLoading: "Loading TTS models.",
+        ttsModelsLoaded: ({ count }) => `Loaded ${count} TTS model${count === 1 ? "" : "s"}.`,
+        ttsModelsFailed: ({ error }) => `Failed to load TTS models: ${error}`,
+        ttsApiRequired: "Configure a TTS API base URL.",
+        ttsModelRequired: "Select or enter a TTS model.",
+        playSpeech: "Play speech",
+        stopSpeech: "Stop speech",
+        ttsPreparing: "Generating speech.",
+        ttsPlaybackFailed: ({ error }) => `TTS playback failed: ${error}`,
         illustrationGeneration: "Image generation",
         illustrationEnabled: "Auto illustrations in RP [Aux. model, Image API]",
         chatT2iEnabled: "T2I images in Chat Mode [Aux. model, Image API]",
@@ -4127,6 +4305,17 @@
         apiKey: "",
         imageApiBaseUrl: "",
         imageApiKey: "",
+        ttsEnabled: false,
+        ttsUseLlmApi: true,
+        ttsApiBaseUrl: "",
+        ttsApiKey: "",
+        ttsModel: "",
+        ttsVoice: "",
+        ttsCustomVoiceEnabled: false,
+        ttsTemperature: null,
+        ttsAudioProfile: "",
+        ttsProfilePresetId: "",
+        ttsProfilePresets: [],
         userAlias: getDefaultUserAlias(normalizedLanguage),
         modelAlias: getDefaultModelAlias(normalizedLanguage),
         language: normalizedLanguage,
@@ -4147,6 +4336,18 @@
       };
     }
     const DEFAULT_SETTINGS = createDefaultSettings(DEFAULT_APP_LANGUAGE);
+    const BUILT_IN_TTS_PROFILE_PRESETS = [
+      ["built-in:intellectual-male", "ttsPresetIntellectualMale", "An intelligent adult male speaker in his 30s or 40s. Calm, articulate, thoughtful, and professionally composed, with precise diction, measured pacing, and quiet confidence."],
+      ["built-in:athletic-male", "ttsPresetAthleticMale", "An athletic adult male speaker in his 20s or 30s. Energetic, confident, straightforward, and upbeat, with a healthy resonant voice, brisk natural pacing, and the friendly presence of a coach or athlete."],
+      ["built-in:intellectual-female", "ttsPresetIntellectualFemale", "An intelligent adult female speaker in her 30s or 40s. Clear, analytical, poised, and professionally assured, with refined diction, steady pacing, and an attentive conversational tone."],
+      ["built-in:kind-female", "ttsPresetKindFemale", "A kind adult female speaker in her 20s or 30s. Warm, gentle, patient, and emotionally attentive, with soft natural expression, comfortable pacing, and a reassuring conversational presence."]
+    ].map(([id, nameKey, profile]) => ({ id, nameKey, profile }));
+    const TTS_VOICE_PRESET_DATASETS = [
+      ["qwen3-custom-voice", /qwen3/i, "Sohee", "Vivian Serena Uncle_Fu Dylan Eric Ryan Aiden Ono_Anna Sohee"],
+      ["openai-tts", /^(?:openai\/)?(?:tts-1(?:-hd)?|gpt-4o-mini-tts(?:-\d{4}-\d{2}-\d{2})?)$/i, "alloy", "alloy ash ballad coral echo fable onyx nova sage shimmer verse marin cedar"],
+      ["kokoro", /kokoro/i, "af_heart", "af_heart af_alloy af_aoede af_bella af_jessica af_kore af_nicole af_nova af_river af_sarah af_sky am_adam am_echo am_eric am_fenrir am_liam am_michael am_onyx am_puck am_santa bf_alice bf_emma bf_isabella bf_lily bm_daniel bm_fable bm_george bm_lewis jf_alpha jf_gongitsune jf_nezumi jf_tebukuro jm_kumo zf_xiaobei zf_xiaoni zf_xiaoxiao zf_xiaoyi zm_yunjian zm_yunxi zm_yunxia zm_yunyang ef_dora em_alex em_santa ff_siwis hf_alpha hf_beta hm_omega hm_psi if_sara im_nicola pf_dora pm_alex pm_santa"],
+      ["orpheus", /orpheus/i, "tara", "tara leah jess leo dan mia zac zoe"]
+    ].map(([id, modelPattern, defaultVoice, voices]) => ({ id, modelPattern, defaultVoice, voices: voices.split(" ") }));
     const DEFAULT_RP_RESPONSE_PERSPECTIVE = "character-first-person";
     const DEFAULT_RP_RESPONSE_LENGTH = "";
     const DEFAULT_RP_ILLUSTRATION_SETTINGS = {
@@ -4187,6 +4388,7 @@
       modelsSyncedAt: "",
       imageModels: [],
       imageModelsSyncedAt: "",
+      ttsModels: [],
       activeMode: "chat",
       activeChatId: "",
       chats: [],
@@ -4265,10 +4467,12 @@
       settingsGeneralTabButton: document.getElementById("settingsGeneralTabButton"),
       settingsModelTabButton: document.getElementById("settingsModelTabButton"),
       settingsIllustrationTabButton: document.getElementById("settingsIllustrationTabButton"),
+      settingsTtsTabButton: document.getElementById("settingsTtsTabButton"),
       settingsTabStrip: document.querySelector(".settings-tab-strip"),
       settingsGeneralPanel: document.getElementById("settingsGeneralPanel"),
       settingsModelPanel: document.getElementById("settingsModelPanel"),
       settingsIllustrationPanel: document.getElementById("settingsIllustrationPanel"),
+      settingsTtsPanel: document.getElementById("settingsTtsPanel"),
       settingsConnectionSectionTitle: document.getElementById("settingsConnectionSectionTitle"),
       settingsGeneralSectionTitle: document.getElementById("settingsGeneralSectionTitle"),
       settingsRpSectionGroup: document.getElementById("settingsRpSectionGroup"),
@@ -4278,6 +4482,7 @@
       settingsBackupSectionTitle: document.getElementById("settingsBackupSectionTitle"),
       settingsBackupHint: document.getElementById("settingsBackupHint"),
       settingsIllustrationSectionTitle: document.querySelector("#settingsIllustrationPanel .section-title"),
+      settingsTtsSectionTitle: document.getElementById("settingsTtsSectionTitle"),
       smoothStreamingLabel: document.querySelector('label.inline-checkbox[for="smoothStreamingInput"]'),
       autoContinueLabel: document.querySelector('label.inline-checkbox[for="autoContinueInput"]'),
       backupIncludeSecretsLabel: document.querySelector('label.inline-checkbox[for="backupIncludeSecretsInput"]'),
@@ -4288,6 +4493,8 @@
       chatT2iEnabledLabel: document.querySelector('label.inline-checkbox[for="chatT2iEnabledInput"]'),
       talkT2iEnabledLabel: document.querySelector('label.inline-checkbox[for="talkT2iEnabledInput"]'),
       talkGroupUnlimitedLabel: document.querySelector('label.inline-checkbox[for="talkGroupUnlimitedInput"]'),
+      ttsEnabledLabel: document.querySelector('label.inline-checkbox[for="ttsEnabledInput"]'),
+      ttsUseLlmApiLabel: document.querySelector('label.inline-checkbox[for="ttsUseLlmApiInput"]'),
       illustrationIgnorePeopleLabel: document.querySelector('label.inline-checkbox[for="illustrationIgnoreNonCharacterPeopleInput"]'),
       settingsActionButtons: document.querySelectorAll("#settingsForm .settings-tab-actions button"),
       modelStatLabels: document.querySelectorAll("#settingsModelPanel .stat-card span"),
@@ -4297,6 +4504,11 @@
       apiKeyInput: document.getElementById("apiKeyInput"),
       imageApiBaseUrlInput: document.getElementById("imageApiBaseUrlInput"),
       imageApiKeyInput: document.getElementById("imageApiKeyInput"),
+      ttsEnabledInput: document.getElementById("ttsEnabledInput"),
+      ttsUseLlmApiInput: document.getElementById("ttsUseLlmApiInput"),
+      ttsApiSettings: document.getElementById("ttsApiSettings"),
+      ttsApiBaseUrlInput: document.getElementById("ttsApiBaseUrlInput"),
+      ttsApiKeyInput: document.getElementById("ttsApiKeyInput"),
       userAliasInput: document.getElementById("userAliasInput"),
       modelAliasInput: document.getElementById("modelAliasInput"),
       themeModeSelect: document.getElementById("themeModeSelect"),
@@ -4382,6 +4594,21 @@
       illustrationHeightInput: document.getElementById("illustrationHeightInput"),
       illustrationHeightValue: document.getElementById("illustrationHeightValue"),
       saveIllustrationSettingsButton: document.getElementById("saveIllustrationSettingsButton"),
+      ttsModelInput: document.getElementById("ttsModelInput"),
+      ttsCustomVoiceLabel: document.getElementById("ttsCustomVoiceLabel"),
+      ttsCustomVoiceInput: document.getElementById("ttsCustomVoiceInput"),
+      ttsVoicePresetField: document.getElementById("ttsVoicePresetField"),
+      ttsVoiceSelect: document.getElementById("ttsVoiceSelect"),
+      ttsVoiceCustomField: document.getElementById("ttsVoiceCustomField"),
+      ttsVoiceInput: document.getElementById("ttsVoiceInput"),
+      ttsTemperatureInput: document.getElementById("ttsTemperatureInput"),
+      ttsProfilePresetSelect: document.getElementById("ttsProfilePresetSelect"),
+      deleteTtsProfilePresetButton: document.getElementById("deleteTtsProfilePresetButton"),
+      ttsAudioProfileInput: document.getElementById("ttsAudioProfileInput"),
+      ttsProfilePresetNameInput: document.getElementById("ttsProfilePresetNameInput"),
+      saveTtsProfilePresetButton: document.getElementById("saveTtsProfilePresetButton"),
+      saveTtsSettingsButton: document.getElementById("saveTtsSettingsButton"),
+      refreshTtsModelsButton: document.getElementById("refreshTtsModelsButton"),
       modelCount: document.getElementById("modelCount"),
       modelsSyncedAt: document.getElementById("modelsSyncedAt"),
       imagePreviewImage: document.getElementById("imagePreviewImage"),
@@ -4437,6 +4664,12 @@
     let isSending = false;
     let isRefreshingModels = false;
     let isRefreshingImageModels = false;
+    let isRefreshingTtsModels = false;
+    let ttsPlaybackRunId = 0;
+    let ttsPlaybackMessageId = "";
+    let ttsPlaybackAbortController = null;
+    let ttsPlaybackAudio = null;
+    let ttsPlaybackObjectUrl = "";
     let currentStreamingMessageId = "";
     let currentRequestAbortController = null;
     let postResponseStatusRunId = 0;
@@ -4618,6 +4851,7 @@
         [elements.settingsGeneralTabButton, () => setSettingsOverlayTab("general")],
         [elements.settingsModelTabButton, () => setSettingsOverlayTab("model")],
         [elements.settingsIllustrationTabButton, () => setSettingsOverlayTab("illustration")],
+        [elements.settingsTtsTabButton, () => setSettingsOverlayTab("tts")],
         [elements.resetSettingsButton, resetSettingsToDefault],
         [elements.exportFullBackupButton, exportFullBackup],
         [elements.importFullBackupButton, triggerImportFullBackup],
@@ -4628,8 +4862,12 @@
         [elements.clearMessagesButton, clearActiveMessages],
         [elements.refreshModelsButton, () => refreshModels({ silent: false })],
         [elements.refreshImageModelsButton, () => refreshImageModels({ silent: false })],
+        [elements.refreshTtsModelsButton, () => refreshTtsModels({ silent: false })],
         [elements.saveModelSettingsButton, handleModelSettingsSave],
         [elements.saveIllustrationSettingsButton, handleIllustrationSettingsSave],
+        [elements.saveTtsSettingsButton, handleTtsSettingsSave],
+        [elements.saveTtsProfilePresetButton, saveTtsProfilePreset],
+        [elements.deleteTtsProfilePresetButton, deleteSelectedTtsProfilePreset],
         [elements.savePromptPresetButton, saveCurrentPromptPreset],
         [elements.clearAuthorsNoteButton, clearAuthorsNote],
         [elements.scrollTopButton, scrollPageToTop],
@@ -4679,6 +4917,7 @@
         [elements.thinkingTokenLimitInput, updateActiveThinkingTokenLimit],
         [elements.systemPromptInput, updateActiveSystemPrompt],
         [elements.forbiddenWordsInput, updateActiveForbiddenWords],
+        [elements.ttsModelInput, handleTtsModelChange],
         [elements.authorsNoteInput, updateAuthorsNote]
       ]);
       bindInputActions([
@@ -4689,6 +4928,13 @@
         [elements.illustrationEnabledInput, syncIllustrationControls],
         [elements.chatT2iEnabledInput, syncIllustrationControls],
         [elements.talkT2iEnabledInput, syncIllustrationControls],
+        [elements.ttsEnabledInput, syncTtsConnectionControls],
+        [elements.ttsUseLlmApiInput, () => {
+          syncTtsConnectionControls();
+          renderTtsModelOptions({ useForm: true });
+        }],
+        [elements.ttsCustomVoiceInput, syncTtsVoiceControls],
+        [elements.ttsProfilePresetSelect, applySelectedTtsProfilePreset],
         [elements.talkGroupUnlimitedInput, () => {
           renderAppSections({ persist: false, rpCards: true });
         }],
@@ -4880,11 +5126,23 @@
       const rp = normalizeRpState(parsed?.rp, { chatMode: "rp", allowWorldCards: true });
       const talk = normalizeRpState(parsed?.talk, { chatMode: "talk", allowWorldCards: false });
       const activeMode = normalizeAppMode(parsed?.activeMode);
+      const ttsProfilePresets = normalizeTtsProfilePresets(parsed?.settings?.ttsProfilePresets);
       const settings = {
         apiBaseUrl: parsed?.settings?.apiBaseUrl || DEFAULT_SETTINGS.apiBaseUrl,
         apiKey: parsed?.settings?.apiKey || DEFAULT_SETTINGS.apiKey,
         imageApiBaseUrl: parsed?.settings?.imageApiBaseUrl || DEFAULT_SETTINGS.imageApiBaseUrl,
         imageApiKey: typeof parsed?.settings?.imageApiKey === "string" ? parsed.settings.imageApiKey : DEFAULT_SETTINGS.imageApiKey,
+        ttsEnabled: typeof parsed?.settings?.ttsEnabled === "boolean" ? parsed.settings.ttsEnabled : DEFAULT_SETTINGS.ttsEnabled,
+        ttsUseLlmApi: typeof parsed?.settings?.ttsUseLlmApi === "boolean" ? parsed.settings.ttsUseLlmApi : DEFAULT_SETTINGS.ttsUseLlmApi,
+        ttsApiBaseUrl: typeof parsed?.settings?.ttsApiBaseUrl === "string" ? parsed.settings.ttsApiBaseUrl : DEFAULT_SETTINGS.ttsApiBaseUrl,
+        ttsApiKey: typeof parsed?.settings?.ttsApiKey === "string" ? parsed.settings.ttsApiKey : DEFAULT_SETTINGS.ttsApiKey,
+        ttsModel: typeof parsed?.settings?.ttsModel === "string" ? parsed.settings.ttsModel : DEFAULT_SETTINGS.ttsModel,
+        ttsVoice: typeof parsed?.settings?.ttsVoice === "string" && parsed.settings.ttsVoice.trim() ? parsed.settings.ttsVoice.trim() : DEFAULT_SETTINGS.ttsVoice,
+        ttsCustomVoiceEnabled: normalizeTtsCustomVoiceEnabled(parsed?.settings),
+        ttsTemperature: normalizeOptionalNumber(parsed?.settings?.ttsTemperature, { min: 0.1, max: 2 }),
+        ttsAudioProfile: typeof parsed?.settings?.ttsAudioProfile === "string" ? parsed.settings.ttsAudioProfile : DEFAULT_SETTINGS.ttsAudioProfile,
+        ttsProfilePresetId: normalizeTtsProfilePresetId(parsed?.settings?.ttsProfilePresetId, ttsProfilePresets),
+        ttsProfilePresets,
         userAlias: parsed?.settings?.userAlias || getDefaultUserAlias(language),
         modelAlias: parsed?.settings?.modelAlias || getDefaultModelAlias(language),
         language,
@@ -4921,6 +5179,7 @@
         modelsSyncedAt: typeof parsed?.modelsSyncedAt === "string" ? parsed.modelsSyncedAt : "",
         imageModels: normalizeImageModelList(parsed?.imageModels),
         imageModelsSyncedAt: typeof parsed?.imageModelsSyncedAt === "string" ? parsed.imageModelsSyncedAt : "",
+        ttsModels: normalizeImageModelList(parsed?.ttsModels),
         storageVersion: isSplitChatStorageState(parsed) ? APP_SPLIT_CHAT_STORAGE_VERSION : 1,
         activeMode,
         activeChatId: typeof parsed?.activeChatId === "string" ? parsed.activeChatId : "",
@@ -4936,6 +5195,64 @@
       return Array.isArray(value)
         ? value.map(normalizePromptPreset).filter(Boolean)
         : [];
+    }
+    function normalizeTtsProfilePresets(value) {
+      return Array.isArray(value)
+        ? value.map(normalizeTtsProfilePreset).filter(Boolean)
+        : [];
+    }
+    function isBuiltInTtsProfilePresetId(presetId) {
+      return BUILT_IN_TTS_PROFILE_PRESETS.some((preset) => preset.id === presetId);
+    }
+    function normalizeTtsProfilePresetId(value, customPresets = []) {
+      const presetId = trimmed(value);
+      if (!presetId) {
+        return "";
+      }
+      return isBuiltInTtsProfilePresetId(presetId) || customPresets.some((preset) => preset.id === presetId)
+        ? presetId
+        : "";
+    }
+    function getTtsVoicePresetDataset(modelName) {
+      const normalizedModelName = trimmed(modelName);
+      if (!normalizedModelName) {
+        return null;
+      }
+      return TTS_VOICE_PRESET_DATASETS.find((dataset) => dataset.modelPattern.test(normalizedModelName)) || null;
+    }
+    function getCanonicalTtsPresetVoice(dataset, voiceId) {
+      const normalizedVoiceId = trimmed(voiceId).toLowerCase();
+      return dataset?.voices.find((voice) => voice.toLowerCase() === normalizedVoiceId) || "";
+    }
+    function normalizeTtsCustomVoiceEnabled(settings) {
+      const dataset = getTtsVoicePresetDataset(settings?.ttsModel);
+      if (!dataset) {
+        return true;
+      }
+      const voiceId = trimmed(settings?.ttsVoice);
+      if (dataset.id === "qwen3-custom-voice" && (!voiceId || voiceId.toLowerCase() === "alloy")) {
+        return false;
+      }
+      if (typeof settings?.ttsCustomVoiceEnabled === "boolean") {
+        return settings.ttsCustomVoiceEnabled;
+      }
+      return Boolean(voiceId && !getCanonicalTtsPresetVoice(dataset, voiceId));
+    }
+    function normalizeTtsProfilePreset(preset) {
+      if (!preset || typeof preset !== "object") {
+        return null;
+      }
+      const name = trimmed(preset.name);
+      const profile = trimmed(preset.profile);
+      if (!name || !profile) {
+        return null;
+      }
+      return {
+        id: typeof preset.id === "string" && preset.id && !preset.id.startsWith("built-in:") ? preset.id : createId("tts-profile-preset"),
+        name,
+        profile,
+        updatedAt: typeof preset.updatedAt === "string" ? preset.updatedAt : new Date().toISOString()
+      };
     }
     function normalizeForbiddenWords(value) {
       if (Array.isArray(value)) {
@@ -5466,6 +5783,7 @@
       if (supportsSettingsSecretStorage() && snapshot?.settings) {
         snapshot.settings.apiKey = "";
         snapshot.settings.imageApiKey = "";
+        snapshot.settings.ttsApiKey = "";
       }
       forEachStateImageAttachment(snapshot, (attachment) => {
         if (attachment?.mediaId) {
@@ -5609,7 +5927,8 @@
       const encryptedSecrets = await readSettingsSecrets();
       const nextSecrets = {
         apiKey: typeof encryptedSecrets?.apiKey === "string" ? encryptedSecrets.apiKey : legacySecrets.apiKey,
-        imageApiKey: typeof encryptedSecrets?.imageApiKey === "string" ? encryptedSecrets.imageApiKey : legacySecrets.imageApiKey
+        imageApiKey: typeof encryptedSecrets?.imageApiKey === "string" ? encryptedSecrets.imageApiKey : legacySecrets.imageApiKey,
+        ttsApiKey: typeof encryptedSecrets?.ttsApiKey === "string" ? encryptedSecrets.ttsApiKey : legacySecrets.ttsApiKey
       };
       setSettingsSecretsOnState(nextState, nextSecrets);
       const hadPlaintextSecrets = hasAnySettingsSecret(legacySecrets);
@@ -5624,7 +5943,8 @@
     function getSettingsSecretsFromState(sourceState = state) {
       return {
         apiKey: String(sourceState?.settings?.apiKey || ""),
-        imageApiKey: String(sourceState?.settings?.imageApiKey || "")
+        imageApiKey: String(sourceState?.settings?.imageApiKey || ""),
+        ttsApiKey: String(sourceState?.settings?.ttsApiKey || "")
       };
     }
     function setSettingsSecretsOnState(targetState, secrets) {
@@ -5633,9 +5953,10 @@
       }
       targetState.settings.apiKey = String(secrets?.apiKey || "");
       targetState.settings.imageApiKey = String(secrets?.imageApiKey || "");
+      targetState.settings.ttsApiKey = String(secrets?.ttsApiKey || "");
     }
     function hasAnySettingsSecret(secrets) {
-      return Boolean(String(secrets?.apiKey || "") || String(secrets?.imageApiKey || ""));
+      return Boolean(String(secrets?.apiKey || "") || String(secrets?.imageApiKey || "") || String(secrets?.ttsApiKey || ""));
     }
     async function saveSettingsSecretsFromState() {
       if (!supportsSettingsSecretStorage()) {
@@ -5659,7 +5980,8 @@
       }
       return {
         apiKey: secretRecord.fields.apiKey ? await decryptSecretValue(secretKey, secretRecord.fields.apiKey) : "",
-        imageApiKey: secretRecord.fields.imageApiKey ? await decryptSecretValue(secretKey, secretRecord.fields.imageApiKey) : ""
+        imageApiKey: secretRecord.fields.imageApiKey ? await decryptSecretValue(secretKey, secretRecord.fields.imageApiKey) : "",
+        ttsApiKey: secretRecord.fields.ttsApiKey ? await decryptSecretValue(secretKey, secretRecord.fields.ttsApiKey) : ""
       };
     }
     async function writeSettingsSecrets(secrets) {
@@ -5668,7 +5990,8 @@
       }
       const normalizedSecrets = {
         apiKey: String(secrets?.apiKey || ""),
-        imageApiKey: String(secrets?.imageApiKey || "")
+        imageApiKey: String(secrets?.imageApiKey || ""),
+        ttsApiKey: String(secrets?.ttsApiKey || "")
       };
       if (!hasAnySettingsSecret(normalizedSecrets)) {
         await ensureSettingsSecretKeyRing();
@@ -5683,7 +6006,8 @@
         probe: await encryptSecretValue(secretKey, APP_SECRET_PROBE_TEXT),
         fields: {
           apiKey: await encryptSecretValue(secretKey, normalizedSecrets.apiKey),
-          imageApiKey: await encryptSecretValue(secretKey, normalizedSecrets.imageApiKey)
+          imageApiKey: await encryptSecretValue(secretKey, normalizedSecrets.imageApiKey),
+          ttsApiKey: await encryptSecretValue(secretKey, normalizedSecrets.ttsApiKey)
         }
       };
       await writeIndexedDbRecord(APP_SECRET_RECORD_KEY, secretRecord);
@@ -6802,6 +7126,7 @@
       if (normalizedMode === normalizeAppMode(state.activeMode)) {
         return;
       }
+      stopTtsPlayback();
       if (normalizedMode !== "chat" && pendingDocumentAttachments.length) {
         pendingDocumentAttachments = [];
         elements.documentUploadInput.value = "";
@@ -6822,10 +7147,11 @@
       setChatStatus(normalizedMode === "rp" ? t("switchedToRpMode") : normalizedMode === "talk" ? t("switchedToTalkMode") : t("switchedToChatMode"), "success");
     }
     function setSettingsOverlayTab(nextTab, options = {}) {
-      activeSettingsTab = nextTab === "model" || nextTab === "illustration" ? nextTab : "general";
+      activeSettingsTab = ["model", "illustration", "tts"].includes(nextTab) ? nextTab : "general";
       const isGeneral = activeSettingsTab === "general";
       const isModel = activeSettingsTab === "model";
       const isIllustration = activeSettingsTab === "illustration";
+      const isTts = activeSettingsTab === "tts";
       elements.settingsIllustrationTabButton.hidden = false;
       elements.settingsGeneralTabButton.classList.toggle("active", isGeneral);
       elements.settingsGeneralTabButton.setAttribute("aria-selected", isGeneral ? "true" : "false");
@@ -6836,6 +7162,9 @@
       elements.settingsIllustrationTabButton.classList.toggle("active", isIllustration);
       elements.settingsIllustrationTabButton.setAttribute("aria-selected", isIllustration ? "true" : "false");
       elements.settingsIllustrationPanel.hidden = !isIllustration;
+      elements.settingsTtsTabButton.classList.toggle("active", isTts);
+      elements.settingsTtsTabButton.setAttribute("aria-selected", isTts ? "true" : "false");
+      elements.settingsTtsPanel.hidden = !isTts;
       if (options.resetScroll !== false) {
         resetSettingsOverlayScroll();
       }
@@ -6845,9 +7174,11 @@
         ? elements.settingsModelPanel
         : activeSettingsTab === "illustration"
           ? elements.settingsIllustrationPanel
+          : activeSettingsTab === "tts"
+            ? elements.settingsTtsPanel
           : elements.settingsGeneralPanel;
       const panels = options.includeAllTabs
-        ? [elements.settingsGeneralPanel, elements.settingsModelPanel, elements.settingsIllustrationPanel]
+        ? [elements.settingsGeneralPanel, elements.settingsModelPanel, elements.settingsIllustrationPanel, elements.settingsTtsPanel]
         : [activePanel];
       panels.filter(Boolean).forEach((panel) => {
         panel.scrollTop = 0;
@@ -6863,6 +7194,10 @@
       elements.apiKeyInput.value = state.settings.apiKey || "";
       elements.imageApiBaseUrlInput.value = state.settings.imageApiBaseUrl || DEFAULT_SETTINGS.imageApiBaseUrl;
       elements.imageApiKeyInput.value = state.settings.imageApiKey || "";
+      elements.ttsEnabledInput.checked = state.settings.ttsEnabled === true;
+      elements.ttsUseLlmApiInput.checked = state.settings.ttsUseLlmApi !== false;
+      elements.ttsApiBaseUrlInput.value = state.settings.ttsApiBaseUrl || DEFAULT_SETTINGS.ttsApiBaseUrl;
+      elements.ttsApiKeyInput.value = state.settings.ttsApiKey || "";
       elements.userAliasInput.value = state.settings.userAlias || "";
       elements.modelAliasInput.value = state.settings.modelAlias || "";
       elements.themeModeSelect.value = normalizeThemeMode(state.settings.themeMode);
@@ -6884,6 +7219,8 @@
       elements.rpInputEnhancementEnabledInput.checked = rpAssistance.inputEnhancementEnabled;
       syncRpAssistanceControls();
       populateIllustrationSettingsForm();
+      populateTtsSettingsForm();
+      syncTtsConnectionControls();
       elements.forbiddenWordsInput.value = formatForbiddenWords(state.settings.forbiddenWords);
     }
     function syncRpAssistanceControls() {
@@ -6908,6 +7245,90 @@
       elements.illustrationWidthInput.value = illustrationSettings.width;
       elements.illustrationHeightInput.value = illustrationSettings.height;
       syncIllustrationControls();
+    }
+    function populateTtsSettingsForm() {
+      elements.ttsModelInput.value = state.settings.ttsModel || "";
+      elements.ttsVoiceInput.value = state.settings.ttsVoice || DEFAULT_SETTINGS.ttsVoice;
+      elements.ttsCustomVoiceInput.checked = state.settings.ttsCustomVoiceEnabled === true;
+      elements.ttsTemperatureInput.value = state.settings.ttsTemperature ?? "";
+      elements.ttsAudioProfileInput.value = state.settings.ttsAudioProfile || "";
+      elements.ttsProfilePresetNameInput.value = "";
+      renderTtsModelOptions();
+      syncTtsVoiceControls();
+      renderTtsProfilePresetOptions(state.settings.ttsProfilePresetId || "");
+      const selectedBuiltInPreset = BUILT_IN_TTS_PROFILE_PRESETS.find((preset) => preset.id === elements.ttsProfilePresetSelect.value);
+      if (selectedBuiltInPreset) {
+        elements.ttsAudioProfileInput.value = selectedBuiltInPreset.profile;
+      }
+      syncTtsProfilePresetControls();
+    }
+    function handleTtsModelChange() {
+      const previousHadPresetDataset = !elements.ttsCustomVoiceLabel.hidden;
+      const currentVoice = getTtsVoiceFromForm();
+      if (currentVoice) {
+        elements.ttsVoiceInput.value = currentVoice;
+      }
+      if (!previousHadPresetDataset && getTtsVoicePresetDataset(elements.ttsModelInput.value)) {
+        elements.ttsCustomVoiceInput.checked = false;
+      }
+      syncTtsVoiceControls({ modelChanged: true });
+    }
+    function getTtsVoiceFromForm() {
+      return elements.ttsVoicePresetField.hidden
+        ? trimmed(elements.ttsVoiceInput.value)
+        : trimmed(elements.ttsVoiceSelect.value);
+    }
+    function syncTtsVoiceControls(options = {}) {
+      const dataset = getTtsVoicePresetDataset(elements.ttsModelInput.value);
+      const wasPresetVisible = !elements.ttsVoicePresetField.hidden;
+      const requestedCustomVoice = elements.ttsCustomVoiceInput.checked;
+      if (dataset && requestedCustomVoice && wasPresetVisible && elements.ttsVoiceSelect.value && !options.modelChanged) {
+        elements.ttsVoiceInput.value = elements.ttsVoiceSelect.value;
+      }
+      elements.ttsVoiceSelect.replaceChildren();
+      if (dataset) {
+        dataset.voices.forEach((voice) => appendSelectOption(elements.ttsVoiceSelect, voice, voice));
+      }
+      const savedVoice = trimmed(elements.ttsVoiceInput.value);
+      const canonicalVoice = getCanonicalTtsPresetVoice(dataset, savedVoice);
+      const useCustomVoice = !dataset || requestedCustomVoice;
+      if (dataset) {
+        elements.ttsVoiceSelect.value = options.modelChanged && !requestedCustomVoice
+          ? dataset.defaultVoice
+          : canonicalVoice || dataset.defaultVoice;
+        if (!useCustomVoice) {
+          elements.ttsVoiceInput.value = elements.ttsVoiceSelect.value;
+        }
+      }
+      elements.ttsCustomVoiceLabel.hidden = !dataset;
+      elements.ttsVoicePresetField.hidden = !dataset || useCustomVoice;
+      elements.ttsVoiceCustomField.hidden = Boolean(dataset) && !useCustomVoice;
+      const enabled = elements.ttsEnabledInput.checked;
+      elements.ttsCustomVoiceInput.disabled = !enabled;
+      elements.ttsVoiceSelect.disabled = !enabled;
+      elements.ttsVoiceInput.disabled = !enabled;
+    }
+    function syncTtsConnectionControls() {
+      const enabled = elements.ttsEnabledInput.checked;
+      const useLlmApi = elements.ttsUseLlmApiInput.checked;
+      elements.ttsUseLlmApiInput.disabled = !enabled;
+      elements.ttsApiBaseUrlInput.disabled = !enabled || useLlmApi;
+      elements.ttsApiKeyInput.disabled = !enabled || useLlmApi;
+      elements.ttsApiSettings.setAttribute("aria-disabled", !enabled || useLlmApi ? "true" : "false");
+      [
+        elements.ttsModelInput,
+        elements.ttsTemperatureInput,
+        elements.ttsProfilePresetSelect,
+        elements.ttsAudioProfileInput,
+        elements.ttsProfilePresetNameInput,
+        elements.saveTtsProfilePresetButton,
+        elements.saveTtsSettingsButton
+      ].forEach((element) => {
+        element.disabled = !enabled;
+      });
+      elements.refreshTtsModelsButton.disabled = !enabled || isRefreshingTtsModels;
+      syncTtsVoiceControls();
+      syncTtsProfilePresetControls();
     }
     function renderImageModelSelect(selectedModel = normalizeRpIllustrationSettings(state.rp?.illustration).imageModel) {
       const models = normalizeImageModelList(state.imageModels);
@@ -7696,6 +8117,7 @@
       if (!findChatById(chatId)) {
         return;
       }
+      stopTtsPlayback();
       currentActiveChatLoadRequestId += 1;
       const requestId = currentActiveChatLoadRequestId;
       setCurrentActiveChatId(chatId);
@@ -7851,6 +8273,16 @@
           onClick: () => toggleMessageEditing(chat.id, message.id)
         });
       }
+      if (canPlayMessageTts(message)) {
+        const isActiveTts = ttsPlaybackMessageId === message.id;
+        buttonConfigs.push({
+          label: t(isActiveTts ? "stopSpeech" : "playSpeech"),
+          iconName: isActiveTts ? "stop" : "play",
+          active: isActiveTts,
+          disabled: hasPendingMessageEdit,
+          onClick: () => toggleMessageTtsPlayback(chat.id, message.id)
+        });
+      }
       if (canRerollMessage(chat, message.id)) {
         buttonConfigs.push({
           label: t("reroll"),
@@ -8003,16 +8435,25 @@
       const nextLanguage = normalizeAppLanguage(elements.languageSelect.value);
       const previousImageApiBaseUrl = normalizeImageApiBase(state.settings.imageApiBaseUrl);
       const nextImageApiBaseUrl = normalizeImageApiBase(elements.imageApiBaseUrlInput.value) || DEFAULT_SETTINGS.imageApiBaseUrl;
+      const previousTtsApiBaseUrl = getConfiguredTtsApi().base;
+      const previousTtsUseLlmApi = state.settings.ttsUseLlmApi !== false;
       state.settings.apiBaseUrl = normalizeApiBase(elements.apiBaseUrlInput.value);
       state.settings.apiKey = elements.apiKeyInput.value.trim();
       state.settings.imageApiBaseUrl = nextImageApiBaseUrl;
       state.settings.imageApiKey = elements.imageApiKeyInput.value.trim();
+      updateTtsConnectionSettingsFromForm();
       if (previousImageApiBaseUrl !== nextImageApiBaseUrl) {
         state.imageModels = [];
         state.imageModelsSyncedAt = "";
         if (state.rp?.illustration) {
           state.rp.illustration.imageModel = "";
         }
+      }
+      if (previousTtsApiBaseUrl !== getConfiguredTtsApi().base || previousTtsUseLlmApi !== state.settings.ttsUseLlmApi) {
+        state.ttsModels = [];
+      }
+      if (!state.settings.ttsEnabled) {
+        stopTtsPlayback();
       }
       state.settings.userAlias = elements.userAliasInput.value.trim() || getDefaultUserAlias(nextLanguage);
       state.settings.modelAlias = elements.modelAliasInput.value.trim() || getDefaultModelAlias(nextLanguage);
@@ -8049,6 +8490,14 @@
       state.settings.apiKey = nextDefaultSettings.apiKey;
       state.settings.imageApiBaseUrl = nextDefaultSettings.imageApiBaseUrl;
       state.settings.imageApiKey = nextDefaultSettings.imageApiKey;
+      [
+        "ttsEnabled", "ttsUseLlmApi", "ttsApiBaseUrl", "ttsApiKey", "ttsModel", "ttsVoice",
+        "ttsCustomVoiceEnabled", "ttsTemperature", "ttsAudioProfile", "ttsProfilePresetId", "ttsProfilePresets"
+      ].forEach((key) => {
+        state.settings[key] = nextDefaultSettings[key];
+      });
+      state.ttsModels = [];
+      stopTtsPlayback();
       state.imageModels = [];
       state.imageModelsSyncedAt = "";
       state.settings.userAlias = nextDefaultSettings.userAlias;
@@ -8136,6 +8585,121 @@
       persistState();
       syncIllustrationControls();
       setChatStatus(t("settingsSaved"), "success");
+    }
+    function updateTtsConnectionSettingsFromForm() {
+      state.settings.ttsEnabled = elements.ttsEnabledInput.checked;
+      state.settings.ttsUseLlmApi = elements.ttsUseLlmApiInput.checked;
+      state.settings.ttsApiBaseUrl = normalizeTtsApiBase(elements.ttsApiBaseUrlInput.value);
+      state.settings.ttsApiKey = elements.ttsApiKeyInput.value.trim();
+    }
+    async function handleTtsSettingsSave() {
+      const model = trimmed(elements.ttsModelInput.value);
+      if (!model) {
+        setChatStatus(t("ttsModelRequired"), "error");
+        elements.ttsModelInput.focus();
+        return;
+      }
+      updateTtsConnectionSettingsFromForm();
+      state.settings.ttsModel = model;
+      state.settings.ttsVoice = getTtsVoiceFromForm();
+      state.settings.ttsCustomVoiceEnabled = getTtsVoicePresetDataset(model)
+        ? elements.ttsCustomVoiceInput.checked
+        : true;
+      state.settings.ttsTemperature = normalizeOptionalNumber(elements.ttsTemperatureInput.value, { min: 0.1, max: 2 });
+      state.settings.ttsAudioProfile = elements.ttsAudioProfileInput.value.trim();
+      state.settings.ttsProfilePresetId = normalizeTtsProfilePresetId(elements.ttsProfilePresetSelect.value, getCustomTtsProfilePresets());
+      try {
+        await saveSettingsSecretsFromState();
+      } catch (error) {
+        console.error("Secret save failed", error);
+        setChatStatus(t("secretStorageFailed", { error: error.message }), "error");
+        return;
+      }
+      persistState();
+      renderTtsModelOptions();
+      refreshActiveMessageMetaActions();
+      setChatStatus(t("settingsSaved"), "success");
+    }
+    function getCustomTtsProfilePresets() {
+      if (!Array.isArray(state.settings.ttsProfilePresets)) {
+        state.settings.ttsProfilePresets = [];
+      }
+      return state.settings.ttsProfilePresets;
+    }
+    function getTtsProfilePresetById(presetId) {
+      return BUILT_IN_TTS_PROFILE_PRESETS.find((preset) => preset.id === presetId)
+        || getCustomTtsProfilePresets().find((preset) => preset.id === presetId)
+        || null;
+    }
+    function renderTtsProfilePresetOptions(selectedId = null) {
+      const currentId = selectedId === null ? elements.ttsProfilePresetSelect.value || "" : selectedId;
+      elements.ttsProfilePresetSelect.replaceChildren();
+      appendSelectOption(elements.ttsProfilePresetSelect, "", t("ttsCustomProfile"));
+      BUILT_IN_TTS_PROFILE_PRESETS.forEach((preset) => {
+        appendSelectOption(elements.ttsProfilePresetSelect, preset.id, t(preset.nameKey));
+      });
+      getCustomTtsProfilePresets()
+        .slice()
+        .sort((left, right) => left.name.localeCompare(right.name))
+        .forEach((preset) => appendSelectOption(elements.ttsProfilePresetSelect, preset.id, preset.name));
+      elements.ttsProfilePresetSelect.value = getTtsProfilePresetById(currentId) ? currentId : "";
+      syncTtsProfilePresetControls();
+    }
+    function syncTtsProfilePresetControls() {
+      const selectedId = elements.ttsProfilePresetSelect.value;
+      const builtInSelected = isBuiltInTtsProfilePresetId(selectedId);
+      elements.ttsAudioProfileInput.readOnly = builtInSelected;
+      elements.ttsAudioProfileInput.setAttribute("aria-readonly", builtInSelected ? "true" : "false");
+      elements.deleteTtsProfilePresetButton.disabled = !elements.ttsEnabledInput.checked || !selectedId || builtInSelected;
+    }
+    function applySelectedTtsProfilePreset() {
+      const preset = getTtsProfilePresetById(elements.ttsProfilePresetSelect.value);
+      if (preset) {
+        elements.ttsAudioProfileInput.value = preset.profile;
+      }
+      syncTtsProfilePresetControls();
+    }
+    function saveTtsProfilePreset() {
+      const name = trimmed(elements.ttsProfilePresetNameInput.value);
+      const profile = trimmed(elements.ttsAudioProfileInput.value);
+      if (!name) {
+        setChatStatus(t("ttsProfilePresetNameRequired"), "error");
+        elements.ttsProfilePresetNameInput.focus();
+        return;
+      }
+      if (!profile) {
+        setChatStatus(t("ttsProfileRequired"), "error");
+        elements.ttsAudioProfileInput.focus();
+        return;
+      }
+      const presets = getCustomTtsProfilePresets();
+      const now = new Date().toISOString();
+      let preset = presets.find((entry) => entry.name.localeCompare(name, undefined, { sensitivity: "accent" }) === 0);
+      if (preset) {
+        preset.profile = profile;
+        preset.updatedAt = now;
+      } else {
+        preset = { id: createId("tts-profile-preset"), name, profile, updatedAt: now };
+        presets.push(preset);
+      }
+      persistState();
+      renderTtsProfilePresetOptions(preset.id);
+      elements.ttsProfilePresetNameInput.select();
+      setChatStatus(t("ttsProfilePresetSaved", { name }), "success");
+    }
+    function deleteSelectedTtsProfilePreset() {
+      const presetId = elements.ttsProfilePresetSelect.value;
+      const preset = getCustomTtsProfilePresets().find((entry) => entry.id === presetId);
+      if (!preset || !window.confirm(t("confirmDeleteTtsProfilePreset", { name: preset.name }))) {
+        return;
+      }
+      state.settings.ttsProfilePresets = getCustomTtsProfilePresets().filter((entry) => entry.id !== presetId);
+      if (state.settings.ttsProfilePresetId === presetId) {
+        state.settings.ttsProfilePresetId = "";
+      }
+      persistState();
+      renderTtsProfilePresetOptions();
+      setChatStatus(t("ttsProfilePresetDeleted", { name: preset.name }), "success");
     }
     function readIllustrationSettingsForm() {
       return {
@@ -9253,7 +9817,7 @@
       if (includeSecrets) {
         setSettingsSecretsOnState(appState, getSettingsSecretsFromState(state));
       } else {
-        setSettingsSecretsOnState(appState, { apiKey: "", imageApiKey: "" });
+        setSettingsSecretsOnState(appState, { apiKey: "", imageApiKey: "", ttsApiKey: "" });
       }
       const manifest = {
         format: FULL_BACKUP_FORMAT,
@@ -9474,6 +10038,7 @@
       if (!shouldClear) {
         return;
       }
+      stopTtsPlayback();
       requestIndexedDbMediaGc(collectReferencedMediaIdsFromMessages(activeChat.messages));
       editingMessageId = "";
       activeChat.messages = [];
@@ -9492,6 +10057,9 @@
         editingMessageId = "";
       }
       const targetMessage = chat.messages.find((message) => message.id === messageId);
+      if (ttsPlaybackMessageId === messageId) {
+        stopTtsPlayback();
+      }
       requestIndexedDbMediaGc(collectReferencedMediaIdsFromMessages(targetMessage ? [targetMessage] : []));
       chat.messages = chat.messages.filter((message) => message.id !== messageId);
       chat.updatedAt = new Date().toISOString();
@@ -9555,6 +10123,202 @@
       }
       const latestAssistant = getLatestAssistantMessage(chat);
       return Boolean(latestAssistant && latestAssistant.id === messageId && latestAssistant.status !== "streaming");
+    }
+    function canPlayMessageTts(message) {
+      return state.settings.ttsEnabled === true
+        && message?.role === "assistant"
+        && message.status === "complete"
+        && hasText(message.content);
+    }
+    function toggleMessageTtsPlayback(chatId, messageId) {
+      if (ttsPlaybackMessageId === messageId) {
+        stopTtsPlayback();
+        return;
+      }
+      void playMessageTts(chatId, messageId);
+    }
+    async function playMessageTts(chatId, messageId) {
+      stopTtsPlayback();
+      const chat = findChatById(chatId);
+      const message = chat?.messages?.find((entry) => entry.id === messageId);
+      if (!canPlayMessageTts(message)) {
+        return;
+      }
+      const apiBase = getConfiguredTtsApi().base;
+      if (!apiBase) {
+        setChatStatus(t("ttsApiRequired"), "error");
+        return;
+      }
+      const model = trimmed(state.settings.ttsModel);
+      if (!model) {
+        setChatStatus(t("ttsModelRequired"), "error");
+        return;
+      }
+      const chunks = splitTtsText(prepareMessageTextForTts(message));
+      if (!chunks.length) {
+        return;
+      }
+      const runId = ++ttsPlaybackRunId;
+      ttsPlaybackMessageId = messageId;
+      ttsPlaybackAbortController = new AbortController();
+      refreshActiveMessageMetaActions();
+      setChatStatus(t("ttsPreparing"));
+      try {
+        for (const chunk of chunks) {
+          if (runId !== ttsPlaybackRunId) {
+            return;
+          }
+          const audioBlob = await requestTtsAudioBlob(apiBase, chunk, ttsPlaybackAbortController.signal);
+          if (runId !== ttsPlaybackRunId) {
+            return;
+          }
+          releaseTtsPlaybackAudio();
+          ttsPlaybackObjectUrl = URL.createObjectURL(audioBlob);
+          ttsPlaybackAudio = new Audio(ttsPlaybackObjectUrl);
+          await playTtsAudioToEnd(ttsPlaybackAudio, ttsPlaybackAbortController.signal);
+          releaseTtsPlaybackAudio();
+        }
+      } catch (error) {
+        if (!isAbortError(error)) {
+          console.error("TTS playback failed", error);
+          setChatStatus(t("ttsPlaybackFailed", { error: error.message }), "error");
+        }
+      } finally {
+        if (runId === ttsPlaybackRunId) {
+          releaseTtsPlaybackAudio();
+          ttsPlaybackAbortController = null;
+          ttsPlaybackMessageId = "";
+          refreshActiveMessageMetaActions();
+        }
+      }
+    }
+    function stopTtsPlayback() {
+      ttsPlaybackRunId += 1;
+      ttsPlaybackAbortController?.abort();
+      ttsPlaybackAbortController = null;
+      releaseTtsPlaybackAudio();
+      const hadActiveMessage = Boolean(ttsPlaybackMessageId);
+      ttsPlaybackMessageId = "";
+      if (hadActiveMessage) {
+        refreshActiveMessageMetaActions();
+      }
+    }
+    function releaseTtsPlaybackAudio() {
+      if (ttsPlaybackAudio) {
+        ttsPlaybackAudio.pause();
+        ttsPlaybackAudio.src = "";
+        ttsPlaybackAudio = null;
+      }
+      if (ttsPlaybackObjectUrl) {
+        URL.revokeObjectURL(ttsPlaybackObjectUrl);
+        ttsPlaybackObjectUrl = "";
+      }
+    }
+    function playTtsAudioToEnd(audio, signal) {
+      return new Promise((resolve, reject) => {
+        const cleanup = () => {
+          audio.removeEventListener("ended", handleEnded);
+          audio.removeEventListener("error", handleError);
+          signal?.removeEventListener("abort", handleAbort);
+        };
+        const handleEnded = () => {
+          cleanup();
+          resolve();
+        };
+        const handleError = () => {
+          cleanup();
+          reject(new Error(audio.error?.message || "Audio playback failed"));
+        };
+        const handleAbort = () => {
+          cleanup();
+          reject(new DOMException("Aborted", "AbortError"));
+        };
+        audio.addEventListener("ended", handleEnded, { once: true });
+        audio.addEventListener("error", handleError, { once: true });
+        signal?.addEventListener("abort", handleAbort, { once: true });
+        Promise.resolve(audio.play()).catch((error) => {
+          cleanup();
+          reject(error);
+        });
+      });
+    }
+    async function requestTtsAudioBlob(apiBase, input, signal) {
+      const requestBody = {
+        model: trimmed(state.settings.ttsModel),
+        input,
+        response_format: "mp3"
+      };
+      const voice = trimmed(state.settings.ttsVoice);
+      if (voice) {
+        requestBody.voice = voice;
+      }
+      const temperature = normalizeOptionalNumber(state.settings.ttsTemperature, { min: 0.1, max: 2 });
+      if (temperature !== null) {
+        requestBody.temperature = temperature;
+      }
+      const instructions = trimmed(state.settings.ttsAudioProfile);
+      if (instructions) {
+        requestBody.instructions = instructions;
+      }
+      const response = await fetch(`${apiBase}/audio/speech`, {
+        method: "POST",
+        headers: {
+          ...buildBearerHeaders(getConfiguredTtsApi().key),
+          "Content-Type": "application/json"
+        },
+        signal,
+        body: JSON.stringify(requestBody)
+      });
+      if (!response.ok) {
+        let detail = "";
+        try {
+          detail = trimmed((await response.json())?.error?.message);
+        } catch {
+          detail = "";
+        }
+        throw new Error([`HTTP ${response.status} ${response.statusText}`, detail].filter(Boolean).join(" - "));
+      }
+      const blob = await response.blob();
+      if (!blob.size) {
+        throw new Error(t("missingResponseContent"));
+      }
+      return blob;
+    }
+    function prepareMessageTextForTts(message) {
+      return replaceRpPromptPlaceholders(String(message?.content || ""), getMessageRpPlaceholders(message))
+        .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
+        .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+        .replace(/^\s*```[^\n]*$/gm, "")
+        .replace(/`([^`]+)`/g, "$1")
+        .replace(/^\s{0,3}#{1,6}\s+/gm, "")
+        .replace(/^\s*[-*+]\s+/gm, "")
+        .replace(/^\s*\d+[.)]\s+/gm, "")
+        .replace(/[*_~]+/g, "")
+        .replace(/<[^>]+>/g, " ")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
+    }
+    function splitTtsText(value, maxLength = 3800) {
+      let remaining = trimmed(value);
+      const chunks = [];
+      while (remaining) {
+        if (remaining.length <= maxLength) {
+          chunks.push(remaining);
+          break;
+        }
+        const minimumSplit = Math.floor(maxLength * 0.6);
+        const windowText = remaining.slice(0, maxLength + 1);
+        const boundaryMatches = [...windowText.matchAll(/[.!?。！？]\s+|\n+/g)]
+          .map((match) => match.index + match[0].length)
+          .filter((index) => index >= minimumSplit && index <= maxLength);
+        let splitAt = boundaryMatches[boundaryMatches.length - 1] || windowText.lastIndexOf(" ", maxLength);
+        if (splitAt < minimumSplit) {
+          splitAt = maxLength;
+        }
+        chunks.push(remaining.slice(0, splitAt).trim());
+        remaining = remaining.slice(splitAt).trim();
+      }
+      return chunks.filter(Boolean);
     }
     function isTalkGroupResponseInProgressForChat(chat) {
       return Boolean(activeTalkGroupResponseChatId && chat?.id === activeTalkGroupResponseChatId);
@@ -9623,6 +10387,93 @@
       }
       if (state.settings.auxiliaryModel && !validIds.has(state.settings.auxiliaryModel)) {
         state.settings.auxiliaryModel = "";
+      }
+    }
+    function getConfiguredTtsApi(options = {}) {
+      const useForm = options.useForm === true;
+      const useLlmApi = useForm ? elements.ttsUseLlmApiInput.checked : state.settings.ttsUseLlmApi !== false;
+      const base = useLlmApi
+        ? useForm ? elements.apiBaseUrlInput.value : state.settings.apiBaseUrl
+        : useForm ? elements.ttsApiBaseUrlInput.value : state.settings.ttsApiBaseUrl;
+      const key = useLlmApi
+        ? useForm ? elements.apiKeyInput.value : state.settings.apiKey
+        : useForm ? elements.ttsApiKeyInput.value : state.settings.ttsApiKey;
+      return { base: useLlmApi ? normalizeApiBase(base) : normalizeTtsApiBase(base), key };
+    }
+    function getTtsModelCandidates(options = {}) {
+      const useLlmApi = options.useForm === true
+        ? elements.ttsUseLlmApiInput.checked
+        : state.settings.ttsUseLlmApi !== false;
+      const candidates = [
+        ...normalizeImageModelList(state.ttsModels),
+        ...(useLlmApi ? normalizeImageModelList(state.models.filter(isTtsModelCandidate)) : [])
+      ];
+      return normalizeImageModelList(candidates);
+    }
+    function isTtsModelCandidate(model) {
+      const normalized = normalizeImageModelOption(model);
+      if (!normalized) {
+        return false;
+      }
+      if (getTtsVoicePresetDataset(normalized.id) || getTtsVoicePresetDataset(normalized.label)) {
+        return true;
+      }
+      const metadata = model && typeof model === "object"
+        ? [model.type, model.task, model.pipeline_tag, model.capability, ...(Array.isArray(model.capabilities) ? model.capabilities : [])]
+          .filter(Boolean)
+          .join(" ")
+        : "";
+      const searchable = `${normalized.id} ${normalized.label} ${metadata}`;
+      return /(?:^|[\s/_.-])(?:tts|text[\s_.-]*to[\s_.-]*speech|speech[\s_.-]*(?:generation|synthesis))(?:$|[\s/_.-])/i.test(searchable);
+    }
+    function renderTtsModelOptions(options = {}) {
+      const selectedModel = options.useForm === true
+        ? trimmed(elements.ttsModelInput.value)
+        : trimmed(state.settings.ttsModel);
+      const models = getTtsModelCandidates(options);
+      elements.ttsModelInput.replaceChildren();
+      appendSelectOption(elements.ttsModelInput, "", t("noTtsModel"));
+      models.forEach((model) => appendSelectOption(elements.ttsModelInput, model.id, model.label || model.id));
+      if (selectedModel && !models.some((model) => model.id === selectedModel)) {
+        appendSelectOption(elements.ttsModelInput, selectedModel, selectedModel);
+      }
+      elements.ttsModelInput.value = selectedModel;
+    }
+    async function refreshTtsModels(options = {}) {
+      if (isRefreshingTtsModels) {
+        return;
+      }
+      const ttsApi = getConfiguredTtsApi({ useForm: true });
+      const apiBase = ttsApi.base;
+      if (!apiBase) {
+        setModelsStatus(t("ttsApiRequired"), "error", options);
+        return;
+      }
+      isRefreshingTtsModels = true;
+      elements.refreshTtsModelsButton.disabled = true;
+      setModelsStatus(t("ttsModelsLoading"), "default", options);
+      try {
+        const response = await fetch(`${apiBase}/models`, {
+          headers: buildBearerHeaders(ttsApi.key)
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status} ${response.statusText}`);
+        }
+        const payload = await response.json();
+        const responseModels = Array.isArray(payload?.data) ? payload.data : [];
+        const useLlmApi = elements.ttsUseLlmApiInput.checked;
+        state.ttsModels = normalizeImageModelList(useLlmApi
+          ? responseModels.filter(isTtsModelCandidate)
+          : responseModels);
+        renderTtsModelOptions({ useForm: true });
+        persistState();
+        setModelsStatus(t("ttsModelsLoaded", { count: getTtsModelCandidates({ useForm: true }).length }), "success", options);
+      } catch (error) {
+        console.error("TTS model refresh failed", error);
+        setModelsStatus(t("ttsModelsFailed", { error: error.message }), "error", options);
+      } finally {
+        isRefreshingTtsModels = false;
+        syncTtsConnectionControls();
       }
     }
     async function refreshImageModels(options = {}) {
@@ -10039,6 +10890,7 @@
       if (isSending) {
         return;
       }
+      stopTtsPlayback();
       const activeChat = getActiveChat();
       if (hasEditingMessageInChat(activeChat)) {
         setChatStatus(t("saveMessageEditsFirst"), "error");
@@ -12171,6 +13023,9 @@
       if (isEditingMessage(messageId)) {
         saveEditedMessage(chat, message);
         return;
+      }
+      if (ttsPlaybackMessageId === messageId) {
+        stopTtsPlayback();
       }
       if (hasEditingMessageInChat(chat)) {
         setChatStatus(t("saveOpenMessageEditFirst"), "error");
@@ -14496,6 +15351,16 @@
         .replace(/\/sdapi\/v1\/txt2img$/i, "")
         .replace(/\/prompt$/i, "");
     }
+    function normalizeTtsApiBase(rawValue) {
+      const value = trimmed(rawValue)
+        .replace(/\/+$/, "")
+        .replace(/\/audio\/speech$/i, "")
+        .replace(/\/models$/i, "");
+      if (!value) {
+        return "";
+      }
+      return /\/v\d+$/i.test(value) ? value : `${value}/v1`;
+    }
     function buildBearerHeaders(apiKey) {
       const headers = {};
       const value = trimmed(apiKey);
@@ -14817,6 +15682,7 @@
         ["text", "settingsGeneralTabButton", "settingsGeneral"],
         ["text", "settingsModelTabButton", "settingsModel"],
         ["text", "settingsIllustrationTabButton", "settingsIllustration"],
+        ["text", "settingsTtsTabButton", "settingsTts"],
         ["text", "settingsConnectionSectionTitle", "connectionSettings"],
         ["text", "settingsGeneralSectionTitle", "generalSettingsSection"],
         ["text", "settingsRpSectionTitle", "rpSettingsSection"],
@@ -14830,12 +15696,15 @@
         ["field", "apiKeyInput", "apiKey"],
         ["field", "imageApiBaseUrlInput", "imageApiBaseUrl"],
         ["field", "imageApiKeyInput", "imageApiKey"],
+        ["field", "ttsApiBaseUrlInput", "ttsApiBaseUrl"],
+        ["field", "ttsApiKeyInput", "ttsApiKey"],
         ["field", "userAliasInput", "userAlias"],
         ["field", "modelAliasInput", "modelAlias"],
         ["field", "themeModeSelect", "themeMode"],
         ["field", "languageSelect", "language"],
         ["placeholder", "apiBaseUrlInput", "apiBaseUrlPlaceholder"],
-        ["placeholder", "imageApiBaseUrlInput", "imageApiBaseUrlPlaceholder"]
+        ["placeholder", "imageApiBaseUrlInput", "imageApiBaseUrlPlaceholder"],
+        ["placeholder", "ttsApiBaseUrlInput", "ttsApiBaseUrlPlaceholder"]
       ]);
       if (elements.settingsTabStrip) {
         elements.settingsTabStrip.setAttribute("aria-label", t("settingsCategory"));
@@ -14849,6 +15718,9 @@
         ["leading", "rpSummaryEnabledLabel", "rpSummaryEnabled"],
         ["leading", "rpInputEnhancementEnabledLabel", "rpInputEnhancementEnabled"],
         ["leading", "talkGroupUnlimitedLabel", "talkGroupUnlimited"],
+        ["leading", "ttsEnabledLabel", "ttsEnabled"],
+        ["leading", "ttsUseLlmApiLabel", "ttsUseLlmApi"],
+        ["leading", "ttsCustomVoiceLabel", "ttsCustomVoiceId"],
         ["leading", "thinkingUnlimitedLabel", "unlimited"],
         ["leading", "illustrationEnabledLabel", "illustrationEnabled"],
         ["leading", "chatT2iEnabledLabel", "chatT2iEnabled"],
@@ -14897,6 +15769,26 @@
         ["field", "illustrationArtStyleSelect", "illustrationArtStyle"],
         ["field", "imageModelSelect", "imageModelSelect"]
       ]);
+      applyElementTranslationBindings([
+        ["text", "settingsTtsSectionTitle", "ttsSettingsTitle"],
+        ["text", "saveTtsSettingsButton", "saveSettings"],
+        ["text", "refreshTtsModelsButton", "refreshModels"],
+        ["text", "saveTtsProfilePresetButton", "saveTtsProfilePreset"],
+        ["text", "deleteTtsProfilePresetButton", "deleteTtsProfilePreset"],
+        ["field", "ttsModelInput", "ttsModel"],
+        ["field", "ttsVoiceSelect", "ttsVoice"],
+        ["field", "ttsVoiceInput", "ttsVoice"],
+        ["field", "ttsTemperatureInput", "ttsTemperature"],
+        ["field", "ttsProfilePresetSelect", "ttsProfilePreset"],
+        ["field", "ttsAudioProfileInput", "ttsAudioProfile"],
+        ["field", "ttsProfilePresetNameInput", "ttsProfilePresetName"],
+        ["placeholder", "ttsVoiceInput", "ttsVoicePlaceholder"],
+        ["placeholder", "ttsTemperatureInput", "serverDefaultPlaceholder"],
+        ["placeholder", "ttsAudioProfileInput", "ttsAudioProfilePlaceholder"],
+        ["placeholder", "ttsProfilePresetNameInput", "ttsProfilePresetNamePlaceholder"]
+      ]);
+      renderTtsProfilePresetOptions();
+      renderTtsModelOptions();
       setSelectOptionTexts(elements.illustrationPromptStyleSelect, ["illustrationPromptStyleTags", "illustrationPromptStyleNatural"]);
       setSelectOptionTexts(elements.illustrationArtStyleSelect, ["illustrationArtStyleNone", "illustrationArtStyleAnime", "illustrationArtStylePhoto"]);
       applyElementTranslationBindings([
