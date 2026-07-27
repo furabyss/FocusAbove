@@ -2755,7 +2755,7 @@
             <section class="brand">
               <a class="brand-mark-link" href="https://github.com/furabyss/FocusAbove" target="_blank" rel="noopener noreferrer"><div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#icon-brand"></use></svg><span>FocusAbove</span></div></a>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.9.0, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.9.1, ⓒ 2026 Fur-Abyss</p>
             </section>
             <div class="settings-tab-strip" role="tablist">
               <button id="settingsGeneralTabButton" type="button" class="settings-tab-button active" role="tab" aria-selected="true" aria-controls="settingsGeneralPanel"></button>
@@ -2974,6 +2974,12 @@
                   </div>
                   <label>
                     <select id="imageModelSelect"></select>
+                  </label>
+                  <label>
+                    <textarea id="illustrationRequiredPromptInput"></textarea>
+                  </label>
+                  <label>
+                    <textarea id="illustrationRequiredNegativePromptInput"></textarea>
                   </label>
                   <div id="illustrationGenerationControls" class="illustration-control-grid">
                     <label class="range-field">
@@ -3210,6 +3216,12 @@
     const RP_CARD_DRAG_THRESHOLD_PX = 6;
     const RP_CARD_TOUCH_DRAG_THRESHOLD_PX = 10;
     const RP_CARD_TOUCH_HOLD_MS = 150;
+    const byId = document.getElementById.bind(document);
+    const query = document.querySelector.bind(document);
+    const createElement = document.createElement.bind(document);
+    const isArray = Array.isArray;
+    const toJson = JSON.stringify;
+    const nowIso = () => new Date().toISOString();
     function iconSvg(iconName, viewBox = "0 0 24 24") {
       return `<svg viewBox="${viewBox}" aria-hidden="true"><use href="#icon-${iconName}"></use></svg>`;
     }
@@ -3225,7 +3237,7 @@
         stopPropagation = false,
         onClick = null
       } = options;
-      const button = document.createElement("button");
+      const button = createElement("button");
       button.type = "button";
       if (className) {
         button.className = className;
@@ -3259,7 +3271,7 @@
       return button;
     }
     function createElementWithClass(tagName, className, textContent = null) {
-      const element = document.createElement(tagName);
+      const element = createElement(tagName);
       if (className) {
         element.className = className;
       }
@@ -3320,17 +3332,17 @@
       return `${kind}${suffixByAction[action]}Button`;
     }
     function appendSelectOption(selectElement, value, textContent) {
-      const option = document.createElement("option");
+      const option = createElement("option");
       option.value = value;
       option.textContent = textContent;
       selectElement.appendChild(option);
       return option;
     }
     function createRpCardThumb(card, kind) {
-      const thumb = document.createElement("div");
+      const thumb = createElement("div");
       thumb.className = "card-thumb";
       if (card.profileImage?.dataUrl || card.profileImage?.mediaId) {
-        const image = document.createElement("img");
+        const image = createElement("img");
         image.alt = card.name;
         image.draggable = false;
         queueImageElementSource(image, card.profileImage);
@@ -3386,7 +3398,7 @@
         if (header.childElementCount) {
           return;
         }
-        const title = document.createElement("h2");
+        const title = createElement("h2");
         title.id = header.dataset.overlayTitleId || "";
         title.className = "section-title";
         const closeButton = createButton({
@@ -3414,9 +3426,9 @@
       });
     }
     function populateRpCardControlMarkup(kind) {
-      const toolbar = document.querySelector(`[data-rp-card-toolbar="${kind}"]`);
-      const actionRow = document.querySelector(`[data-rp-card-action-row="${kind}"]`);
-      const mediaActions = document.querySelector(`[data-rp-card-media-actions="${kind}"]`);
+      const toolbar = query(`[data-rp-card-toolbar="${kind}"]`);
+      const actionRow = query(`[data-rp-card-action-row="${kind}"]`);
+      const mediaActions = query(`[data-rp-card-media-actions="${kind}"]`);
       const toolbarActions = kind === "character" ? ["new", "newGroup", "import"] : ["new", "import"];
       populateGeneratedButtons(toolbar, toolbarActions.map((action) => ({
         className: action === "new" ? "" : "ghost-button",
@@ -3451,7 +3463,7 @@
         return '<label><input id="personaCardNameInput" type="text"></label><label><textarea id="personaCardDescriptionInput"></textarea></label>';
     }
     function populateRpCardEditorMarkup(kind) {
-      const editor = document.querySelector(`[data-rp-card-editor="${kind}"]`);
+      const editor = query(`[data-rp-card-editor="${kind}"]`);
       if (!editor || editor.childElementCount) {
         return;
       }
@@ -3463,7 +3475,7 @@
         ["overlay", "newChatButton", "importChatsButton"]
       ].forEach(([row, newId, importId]) => {
         populateGeneratedButtons(
-          document.querySelector(`[data-tab-utility-row="${row}"]`),
+          query(`[data-tab-utility-row="${row}"]`),
           [
             { iconName: "plus", label: "새 탭", attributes: { id: newId } },
             { iconName: "import", tone: "secondary", label: "JSON 임포트", attributes: { id: importId } }
@@ -3659,7 +3671,7 @@
         ttsTemperature: "TTS 온도",
         ttsChunkLength: "청크당 최대 글자 수",
         ttsAudioProfile: "오디오 프로필",
-        ttsAudioProfilePlaceholder: "화자의 성별, 나이대, 성격, 직업적 페르소나, 말투와 속도 등을 작성하세요. 모델이 지원하는 경우 instructions로 전달됩니다.",
+        ttsAudioProfilePlaceholder: "화자의 성별, 나이대, 성격, 직업적 페르소나, 말투와 속도 등을 작성하세요.",
         ttsProfilePreset: "오디오 프로필 프리셋",
         ttsCustomProfile: "직접 작성",
         ttsPresetIntellectualMale: "지적인 남성",
@@ -3697,6 +3709,8 @@
         illustrationArtStyleAnime: "아니메",
         illustrationArtStylePhoto: "사진",
         imageModelSelect: "이미지 모델",
+        illustrationRequiredPrompt: "항상 포함할 프롬프트",
+        illustrationRequiredNegativePrompt: "항상 포함할 네거티브 프롬프트",
         autoImageModel: "자동 선택",
         imageModelsLoading: "이미지 API에서 모델 목록을 불러오는 중입니다.",
         imageModelsLoaded: ({ count }) => `이미지 모델 ${count}개를 불러왔습니다.`,
@@ -4048,7 +4062,7 @@
         ttsTemperature: "TTS temperature",
         ttsChunkLength: "Maximum characters per chunk",
         ttsAudioProfile: "Audio profile",
-        ttsAudioProfilePlaceholder: "Describe the speaker's gender, age range, personality, professional persona, delivery, and pace. Sent as instructions when supported by the model.",
+        ttsAudioProfilePlaceholder: "Describe the speaker's gender, age range, personality, professional persona, delivery, and pace.",
         ttsProfilePreset: "Audio profile preset",
         ttsCustomProfile: "Custom",
         ttsPresetIntellectualMale: "Intellectual man",
@@ -4086,6 +4100,8 @@
         illustrationArtStyleAnime: "Anime",
         illustrationArtStylePhoto: "Photo",
         imageModelSelect: "Image model",
+        illustrationRequiredPrompt: "Always include prompt",
+        illustrationRequiredNegativePrompt: "Always include negative prompt",
         autoImageModel: "Auto select",
         imageModelsLoading: "Loading image models.",
         imageModelsLoaded: ({ count }) => `Loaded ${count} image model${count === 1 ? "" : "s"}.`,
@@ -4365,6 +4381,8 @@
       promptStyle: "tag-list",
       artStyle: "",
       imageModel: "",
+      requiredPrompt: "",
+      requiredNegativePrompt: "",
       ignoreNonCharacterPeople: false,
       cfgScale: 3,
       steps: 16,
@@ -4406,252 +4424,254 @@
       talk: createDefaultTalkState()
     };
     const elements = {
-      appShell: document.getElementById("appShell"),
-      settingsOverlay: document.getElementById("settingsOverlay"),
-      promptPresetOverlay: document.getElementById("promptPresetOverlay"),
-      authorsNoteOverlay: document.getElementById("authorsNoteOverlay"),
-      tabsOverlay: document.getElementById("tabsOverlay"),
-      characterOverlay: document.getElementById("characterOverlay"),
-      personaOverlay: document.getElementById("personaOverlay"),
-      talkGroupMemberOverlay: document.getElementById("talkGroupMemberOverlay"),
-      imagePreviewOverlay: document.getElementById("imagePreviewOverlay"),
-      rpImageCropOverlay: document.getElementById("rpImageCropOverlay"),
-      tabLockWarning: document.getElementById("tabLockWarning"),
-      tabLockWarningMessage: document.getElementById("tabLockWarningMessage"),
-      desktopTabsSidebar: document.getElementById("desktopTabsSidebar"),
-      modeToggle: document.querySelector(".header-mode-toggle"),
-      chatModeButton: document.getElementById("chatModeButton"),
-      rpModeButton: document.getElementById("rpModeButton"),
-      talkModeButton: document.getElementById("talkModeButton"),
-      rpHeaderActions: document.getElementById("rpHeaderActions"),
-      openCharacterOverlayButton: document.getElementById("openCharacterOverlayButton"),
-      openPersonaOverlayButton: document.getElementById("openPersonaOverlayButton"),
-      authorsNoteButton: document.getElementById("authorsNoteButton"),
-      openSettingsOverlayButton: document.getElementById("openSettingsOverlayButton"),
-      openTabsOverlayButton: document.getElementById("openTabsOverlayButton"),
-      desktopTabsTitle: document.getElementById("desktopTabsTitle"),
-      messageInputLabel: document.querySelector('label:has(#messageInput) .sr-only'),
-      scrollJumpStack: document.querySelector(".scroll-jump-stack"),
-      authorsNoteOverlayTitle: document.getElementById("authorsNoteOverlayTitle"),
-      settingsOverlayTitle: document.getElementById("settingsOverlayTitle"),
-      promptPresetOverlayTitle: document.getElementById("promptPresetOverlayTitle"),
-      tabsOverlayTitle: document.getElementById("tabsOverlayTitle"),
-      tabsOverlayListTitle: document.getElementById("tabsOverlayListTitle"),
-      promptPresetListTitle: document.getElementById("promptPresetListTitle"),
-      characterOverlayTitle: document.getElementById("characterOverlayTitle"),
-      personaOverlayTitle: document.getElementById("personaOverlayTitle"),
-      talkGroupMemberOverlayTitle: document.getElementById("talkGroupMemberOverlayTitle"),
-      talkGroupMemberCandidateTitle: document.getElementById("talkGroupMemberCandidateTitle"),
-      imagePreviewTitle: document.getElementById("imagePreviewTitle"),
-      rpImageCropTitle: document.getElementById("rpImageCropTitle"),
-      tabLockWarningTitle: document.getElementById("tabLockWarningTitle"),
-      closeSettingsOverlayButton: document.getElementById("closeSettingsOverlayButton"),
-      closePromptPresetOverlayButton: document.getElementById("closePromptPresetOverlayButton"),
-      closeAuthorsNoteOverlayButton: document.getElementById("closeAuthorsNoteOverlayButton"),
-      closeTabsOverlayButton: document.getElementById("closeTabsOverlayButton"),
-      closeCharacterOverlayButton: document.getElementById("closeCharacterOverlayButton"),
-      closePersonaOverlayButton: document.getElementById("closePersonaOverlayButton"),
-      closeTalkGroupMemberOverlayButton: document.getElementById("closeTalkGroupMemberOverlayButton"),
-      downloadImagePreviewButton: document.getElementById("downloadImagePreviewButton"),
-      closeImagePreviewButton: document.getElementById("closeImagePreviewButton"),
-      closeRpImageCropButton: document.getElementById("closeRpImageCropButton"),
-      settingsSection: document.getElementById("settingsSection"),
-      settingsGeneralTabButton: document.getElementById("settingsGeneralTabButton"),
-      settingsModelTabButton: document.getElementById("settingsModelTabButton"),
-      settingsIllustrationTabButton: document.getElementById("settingsIllustrationTabButton"),
-      settingsTtsTabButton: document.getElementById("settingsTtsTabButton"),
-      settingsTabStrip: document.querySelector(".settings-tab-strip"),
-      settingsGeneralPanel: document.getElementById("settingsGeneralPanel"),
-      settingsModelPanel: document.getElementById("settingsModelPanel"),
-      settingsIllustrationPanel: document.getElementById("settingsIllustrationPanel"),
-      settingsTtsPanel: document.getElementById("settingsTtsPanel"),
-      settingsConnectionSectionTitle: document.getElementById("settingsConnectionSectionTitle"),
-      settingsGeneralSectionTitle: document.getElementById("settingsGeneralSectionTitle"),
-      settingsRpSectionGroup: document.getElementById("settingsRpSectionGroup"),
-      settingsRpSectionTitle: document.getElementById("settingsRpSectionTitle"),
-      settingsTalkSectionGroup: document.getElementById("settingsTalkSectionGroup"),
-      settingsTalkSectionTitle: document.getElementById("settingsTalkSectionTitle"),
-      settingsBackupSectionTitle: document.getElementById("settingsBackupSectionTitle"),
-      settingsBackupHint: document.getElementById("settingsBackupHint"),
-      settingsIllustrationSectionTitle: document.querySelector("#settingsIllustrationPanel .section-title"),
-      settingsTtsSectionTitle: document.getElementById("settingsTtsSectionTitle"),
-      smoothStreamingLabel: document.querySelector('label.inline-checkbox[for="smoothStreamingInput"]'),
-      autoContinueLabel: document.querySelector('label.inline-checkbox[for="autoContinueInput"]'),
-      backupIncludeSecretsLabel: document.querySelector('label.inline-checkbox[for="backupIncludeSecretsInput"]'),
-      rpSummaryEnabledLabel: document.querySelector('label.inline-checkbox[for="rpSummaryEnabledInput"]'),
-      rpInputEnhancementEnabledLabel: document.querySelector('label.inline-checkbox[for="rpInputEnhancementEnabledInput"]'),
-      thinkingUnlimitedLabel: document.querySelector('label.inline-checkbox[for="thinkingUnlimitedInput"]'),
-      illustrationEnabledLabel: document.querySelector('label.inline-checkbox[for="illustrationEnabledInput"]'),
-      chatT2iEnabledLabel: document.querySelector('label.inline-checkbox[for="chatT2iEnabledInput"]'),
-      talkT2iEnabledLabel: document.querySelector('label.inline-checkbox[for="talkT2iEnabledInput"]'),
-      talkGroupUnlimitedLabel: document.querySelector('label.inline-checkbox[for="talkGroupUnlimitedInput"]'),
-      ttsEnabledLabel: document.querySelector('label.inline-checkbox[for="ttsEnabledInput"]'),
-      ttsUseLlmApiLabel: document.querySelector('label.inline-checkbox[for="ttsUseLlmApiInput"]'),
-      illustrationIgnorePeopleLabel: document.querySelector('label.inline-checkbox[for="illustrationIgnoreNonCharacterPeopleInput"]'),
+      appShell: byId("appShell"),
+      settingsOverlay: byId("settingsOverlay"),
+      promptPresetOverlay: byId("promptPresetOverlay"),
+      authorsNoteOverlay: byId("authorsNoteOverlay"),
+      tabsOverlay: byId("tabsOverlay"),
+      characterOverlay: byId("characterOverlay"),
+      personaOverlay: byId("personaOverlay"),
+      talkGroupMemberOverlay: byId("talkGroupMemberOverlay"),
+      imagePreviewOverlay: byId("imagePreviewOverlay"),
+      rpImageCropOverlay: byId("rpImageCropOverlay"),
+      tabLockWarning: byId("tabLockWarning"),
+      tabLockWarningMessage: byId("tabLockWarningMessage"),
+      desktopTabsSidebar: byId("desktopTabsSidebar"),
+      modeToggle: query(".header-mode-toggle"),
+      chatModeButton: byId("chatModeButton"),
+      rpModeButton: byId("rpModeButton"),
+      talkModeButton: byId("talkModeButton"),
+      rpHeaderActions: byId("rpHeaderActions"),
+      openCharacterOverlayButton: byId("openCharacterOverlayButton"),
+      openPersonaOverlayButton: byId("openPersonaOverlayButton"),
+      authorsNoteButton: byId("authorsNoteButton"),
+      openSettingsOverlayButton: byId("openSettingsOverlayButton"),
+      openTabsOverlayButton: byId("openTabsOverlayButton"),
+      desktopTabsTitle: byId("desktopTabsTitle"),
+      messageInputLabel: query('label:has(#messageInput) .sr-only'),
+      scrollJumpStack: query(".scroll-jump-stack"),
+      authorsNoteOverlayTitle: byId("authorsNoteOverlayTitle"),
+      settingsOverlayTitle: byId("settingsOverlayTitle"),
+      promptPresetOverlayTitle: byId("promptPresetOverlayTitle"),
+      tabsOverlayTitle: byId("tabsOverlayTitle"),
+      tabsOverlayListTitle: byId("tabsOverlayListTitle"),
+      promptPresetListTitle: byId("promptPresetListTitle"),
+      characterOverlayTitle: byId("characterOverlayTitle"),
+      personaOverlayTitle: byId("personaOverlayTitle"),
+      talkGroupMemberOverlayTitle: byId("talkGroupMemberOverlayTitle"),
+      talkGroupMemberCandidateTitle: byId("talkGroupMemberCandidateTitle"),
+      imagePreviewTitle: byId("imagePreviewTitle"),
+      rpImageCropTitle: byId("rpImageCropTitle"),
+      tabLockWarningTitle: byId("tabLockWarningTitle"),
+      closeSettingsOverlayButton: byId("closeSettingsOverlayButton"),
+      closePromptPresetOverlayButton: byId("closePromptPresetOverlayButton"),
+      closeAuthorsNoteOverlayButton: byId("closeAuthorsNoteOverlayButton"),
+      closeTabsOverlayButton: byId("closeTabsOverlayButton"),
+      closeCharacterOverlayButton: byId("closeCharacterOverlayButton"),
+      closePersonaOverlayButton: byId("closePersonaOverlayButton"),
+      closeTalkGroupMemberOverlayButton: byId("closeTalkGroupMemberOverlayButton"),
+      downloadImagePreviewButton: byId("downloadImagePreviewButton"),
+      closeImagePreviewButton: byId("closeImagePreviewButton"),
+      closeRpImageCropButton: byId("closeRpImageCropButton"),
+      settingsSection: byId("settingsSection"),
+      settingsGeneralTabButton: byId("settingsGeneralTabButton"),
+      settingsModelTabButton: byId("settingsModelTabButton"),
+      settingsIllustrationTabButton: byId("settingsIllustrationTabButton"),
+      settingsTtsTabButton: byId("settingsTtsTabButton"),
+      settingsTabStrip: query(".settings-tab-strip"),
+      settingsGeneralPanel: byId("settingsGeneralPanel"),
+      settingsModelPanel: byId("settingsModelPanel"),
+      settingsIllustrationPanel: byId("settingsIllustrationPanel"),
+      settingsTtsPanel: byId("settingsTtsPanel"),
+      settingsConnectionSectionTitle: byId("settingsConnectionSectionTitle"),
+      settingsGeneralSectionTitle: byId("settingsGeneralSectionTitle"),
+      settingsRpSectionGroup: byId("settingsRpSectionGroup"),
+      settingsRpSectionTitle: byId("settingsRpSectionTitle"),
+      settingsTalkSectionGroup: byId("settingsTalkSectionGroup"),
+      settingsTalkSectionTitle: byId("settingsTalkSectionTitle"),
+      settingsBackupSectionTitle: byId("settingsBackupSectionTitle"),
+      settingsBackupHint: byId("settingsBackupHint"),
+      settingsIllustrationSectionTitle: query("#settingsIllustrationPanel .section-title"),
+      settingsTtsSectionTitle: byId("settingsTtsSectionTitle"),
+      smoothStreamingLabel: query('label.inline-checkbox[for="smoothStreamingInput"]'),
+      autoContinueLabel: query('label.inline-checkbox[for="autoContinueInput"]'),
+      backupIncludeSecretsLabel: query('label.inline-checkbox[for="backupIncludeSecretsInput"]'),
+      rpSummaryEnabledLabel: query('label.inline-checkbox[for="rpSummaryEnabledInput"]'),
+      rpInputEnhancementEnabledLabel: query('label.inline-checkbox[for="rpInputEnhancementEnabledInput"]'),
+      thinkingUnlimitedLabel: query('label.inline-checkbox[for="thinkingUnlimitedInput"]'),
+      illustrationEnabledLabel: query('label.inline-checkbox[for="illustrationEnabledInput"]'),
+      chatT2iEnabledLabel: query('label.inline-checkbox[for="chatT2iEnabledInput"]'),
+      talkT2iEnabledLabel: query('label.inline-checkbox[for="talkT2iEnabledInput"]'),
+      talkGroupUnlimitedLabel: query('label.inline-checkbox[for="talkGroupUnlimitedInput"]'),
+      ttsEnabledLabel: query('label.inline-checkbox[for="ttsEnabledInput"]'),
+      ttsUseLlmApiLabel: query('label.inline-checkbox[for="ttsUseLlmApiInput"]'),
+      illustrationIgnorePeopleLabel: query('label.inline-checkbox[for="illustrationIgnoreNonCharacterPeopleInput"]'),
       settingsActionButtons: document.querySelectorAll("#settingsForm .settings-tab-actions button"),
       modelStatLabels: document.querySelectorAll("#settingsModelPanel .stat-card span"),
-      settingsModelHint: document.querySelector("#settingsModelPanel .hint"),
-      settingsForm: document.getElementById("settingsForm"),
-      apiBaseUrlInput: document.getElementById("apiBaseUrlInput"),
-      apiKeyInput: document.getElementById("apiKeyInput"),
-      imageApiBaseUrlInput: document.getElementById("imageApiBaseUrlInput"),
-      imageApiKeyInput: document.getElementById("imageApiKeyInput"),
-      ttsEnabledInput: document.getElementById("ttsEnabledInput"),
-      ttsUseLlmApiInput: document.getElementById("ttsUseLlmApiInput"),
-      ttsApiSettings: document.getElementById("ttsApiSettings"),
-      ttsApiBaseUrlInput: document.getElementById("ttsApiBaseUrlInput"),
-      ttsApiKeyInput: document.getElementById("ttsApiKeyInput"),
-      userAliasInput: document.getElementById("userAliasInput"),
-      modelAliasInput: document.getElementById("modelAliasInput"),
-      themeModeSelect: document.getElementById("themeModeSelect"),
-      languageSelect: document.getElementById("languageSelect"),
-      smoothStreamingInput: document.getElementById("smoothStreamingInput"),
-      autoContinueInput: document.getElementById("autoContinueInput"),
-      rpAssistanceFields: document.getElementById("rpAssistanceFields"),
-      rpSummaryEnabledInput: document.getElementById("rpSummaryEnabledInput"),
-      rpSummaryTokenThresholdField: document.getElementById("rpSummaryTokenThresholdField"),
-      rpSummaryTokenThresholdInput: document.getElementById("rpSummaryTokenThresholdInput"),
-      rpSummaryMaxTokensField: document.getElementById("rpSummaryMaxTokensField"),
-      rpSummaryMaxTokensInput: document.getElementById("rpSummaryMaxTokensInput"),
-      rpInputEnhancementEnabledInput: document.getElementById("rpInputEnhancementEnabledInput"),
-      resetSettingsButton: document.getElementById("resetSettingsButton"),
-      backupIncludeSecretsInput: document.getElementById("backupIncludeSecretsInput"),
-      exportFullBackupButton: document.getElementById("exportFullBackupButton"),
-      importFullBackupButton: document.getElementById("importFullBackupButton"),
-      importFullBackupInput: document.getElementById("importFullBackupInput"),
-      backupProgressOverlay: document.getElementById("backupProgressOverlay"),
-      backupProgressTitle: document.getElementById("backupProgressTitle"),
-      backupProgressBar: document.getElementById("backupProgressBar"),
-      backupProgressDetail: document.getElementById("backupProgressDetail"),
-      newChatButton: document.getElementById("newChatButton"),
-      desktopNewChatButton: document.getElementById("desktopNewChatButton"),
-      importChatsButton: document.getElementById("importChatsButton"),
-      desktopImportChatsButton: document.getElementById("desktopImportChatsButton"),
-      importChatsInput: document.getElementById("importChatsInput"),
-      clearMessagesButton: document.getElementById("clearMessagesButton"),
-      chatList: document.getElementById("chatList"),
-      desktopChatList: document.getElementById("desktopChatList"),
-      chatTitle: document.getElementById("chatTitle"),
-      chatSubtitle: document.getElementById("chatSubtitle"),
-      messageStream: document.getElementById("messageStream"),
-      chatForm: document.getElementById("chatForm"),
-      messageInput: document.getElementById("messageInput"),
-      composerUploadGroup: document.querySelector(".composer-upload-group"),
-      imageUploadButton: document.getElementById("imageUploadButton"),
-      imageUploadInput: document.getElementById("imageUploadInput"),
-      documentUploadButton: document.getElementById("documentUploadButton"),
-      documentUploadInput: document.getElementById("documentUploadInput"),
-      imageUploadHint: document.getElementById("imageUploadHint"),
-      composerAttachments: document.getElementById("composerAttachments"),
-      scrollTopButton: document.getElementById("scrollTopButton"),
-      scrollBottomButton: document.getElementById("scrollBottomButton"),
-      chatStatusToast: document.getElementById("chatStatusToast"),
-      authorsNoteInput: document.getElementById("authorsNoteInput"),
-      clearAuthorsNoteButton: document.getElementById("clearAuthorsNoteButton"),
-      modelSelect: document.getElementById("modelSelect"),
-      auxiliaryModelSelect: document.getElementById("auxiliaryModelSelect"),
-      temperatureInput: document.getElementById("temperatureInput"),
-      thinkingTokenLimitInput: document.getElementById("thinkingTokenLimitInput"),
-      thinkingUnlimitedInput: document.getElementById("thinkingUnlimitedInput"),
-      rpResponsePerspectiveField: document.getElementById("rpResponsePerspectiveField"),
-      rpResponsePerspectiveSelect: document.getElementById("rpResponsePerspectiveSelect"),
-      rpResponseLengthField: document.getElementById("rpResponseLengthField"),
-      rpResponseLengthSelect: document.getElementById("rpResponseLengthSelect"),
-      systemPromptInput: document.getElementById("systemPromptInput"),
-      forbiddenWordsInput: document.getElementById("forbiddenWordsInput"),
-      forbiddenWordsHint: document.getElementById("forbiddenWordsHint"),
-      openPromptPresetOverlayButton: document.getElementById("openPromptPresetOverlayButton"),
-      promptPresetNameInput: document.getElementById("promptPresetNameInput"),
-      savePromptPresetButton: document.getElementById("savePromptPresetButton"),
-      promptPresetList: document.getElementById("promptPresetList"),
-      sendButton: document.getElementById("sendButton"),
-      saveModelSettingsButton: document.getElementById("saveModelSettingsButton"),
-      refreshModelsButton: document.getElementById("refreshModelsButton"),
-      illustrationEnabledInput: document.getElementById("illustrationEnabledInput"),
-      chatT2iEnabledInput: document.getElementById("chatT2iEnabledInput"),
-      talkT2iEnabledInput: document.getElementById("talkT2iEnabledInput"),
-      talkGroupUnlimitedInput: document.getElementById("talkGroupUnlimitedInput"),
-      illustrationIgnoreNonCharacterPeopleInput: document.getElementById("illustrationIgnoreNonCharacterPeopleInput"),
-      illustrationPromptStyleSelect: document.getElementById("illustrationPromptStyleSelect"),
-      illustrationArtStyleSelect: document.getElementById("illustrationArtStyleSelect"),
-      imageModelSelect: document.getElementById("imageModelSelect"),
-      refreshImageModelsButton: document.getElementById("refreshImageModelsButton"),
-      illustrationGenerationControls: document.getElementById("illustrationGenerationControls"),
-      illustrationCfgScaleInput: document.getElementById("illustrationCfgScaleInput"),
-      illustrationCfgScaleValue: document.getElementById("illustrationCfgScaleValue"),
-      illustrationStepsInput: document.getElementById("illustrationStepsInput"),
-      illustrationStepsValue: document.getElementById("illustrationStepsValue"),
-      illustrationWidthInput: document.getElementById("illustrationWidthInput"),
-      illustrationWidthValue: document.getElementById("illustrationWidthValue"),
-      illustrationHeightInput: document.getElementById("illustrationHeightInput"),
-      illustrationHeightValue: document.getElementById("illustrationHeightValue"),
-      saveIllustrationSettingsButton: document.getElementById("saveIllustrationSettingsButton"),
-      ttsModelInput: document.getElementById("ttsModelInput"),
-      ttsCustomVoiceLabel: document.getElementById("ttsCustomVoiceLabel"),
-      ttsCustomVoiceInput: document.getElementById("ttsCustomVoiceInput"),
-      ttsVoicePresetField: document.getElementById("ttsVoicePresetField"),
-      ttsVoiceSelect: document.getElementById("ttsVoiceSelect"),
-      ttsVoiceCustomField: document.getElementById("ttsVoiceCustomField"),
-      ttsVoiceInput: document.getElementById("ttsVoiceInput"),
-      ttsTemperatureInput: document.getElementById("ttsTemperatureInput"),
-      ttsChunkLengthInput: document.getElementById("ttsChunkLengthInput"),
-      ttsProfilePresetSelect: document.getElementById("ttsProfilePresetSelect"),
-      deleteTtsProfilePresetButton: document.getElementById("deleteTtsProfilePresetButton"),
-      ttsAudioProfileInput: document.getElementById("ttsAudioProfileInput"),
-      ttsProfilePresetNameInput: document.getElementById("ttsProfilePresetNameInput"),
-      saveTtsProfilePresetButton: document.getElementById("saveTtsProfilePresetButton"),
-      saveTtsSettingsButton: document.getElementById("saveTtsSettingsButton"),
-      refreshTtsModelsButton: document.getElementById("refreshTtsModelsButton"),
-      modelCount: document.getElementById("modelCount"),
-      modelsSyncedAt: document.getElementById("modelsSyncedAt"),
-      imagePreviewImage: document.getElementById("imagePreviewImage"),
-      imagePreviewCaption: document.getElementById("imagePreviewCaption"),
-      rpImageCropViewport: document.getElementById("rpImageCropViewport"),
-      rpImageCropImage: document.getElementById("rpImageCropImage"),
-      rpImageCropMeta: document.getElementById("rpImageCropMeta"),
-      rpImageCropZoomInput: document.getElementById("rpImageCropZoomInput"),
-      rpImageCropZoomValue: document.getElementById("rpImageCropZoomValue"),
-      rpImageCropHelp: document.querySelector(".image-crop-help"),
-      cancelRpImageCropButton: document.getElementById("cancelRpImageCropButton"),
-      applyRpImageCropButton: document.getElementById("applyRpImageCropButton"),
-      characterCardList: document.getElementById("characterCardList"),
-      characterSettingsPanel: document.querySelector("#characterOverlay .card-pane"),
-      characterCardNameInput: document.getElementById("characterCardNameInput"),
-      characterCardIsWorldCardInput: document.getElementById("characterCardIsWorldCardInput"),
-      characterCardDescriptionLabelText: document.getElementById("characterCardDescriptionLabelText"),
-      characterCardDescriptionModeSelect: document.getElementById("characterCardDescriptionModeSelect"),
-      characterCardDescriptionInput: document.getElementById("characterCardDescriptionInput"),
-      characterCardFirstMessageInput: document.getElementById("characterCardFirstMessageInput"),
-      talkGroupMembersField: document.getElementById("talkGroupMembersField"),
-      talkGroupMembersTitle: document.getElementById("talkGroupMembersTitle"),
-      talkGroupMembersHint: document.getElementById("talkGroupMembersHint"),
-      talkGroupMembersList: document.getElementById("talkGroupMembersList"),
-      talkGroupMembersLimitNotice: document.getElementById("talkGroupMembersLimitNotice"),
-      openTalkGroupMemberOverlayButton: document.getElementById("openTalkGroupMemberOverlayButton"),
-      talkGroupMemberCandidateList: document.getElementById("talkGroupMemberCandidateList"),
-      characterNewButton: document.getElementById("characterNewButton"),
-      characterNewGroupButton: document.getElementById("characterNewGroupButton"),
-      characterImportButton: document.getElementById("characterImportButton"),
-      characterSaveButton: document.getElementById("characterSaveButton"),
-      characterExportButton: document.getElementById("characterExportButton"),
-      characterImageButton: document.getElementById("characterImageButton"),
-      characterImageClearButton: document.getElementById("characterImageClearButton"),
-      characterDeleteButton: document.getElementById("characterDeleteButton"),
-      characterProfileImageInput: document.getElementById("characterProfileImageInput"),
-      characterCardImportInput: document.getElementById("characterCardImportInput"),
-      personaCardList: document.getElementById("personaCardList"),
-      personaSettingsPanel: document.querySelector("#personaOverlay .card-pane"),
-      personaCardNameInput: document.getElementById("personaCardNameInput"),
-      personaCardDescriptionInput: document.getElementById("personaCardDescriptionInput"),
-      personaNewButton: document.getElementById("personaNewButton"),
-      personaImportButton: document.getElementById("personaImportButton"),
-      personaSaveButton: document.getElementById("personaSaveButton"),
-      personaExportButton: document.getElementById("personaExportButton"),
-      personaImageButton: document.getElementById("personaImageButton"),
-      personaImageClearButton: document.getElementById("personaImageClearButton"),
-      personaDeleteButton: document.getElementById("personaDeleteButton"),
-      personaProfileImageInput: document.getElementById("personaProfileImageInput"),
-      personaCardImportInput: document.getElementById("personaCardImportInput")
+      settingsModelHint: query("#settingsModelPanel .hint"),
+      settingsForm: byId("settingsForm"),
+      apiBaseUrlInput: byId("apiBaseUrlInput"),
+      apiKeyInput: byId("apiKeyInput"),
+      imageApiBaseUrlInput: byId("imageApiBaseUrlInput"),
+      imageApiKeyInput: byId("imageApiKeyInput"),
+      ttsEnabledInput: byId("ttsEnabledInput"),
+      ttsUseLlmApiInput: byId("ttsUseLlmApiInput"),
+      ttsApiSettings: byId("ttsApiSettings"),
+      ttsApiBaseUrlInput: byId("ttsApiBaseUrlInput"),
+      ttsApiKeyInput: byId("ttsApiKeyInput"),
+      userAliasInput: byId("userAliasInput"),
+      modelAliasInput: byId("modelAliasInput"),
+      themeModeSelect: byId("themeModeSelect"),
+      languageSelect: byId("languageSelect"),
+      smoothStreamingInput: byId("smoothStreamingInput"),
+      autoContinueInput: byId("autoContinueInput"),
+      rpAssistanceFields: byId("rpAssistanceFields"),
+      rpSummaryEnabledInput: byId("rpSummaryEnabledInput"),
+      rpSummaryTokenThresholdField: byId("rpSummaryTokenThresholdField"),
+      rpSummaryTokenThresholdInput: byId("rpSummaryTokenThresholdInput"),
+      rpSummaryMaxTokensField: byId("rpSummaryMaxTokensField"),
+      rpSummaryMaxTokensInput: byId("rpSummaryMaxTokensInput"),
+      rpInputEnhancementEnabledInput: byId("rpInputEnhancementEnabledInput"),
+      resetSettingsButton: byId("resetSettingsButton"),
+      backupIncludeSecretsInput: byId("backupIncludeSecretsInput"),
+      exportFullBackupButton: byId("exportFullBackupButton"),
+      importFullBackupButton: byId("importFullBackupButton"),
+      importFullBackupInput: byId("importFullBackupInput"),
+      backupProgressOverlay: byId("backupProgressOverlay"),
+      backupProgressTitle: byId("backupProgressTitle"),
+      backupProgressBar: byId("backupProgressBar"),
+      backupProgressDetail: byId("backupProgressDetail"),
+      newChatButton: byId("newChatButton"),
+      desktopNewChatButton: byId("desktopNewChatButton"),
+      importChatsButton: byId("importChatsButton"),
+      desktopImportChatsButton: byId("desktopImportChatsButton"),
+      importChatsInput: byId("importChatsInput"),
+      clearMessagesButton: byId("clearMessagesButton"),
+      chatList: byId("chatList"),
+      desktopChatList: byId("desktopChatList"),
+      chatTitle: byId("chatTitle"),
+      chatSubtitle: byId("chatSubtitle"),
+      messageStream: byId("messageStream"),
+      chatForm: byId("chatForm"),
+      messageInput: byId("messageInput"),
+      composerUploadGroup: query(".composer-upload-group"),
+      imageUploadButton: byId("imageUploadButton"),
+      imageUploadInput: byId("imageUploadInput"),
+      documentUploadButton: byId("documentUploadButton"),
+      documentUploadInput: byId("documentUploadInput"),
+      imageUploadHint: byId("imageUploadHint"),
+      composerAttachments: byId("composerAttachments"),
+      scrollTopButton: byId("scrollTopButton"),
+      scrollBottomButton: byId("scrollBottomButton"),
+      chatStatusToast: byId("chatStatusToast"),
+      authorsNoteInput: byId("authorsNoteInput"),
+      clearAuthorsNoteButton: byId("clearAuthorsNoteButton"),
+      modelSelect: byId("modelSelect"),
+      auxiliaryModelSelect: byId("auxiliaryModelSelect"),
+      temperatureInput: byId("temperatureInput"),
+      thinkingTokenLimitInput: byId("thinkingTokenLimitInput"),
+      thinkingUnlimitedInput: byId("thinkingUnlimitedInput"),
+      rpResponsePerspectiveField: byId("rpResponsePerspectiveField"),
+      rpResponsePerspectiveSelect: byId("rpResponsePerspectiveSelect"),
+      rpResponseLengthField: byId("rpResponseLengthField"),
+      rpResponseLengthSelect: byId("rpResponseLengthSelect"),
+      systemPromptInput: byId("systemPromptInput"),
+      forbiddenWordsInput: byId("forbiddenWordsInput"),
+      forbiddenWordsHint: byId("forbiddenWordsHint"),
+      openPromptPresetOverlayButton: byId("openPromptPresetOverlayButton"),
+      promptPresetNameInput: byId("promptPresetNameInput"),
+      savePromptPresetButton: byId("savePromptPresetButton"),
+      promptPresetList: byId("promptPresetList"),
+      sendButton: byId("sendButton"),
+      saveModelSettingsButton: byId("saveModelSettingsButton"),
+      refreshModelsButton: byId("refreshModelsButton"),
+      illustrationEnabledInput: byId("illustrationEnabledInput"),
+      chatT2iEnabledInput: byId("chatT2iEnabledInput"),
+      talkT2iEnabledInput: byId("talkT2iEnabledInput"),
+      talkGroupUnlimitedInput: byId("talkGroupUnlimitedInput"),
+      illustrationIgnoreNonCharacterPeopleInput: byId("illustrationIgnoreNonCharacterPeopleInput"),
+      illustrationPromptStyleSelect: byId("illustrationPromptStyleSelect"),
+      illustrationArtStyleSelect: byId("illustrationArtStyleSelect"),
+      imageModelSelect: byId("imageModelSelect"),
+      illustrationRequiredPromptInput: byId("illustrationRequiredPromptInput"),
+      illustrationRequiredNegativePromptInput: byId("illustrationRequiredNegativePromptInput"),
+      refreshImageModelsButton: byId("refreshImageModelsButton"),
+      illustrationGenerationControls: byId("illustrationGenerationControls"),
+      illustrationCfgScaleInput: byId("illustrationCfgScaleInput"),
+      illustrationCfgScaleValue: byId("illustrationCfgScaleValue"),
+      illustrationStepsInput: byId("illustrationStepsInput"),
+      illustrationStepsValue: byId("illustrationStepsValue"),
+      illustrationWidthInput: byId("illustrationWidthInput"),
+      illustrationWidthValue: byId("illustrationWidthValue"),
+      illustrationHeightInput: byId("illustrationHeightInput"),
+      illustrationHeightValue: byId("illustrationHeightValue"),
+      saveIllustrationSettingsButton: byId("saveIllustrationSettingsButton"),
+      ttsModelInput: byId("ttsModelInput"),
+      ttsCustomVoiceLabel: byId("ttsCustomVoiceLabel"),
+      ttsCustomVoiceInput: byId("ttsCustomVoiceInput"),
+      ttsVoicePresetField: byId("ttsVoicePresetField"),
+      ttsVoiceSelect: byId("ttsVoiceSelect"),
+      ttsVoiceCustomField: byId("ttsVoiceCustomField"),
+      ttsVoiceInput: byId("ttsVoiceInput"),
+      ttsTemperatureInput: byId("ttsTemperatureInput"),
+      ttsChunkLengthInput: byId("ttsChunkLengthInput"),
+      ttsProfilePresetSelect: byId("ttsProfilePresetSelect"),
+      deleteTtsProfilePresetButton: byId("deleteTtsProfilePresetButton"),
+      ttsAudioProfileInput: byId("ttsAudioProfileInput"),
+      ttsProfilePresetNameInput: byId("ttsProfilePresetNameInput"),
+      saveTtsProfilePresetButton: byId("saveTtsProfilePresetButton"),
+      saveTtsSettingsButton: byId("saveTtsSettingsButton"),
+      refreshTtsModelsButton: byId("refreshTtsModelsButton"),
+      modelCount: byId("modelCount"),
+      modelsSyncedAt: byId("modelsSyncedAt"),
+      imagePreviewImage: byId("imagePreviewImage"),
+      imagePreviewCaption: byId("imagePreviewCaption"),
+      rpImageCropViewport: byId("rpImageCropViewport"),
+      rpImageCropImage: byId("rpImageCropImage"),
+      rpImageCropMeta: byId("rpImageCropMeta"),
+      rpImageCropZoomInput: byId("rpImageCropZoomInput"),
+      rpImageCropZoomValue: byId("rpImageCropZoomValue"),
+      rpImageCropHelp: query(".image-crop-help"),
+      cancelRpImageCropButton: byId("cancelRpImageCropButton"),
+      applyRpImageCropButton: byId("applyRpImageCropButton"),
+      characterCardList: byId("characterCardList"),
+      characterSettingsPanel: query("#characterOverlay .card-pane"),
+      characterCardNameInput: byId("characterCardNameInput"),
+      characterCardIsWorldCardInput: byId("characterCardIsWorldCardInput"),
+      characterCardDescriptionLabelText: byId("characterCardDescriptionLabelText"),
+      characterCardDescriptionModeSelect: byId("characterCardDescriptionModeSelect"),
+      characterCardDescriptionInput: byId("characterCardDescriptionInput"),
+      characterCardFirstMessageInput: byId("characterCardFirstMessageInput"),
+      talkGroupMembersField: byId("talkGroupMembersField"),
+      talkGroupMembersTitle: byId("talkGroupMembersTitle"),
+      talkGroupMembersHint: byId("talkGroupMembersHint"),
+      talkGroupMembersList: byId("talkGroupMembersList"),
+      talkGroupMembersLimitNotice: byId("talkGroupMembersLimitNotice"),
+      openTalkGroupMemberOverlayButton: byId("openTalkGroupMemberOverlayButton"),
+      talkGroupMemberCandidateList: byId("talkGroupMemberCandidateList"),
+      characterNewButton: byId("characterNewButton"),
+      characterNewGroupButton: byId("characterNewGroupButton"),
+      characterImportButton: byId("characterImportButton"),
+      characterSaveButton: byId("characterSaveButton"),
+      characterExportButton: byId("characterExportButton"),
+      characterImageButton: byId("characterImageButton"),
+      characterImageClearButton: byId("characterImageClearButton"),
+      characterDeleteButton: byId("characterDeleteButton"),
+      characterProfileImageInput: byId("characterProfileImageInput"),
+      characterCardImportInput: byId("characterCardImportInput"),
+      personaCardList: byId("personaCardList"),
+      personaSettingsPanel: query("#personaOverlay .card-pane"),
+      personaCardNameInput: byId("personaCardNameInput"),
+      personaCardDescriptionInput: byId("personaCardDescriptionInput"),
+      personaNewButton: byId("personaNewButton"),
+      personaImportButton: byId("personaImportButton"),
+      personaSaveButton: byId("personaSaveButton"),
+      personaExportButton: byId("personaExportButton"),
+      personaImageButton: byId("personaImageButton"),
+      personaImageClearButton: byId("personaImageClearButton"),
+      personaDeleteButton: byId("personaDeleteButton"),
+      personaProfileImageInput: byId("personaProfileImageInput"),
+      personaCardImportInput: byId("personaCardImportInput")
     };
     let state = structuredClone(DEFAULT_APP_STATE);
     let isSending = false;
@@ -4729,7 +4749,7 @@
     let lastStreamingPersistRequestAt = 0;
     let lastChatListViewportBucket = "";
     const tabSessionId = createId("tab");
-    const tabOpenedAt = new Date().toISOString();
+    const tabOpenedAt = nowIso();
     void initialize();
     async function initialize() {
       bindEvents();
@@ -4748,9 +4768,7 @@
         });
         ensureInitialChat();
       }
-      resetModelSettingsDraft();
-      resetRpCardDraft("character");
-      resetRpCardDraft("persona");
+      resetAllSettingsDrafts();
       populateSettingsForm();
       syncChatSelection();
       renderAll({ persist: false });
@@ -4874,7 +4892,7 @@
         renderAppSections({ persist: false, modelSelect: true, modelsPanel: true });
         setSettingsOverlayTab("general", { resetScroll: true });
         resetSettingsOverlayScroll({ includeAllTabs: true });
-        window.requestAnimationFrame(() => resetSettingsOverlayScroll({ includeAllTabs: true }));
+        requestAnimationFrame(() => resetSettingsOverlayScroll({ includeAllTabs: true }));
       });
       bindOverlayOpenAction(elements.openTabsOverlayButton, elements.tabsOverlay, () => {
         renderChatList({ includeOverlay: true });
@@ -5049,7 +5067,7 @@
     }
     function handleWindowScroll() {
       if (!olderMessagesLoadCheckFrameId) {
-        olderMessagesLoadCheckFrameId = window.requestAnimationFrame(() => {
+        olderMessagesLoadCheckFrameId = requestAnimationFrame(() => {
           olderMessagesLoadCheckFrameId = 0;
           maybeLoadOlderMessagesOnScroll();
           if (currentStreamingMessageId) {
@@ -5115,7 +5133,7 @@
         ? parsed.settings.autoContinue
         : DEFAULT_SETTINGS.autoContinue;
       const language = normalizeAppLanguage(parsed?.settings?.language);
-      const chats = Array.isArray(parsed?.chats) ? parsed.chats.map(normalizeChat).filter(Boolean) : [];
+      const chats = isArray(parsed?.chats) ? parsed.chats.map(normalizeChat).filter(Boolean) : [];
       const rp = normalizeRpState(parsed?.rp, { chatMode: "rp", allowWorldCards: true });
       const talk = normalizeRpState(parsed?.talk, { chatMode: "talk", allowWorldCards: false });
       const activeMode = normalizeAppMode(parsed?.activeMode);
@@ -5171,7 +5189,7 @@
       };
       return {
         settings,
-        models: Array.isArray(parsed?.models) ? parsed.models : [],
+        models: isArray(parsed?.models) ? parsed.models : [],
         modelsSyncedAt: typeof parsed?.modelsSyncedAt === "string" ? parsed.modelsSyncedAt : "",
         imageModels: normalizeImageModelList(parsed?.imageModels),
         imageModelsSyncedAt: typeof parsed?.imageModelsSyncedAt === "string" ? parsed.imageModelsSyncedAt : "",
@@ -5188,12 +5206,12 @@
       return parsed?.chatStorage === "split" || Number(parsed?.storageVersion || 0) >= APP_SPLIT_CHAT_STORAGE_VERSION;
     }
     function normalizePromptPresets(value) {
-      return Array.isArray(value)
+      return isArray(value)
         ? value.map(normalizePromptPreset).filter(Boolean)
         : [];
     }
     function normalizeTtsProfilePresets(value) {
-      return Array.isArray(value)
+      return isArray(value)
         ? value.map(normalizeTtsProfilePreset).filter(Boolean)
         : [];
     }
@@ -5247,11 +5265,11 @@
         id: typeof preset.id === "string" && preset.id && !preset.id.startsWith("built-in:") ? preset.id : createId("tts-profile-preset"),
         name,
         profile,
-        updatedAt: typeof preset.updatedAt === "string" ? preset.updatedAt : new Date().toISOString()
+        updatedAt: typeof preset.updatedAt === "string" ? preset.updatedAt : nowIso()
       };
     }
     function normalizeForbiddenWords(value) {
-      if (Array.isArray(value)) {
+      if (isArray(value)) {
         return value
           .map(trimmed)
           .filter(Boolean);
@@ -5311,7 +5329,7 @@
         id: typeof preset.id === "string" && preset.id ? preset.id : createId("prompt-preset"),
         name,
         prompt: typeof preset.prompt === "string" ? preset.prompt : "",
-        updatedAt: typeof preset.updatedAt === "string" ? preset.updatedAt : new Date().toISOString()
+        updatedAt: typeof preset.updatedAt === "string" ? preset.updatedAt : nowIso()
       };
     }
     function createDefaultRpState() {
@@ -5356,6 +5374,8 @@
         promptStyle: normalizeIllustrationPromptStyle(settings?.promptStyle),
         artStyle: normalizeIllustrationArtStyle(settings?.artStyle),
         imageModel: typeof settings?.imageModel === "string" ? settings.imageModel : "",
+        requiredPrompt: typeof settings?.requiredPrompt === "string" ? settings.requiredPrompt : "",
+        requiredNegativePrompt: typeof settings?.requiredNegativePrompt === "string" ? settings.requiredNegativePrompt : "",
         ignoreNonCharacterPeople: Boolean(settings?.ignoreNonCharacterPeople),
         cfgScale: normalizeOptionalNumber(settings?.cfgScale, { min: 1, max: 20 }) ?? DEFAULT_RP_ILLUSTRATION_SETTINGS.cfgScale,
         steps: normalizeOptionalInteger(settings?.steps, { min: 1, max: 60 }) ?? DEFAULT_RP_ILLUSTRATION_SETTINGS.steps,
@@ -5370,7 +5390,7 @@
       return value === "anime" || value === "photo" ? value : "";
     }
     function normalizeImageModelList(value) {
-      if (!Array.isArray(value)) {
+      if (!isArray(value)) {
         return [];
       }
       const seen = new Set();
@@ -5413,17 +5433,17 @@
       const allowWorldCards = options.allowWorldCards !== false;
       const chatMode = options.chatMode === "talk" ? "talk" : "rp";
       const base = chatMode === "talk" ? createDefaultTalkState() : createDefaultRpState();
-      const characterCards = Array.isArray(rpState?.characterCards)
+      const characterCards = isArray(rpState?.characterCards)
         ? rpState.characterCards.map((card) => normalizeRpCard(card, "character", { allowWorldCards, chatMode })).filter(Boolean)
         : [];
-      const personaCards = Array.isArray(rpState?.personaCards)
+      const personaCards = isArray(rpState?.personaCards)
         ? rpState.personaCards.map((card) => normalizeRpCard(card, "persona", { allowWorldCards, chatMode })).filter(Boolean)
         : [];
       const validCharacterIds = new Set(characterCards.map((card) => card.id));
       pruneInvalidTalkGroupMembers({ characterCards }, { touchUpdatedAt: false });
       const chatsByCharacterId = {};
       characterCards.forEach((card) => {
-        chatsByCharacterId[card.id] = Array.isArray(rpState?.chatsByCharacterId?.[card.id])
+        chatsByCharacterId[card.id] = isArray(rpState?.chatsByCharacterId?.[card.id])
           ? rpState.chatsByCharacterId[card.id].map((chat) => normalizeChat(chat, { chatMode })).filter(Boolean)
           : [];
       });
@@ -5467,8 +5487,8 @@
         groupMembers: isGroupChat ? normalizeTalkGroupMembers(card.groupMembers, { excludeId: card.id }) : [],
         mainCharacterDescription: !isGroupChat && isWorldCard && typeof card.mainCharacterDescription === "string" ? card.mainCharacterDescription : "",
         profileImage: normalizeCardProfileImage(card.profileImage),
-        createdAt: typeof card.createdAt === "string" ? card.createdAt : new Date().toISOString(),
-        updatedAt: typeof card.updatedAt === "string" ? card.updatedAt : new Date().toISOString()
+        createdAt: typeof card.createdAt === "string" ? card.createdAt : nowIso(),
+        updatedAt: typeof card.updatedAt === "string" ? card.updatedAt : nowIso()
       };
     }
     function normalizeTalkGroupMemberWeight(value) {
@@ -5476,7 +5496,7 @@
       return typeof normalized === "number" ? normalized : 50;
     }
     function normalizeTalkGroupMembers(value, options = {}) {
-      if (!Array.isArray(value)) {
+      if (!isArray(value)) {
         return [];
       }
       const seen = new Set();
@@ -5494,7 +5514,7 @@
         });
     }
     function pruneInvalidTalkGroupMembers(rpLikeState, options = {}) {
-      const cards = Array.isArray(rpLikeState?.characterCards) ? rpLikeState.characterCards : [];
+      const cards = isArray(rpLikeState?.characterCards) ? rpLikeState.characterCards : [];
       if (!cards.length) {
         return false;
       }
@@ -5507,17 +5527,17 @@
         if (!isTalkGroupCard(card)) {
           return;
         }
-        const previousSignature = JSON.stringify(normalizeTalkGroupMembers(card.groupMembers, { excludeId: card.id }));
+        const previousSignature = toJson(normalizeTalkGroupMembers(card.groupMembers, { excludeId: card.id }));
         const nextMembers = normalizeTalkGroupMembers(card.groupMembers, { excludeId: card.id })
           .filter((member) => validMemberIds.has(member.characterId));
-        const nextSignature = JSON.stringify(nextMembers);
+        const nextSignature = toJson(nextMembers);
         if (previousSignature === nextSignature) {
           card.groupMembers = nextMembers;
           return;
         }
         card.groupMembers = nextMembers;
         if (options.touchUpdatedAt !== false) {
-          card.updatedAt = new Date().toISOString();
+          card.updatedAt = nowIso();
         }
         changed = true;
       });
@@ -5541,7 +5561,7 @@
         ...Object.values(targetState?.rp?.chatsByCharacterId || {}),
         ...Object.values(targetState?.talk?.chatsByCharacterId || {})
       ]
-        .flatMap((chats) => Array.isArray(chats) ? chats : []);
+        .flatMap((chats) => isArray(chats) ? chats : []);
     }
     function syncPersistedChatRecordIds(targetState = state) {
       persistedChatRecordIds = new Set(getAllStateChats(targetState).map((chat) => chat.id).filter(Boolean));
@@ -5670,7 +5690,7 @@
         if (!chat?.id) {
           return;
         }
-        const messages = Array.isArray(chat.messages) ? chat.messages : [];
+        const messages = isArray(chat.messages) ? chat.messages : [];
         const messagesLoaded = chat.messagesLoaded !== false;
         chat.messageCount = messagesLoaded
           ? messages.length
@@ -5760,7 +5780,7 @@
           console.error("IDB write failed", error);
         }
       }
-      localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(snapshot));
+      localStorage.setItem(APP_STORAGE_KEY, toJson(snapshot));
     }
     function cloneStateForPersistence(nextState) {
       let snapshot;
@@ -5772,7 +5792,7 @@
           console.warn("structuredClone failed; using JSON", error);
         }
       }
-      snapshot = JSON.parse(JSON.stringify(nextState));
+      snapshot = JSON.parse(toJson(nextState));
       return scrubSettingsSecretsFromSnapshot(snapshot);
     }
     function scrubSettingsSecretsFromSnapshot(snapshot) {
@@ -5796,11 +5816,11 @@
         ...Object.values(snapshot?.talk?.chatsByCharacterId || {})
       ];
       chatGroups.forEach((chats) => {
-        if (!Array.isArray(chats)) {
+        if (!isArray(chats)) {
           return;
         }
         chats.forEach((chat) => {
-          if (!Array.isArray(chat?.messages)) {
+          if (!isArray(chat?.messages)) {
             return;
           }
           chat.messages.forEach((message) => {
@@ -5816,21 +5836,21 @@
         return;
       }
       [targetState.chats, ...Object.values(targetState.rp?.chatsByCharacterId || {}), ...Object.values(targetState.talk?.chatsByCharacterId || {})].forEach((chats) => {
-        (Array.isArray(chats) ? chats : []).forEach((chat) => {
-          (Array.isArray(chat?.messages) ? chat.messages : []).forEach((message) => {
-            (Array.isArray(message?.attachments) ? message.attachments : []).forEach(callback);
+        (isArray(chats) ? chats : []).forEach((chat) => {
+          (isArray(chat?.messages) ? chat.messages : []).forEach((message) => {
+            (isArray(message?.attachments) ? message.attachments : []).forEach(callback);
             message?.illustration?.image && callback(message.illustration.image);
           });
         });
       });
       [targetState.rp?.characterCards, targetState.rp?.personaCards, targetState.talk?.characterCards, targetState.talk?.personaCards].forEach((cards) => {
-        (Array.isArray(cards) ? cards : []).forEach((card) => {
+        (isArray(cards) ? cards : []).forEach((card) => {
           card?.profileImage && callback(card.profileImage);
         });
       });
     }
     function collectReferencedMediaIdsFromMessages(messages, mediaIds = new Set(), filterSet = null) {
-      (Array.isArray(messages) ? messages : []).forEach((message) => {
+      (isArray(messages) ? messages : []).forEach((message) => {
         normalizeImageAttachments(message?.attachments).forEach((attachment) => {
           const mediaId = trimmed(attachment?.mediaId);
           if (mediaId && (!filterSet || filterSet.has(mediaId))) {
@@ -5848,7 +5868,7 @@
       if (!supportsIndexedDb()) {
         return;
       }
-      (mediaIds instanceof Set ? [...mediaIds] : Array.isArray(mediaIds) ? mediaIds : [mediaIds]).forEach((mediaId) => {
+      (mediaIds instanceof Set ? [...mediaIds] : isArray(mediaIds) ? mediaIds : [mediaIds]).forEach((mediaId) => {
         const normalizedMediaId = trimmed(mediaId);
         if (normalizedMediaId) {
           pendingIndexedDbMediaGcCandidateIds.add(normalizedMediaId);
@@ -5998,7 +6018,7 @@
       const secretKey = await resolveSettingsSecretKey(existingSecretRecord) || await selectSettingsSecretKeyForWrite();
       const secretRecord = {
         version: 1,
-        updatedAt: new Date().toISOString(),
+        updatedAt: nowIso(),
         probe: await encryptSecretValue(secretKey, APP_SECRET_PROBE_TEXT),
         fields: {
           apiKey: await encryptSecretValue(secretKey, normalizedSecrets.apiKey),
@@ -6039,7 +6059,7 @@
         const id = createSecretKeyRecordId();
         const value = {
           version: 1,
-          createdAt: new Date().toISOString(),
+          createdAt: nowIso(),
           key: await generateSettingsSecretKey()
         };
         await writeIndexedDbRecord(id, value);
@@ -6116,8 +6136,8 @@
       return base64ToBytes(value).buffer;
     }
     function signalStateSync() {
-      localStorage.setItem(APP_STATE_SYNC_KEY, JSON.stringify({
-        updatedAt: new Date().toISOString(),
+      localStorage.setItem(APP_STATE_SYNC_KEY, toJson({
+        updatedAt: nowIso(),
         nonce: Math.random().toString(36).slice(2, 10)
       }));
     }
@@ -6137,7 +6157,7 @@
     }
     function writeLegacyEmergencyStateSnapshot() {
       try {
-        localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(cloneStateForPersistence(state)));
+        localStorage.setItem(APP_STORAGE_KEY, toJson(cloneStateForPersistence(state)));
       } catch (error) {
         console.error("Emergency snapshot failed", error);
       }
@@ -6150,7 +6170,7 @@
       if (persistStateTimerId) {
         return;
       }
-      persistStateTimerId = window.setTimeout(flushPendingStatePersist, getPersistStateDebounceMs());
+      persistStateTimerId = setTimeout(flushPendingStatePersist, getPersistStateDebounceMs());
     }
     function persistStateNow() {
       if (!isPrimaryTab) {
@@ -6158,14 +6178,14 @@
       }
       pendingStatePersistRequested = true;
       if (persistStateTimerId) {
-        window.clearTimeout(persistStateTimerId);
+        clearTimeout(persistStateTimerId);
         persistStateTimerId = 0;
       }
       flushPendingStatePersist();
     }
     function flushPendingStatePersist() {
       if (persistStateTimerId) {
-        window.clearTimeout(persistStateTimerId);
+        clearTimeout(persistStateTimerId);
         persistStateTimerId = 0;
       }
       const shouldPersist = pendingStatePersistRequested;
@@ -6198,7 +6218,7 @@
           isStatePersistWriteInFlight = false;
           flushPendingInactiveChatUnload();
           if (pendingStatePersistRequested && !persistStateTimerId) {
-            persistStateTimerId = window.setTimeout(flushPendingStatePersist, getPersistStateDebounceMs());
+            persistStateTimerId = setTimeout(flushPendingStatePersist, getPersistStateDebounceMs());
           }
         });
     }
@@ -6213,7 +6233,7 @@
       }
       const messagesLoaded = typeof chat.messagesLoaded === "boolean"
         ? chat.messagesLoaded
-        : Array.isArray(chat.messages);
+        : isArray(chat.messages);
       const chatMode = options.chatMode === "talk" || chat.chatMode === "talk"
         ? "talk"
         : (options.chatMode === "rp" || chat.chatMode === "rp" || chat.characterCardId ? "rp" : "chat");
@@ -6232,15 +6252,15 @@
         titleManuallyEdited: Boolean(chat.titleManuallyEdited),
         characterCardId: typeof chat.characterCardId === "string" ? chat.characterCardId : "",
         chatMode,
-        createdAt: typeof chat.createdAt === "string" ? chat.createdAt : new Date().toISOString(),
-        updatedAt: typeof chat.updatedAt === "string" ? chat.updatedAt : new Date().toISOString(),
+        createdAt: typeof chat.createdAt === "string" ? chat.createdAt : nowIso(),
+        updatedAt: typeof chat.updatedAt === "string" ? chat.updatedAt : nowIso(),
         messageCount,
         messagesLoaded,
         messages
       };
     }
     function normalizeStoredChatMessages(messages) {
-      return Array.isArray(messages)
+      return isArray(messages)
         ? messages
           .filter((message) => message && typeof message.content === "string")
           .map((message) => ({
@@ -6250,7 +6270,7 @@
             attachments: normalizeImageAttachments(message.attachments),
             documents: normalizeDocumentAttachments(message.documents),
             generatedDocument: normalizeGeneratedDocument(message.generatedDocument),
-            timestamp: typeof message.timestamp === "string" ? message.timestamp : new Date().toISOString(),
+            timestamp: typeof message.timestamp === "string" ? message.timestamp : nowIso(),
             status: normalizeMessageStatus(message.status),
             isThinking: Boolean(message.isThinking),
             isFirstMessage: Boolean(message.isFirstMessage),
@@ -6264,7 +6284,7 @@
         : [];
     }
     function normalizeChatMessagesForMode(messages, chatMode) {
-      const normalizedMessages = Array.isArray(messages) ? messages : [];
+      const normalizedMessages = isArray(messages) ? messages : [];
       if (chatMode !== "talk") {
         return normalizedMessages;
       }
@@ -6279,7 +6299,7 @@
       if (!chat || typeof chat !== "object") {
         return 0;
       }
-      if (chat.messagesLoaded !== false && Array.isArray(chat.messages)) {
+      if (chat.messagesLoaded !== false && isArray(chat.messages)) {
         return chat.messages.length;
       }
       return normalizeOptionalInteger(chat.messageCount, { min: 0 }) ?? 0;
@@ -6321,7 +6341,7 @@
         return chat;
       }
       if (!supportsIndexedDb()) {
-        chat.messages = normalizeChatMessagesForMode(Array.isArray(chat.messages) ? chat.messages : [], chat.chatMode);
+        chat.messages = normalizeChatMessagesForMode(isArray(chat.messages) ? chat.messages : [], chat.chatMode);
         chat.messagesLoaded = true;
         syncChatMessageCount(chat);
         return chat;
@@ -6344,7 +6364,7 @@
       return loadPromise;
     }
     async function ensureChatsLoaded(chats) {
-      await Promise.all((Array.isArray(chats) ? chats : []).map((chat) => ensureChatMessagesLoaded(chat)));
+      await Promise.all((isArray(chats) ? chats : []).map((chat) => ensureChatMessagesLoaded(chat)));
     }
     async function ensureCurrentActiveChatLoaded() {
       const activeChatId = getCurrentActiveChatId();
@@ -6369,8 +6389,8 @@
         prompt: typeof illustration.prompt === "string" ? illustration.prompt : "",
         image,
         error: typeof illustration.error === "string" ? illustration.error : "",
-        createdAt: typeof illustration.createdAt === "string" ? illustration.createdAt : new Date().toISOString(),
-        updatedAt: typeof illustration.updatedAt === "string" ? illustration.updatedAt : new Date().toISOString()
+        createdAt: typeof illustration.createdAt === "string" ? illustration.createdAt : nowIso(),
+        updatedAt: typeof illustration.updatedAt === "string" ? illustration.updatedAt : nowIso()
       };
     }
     function readTabLockRecord() {
@@ -6403,9 +6423,9 @@
       const nextLock = {
         tabId: tabSessionId,
         acquiredAt: lockRecord?.tabId === tabSessionId ? lockRecord.acquiredAt || tabOpenedAt : tabOpenedAt,
-        heartbeatAt: new Date().toISOString()
+        heartbeatAt: nowIso()
       };
-      localStorage.setItem(TAB_LOCK_KEY, JSON.stringify(nextLock));
+      localStorage.setItem(TAB_LOCK_KEY, toJson(nextLock));
       const confirmedLock = readTabLockRecord();
       const claimed = Boolean(confirmedLock && confirmedLock.tabId === tabSessionId);
       if (claimed) {
@@ -6466,10 +6486,10 @@
             setPrimaryTabState(false);
             return;
           }
-          localStorage.setItem(TAB_LOCK_KEY, JSON.stringify({
+          localStorage.setItem(TAB_LOCK_KEY, toJson({
             tabId: tabSessionId,
             acquiredAt: currentLock?.tabId === tabSessionId ? currentLock.acquiredAt || tabOpenedAt : tabOpenedAt,
-            heartbeatAt: new Date().toISOString()
+            heartbeatAt: nowIso()
           }));
           return;
         }
@@ -6551,13 +6571,13 @@
       }
     }
     function createChatRecord(options = {}) {
-      const createdAt = new Date().toISOString();
+      const createdAt = nowIso();
       const characterCardId = typeof options.characterCardId === "string" ? options.characterCardId : "";
       const chatMode = options.chatMode === "talk" ? "talk" : (characterCardId ? "rp" : "chat");
       const ownerState = chatMode === "talk" ? state.talk : state.rp;
       const existingRpChats = characterCardId ? ownerState?.chatsByCharacterId?.[characterCardId] : null;
       const titleNumber = characterCardId
-        ? (Array.isArray(existingRpChats) ? existingRpChats.length + 1 : 1)
+        ? (isArray(existingRpChats) ? existingRpChats.length + 1 : 1)
         : state.chats.length + 1;
       const characterCard = characterCardId ? getRpCardById("character", characterCardId) : null;
       const firstMessage = chatMode === "rp" ? trimmed(characterCard?.firstMessage) : "";
@@ -6580,7 +6600,7 @@
         messages
       };
     }
-    function createRpFirstMessageMessage(characterCardId, content, timestamp = new Date().toISOString()) {
+    function createRpFirstMessageMessage(characterCardId, content, timestamp = nowIso()) {
       return {
         id: createId("msg"),
         role: "assistant",
@@ -6621,7 +6641,7 @@
         };
         return true;
       }
-      chat.messages.unshift(createRpFirstMessageMessage(characterCard.id, firstMessage, chat.createdAt || new Date().toISOString()));
+      chat.messages.unshift(createRpFirstMessageMessage(characterCard.id, firstMessage, chat.createdAt || nowIso()));
       syncChatMessageCount(chat);
       return true;
     }
@@ -6705,12 +6725,12 @@
         ? [state.rp?.characterCards, state.talk?.characterCards]
         : [state.rp?.personaCards, state.talk?.personaCards];
       return collections
-        .flatMap((cards) => Array.isArray(cards) ? cards : [])
+        .flatMap((cards) => isArray(cards) ? cards : [])
         .find((card) => card.id === cardId) || null;
     }
     function getRpCardByIdFromState(rpLikeState, kind, cardId) {
       const cards = kind === "character" ? rpLikeState?.characterCards : rpLikeState?.personaCards;
-      return (Array.isArray(cards) ? cards : []).find((card) => card.id === cardId) || null;
+      return (isArray(cards) ? cards : []).find((card) => card.id === cardId) || null;
     }
     function getActiveRpCard(kind) {
       const rpLikeState = getActiveRpLikeState();
@@ -6742,7 +6762,7 @@
         return [];
       }
       const rpLikeState = getActiveRpLikeState();
-      if (!Array.isArray(rpLikeState.chatsByCharacterId[characterId])) {
+      if (!isArray(rpLikeState.chatsByCharacterId[characterId])) {
         rpLikeState.chatsByCharacterId[characterId] = [];
       }
       return rpLikeState.chatsByCharacterId[characterId];
@@ -6810,7 +6830,7 @@
       }
     }
     function createRpCardRecord(kind) {
-      const createdAt = new Date().toISOString();
+      const createdAt = nowIso();
       const count = getRpCardCollection(kind).length + 1;
       return {
         id: createId(`${kind}-card`),
@@ -6844,6 +6864,11 @@
     }
     function resetRpCardDraft(kind) {
       rpCardDrafts[kind] = createRpCardDraft(kind);
+    }
+    function resetAllSettingsDrafts() {
+      resetModelSettingsDraft();
+      resetRpCardDraft("character");
+      resetRpCardDraft("persona");
     }
     function getRpCardDraft(kind) {
       if (!rpCardDrafts[kind]) {
@@ -6927,7 +6952,7 @@
         const row = createDiv("talk-group-member-row");
         const name = createSpan("talk-group-member-name", card.name || t("character"));
         const weightLabel = createSpan("talk-group-member-weight-label", t("groupMemberWeight"));
-        const weightInput = document.createElement("input");
+        const weightInput = createElement("input");
         weightInput.type = "number";
         weightInput.min = "0";
         weightInput.max = "100";
@@ -7133,9 +7158,7 @@
       } else {
         ensureInitialChat();
       }
-      resetModelSettingsDraft();
-      resetRpCardDraft("character");
-      resetRpCardDraft("persona");
+      resetAllSettingsDrafts();
       renderAll({ persist: false });
       await ensureCurrentActiveChatLoaded();
       renderAll();
@@ -7236,6 +7259,8 @@
       elements.illustrationPromptStyleSelect.value = illustrationSettings.promptStyle;
       elements.illustrationArtStyleSelect.value = illustrationSettings.artStyle;
       renderImageModelSelect(illustrationSettings.imageModel);
+      elements.illustrationRequiredPromptInput.value = illustrationSettings.requiredPrompt;
+      elements.illustrationRequiredNegativePromptInput.value = illustrationSettings.requiredNegativePrompt;
       elements.illustrationCfgScaleInput.value = illustrationSettings.cfgScale;
       elements.illustrationStepsInput.value = illustrationSettings.steps;
       elements.illustrationWidthInput.value = illustrationSettings.width;
@@ -7458,9 +7483,9 @@
         normalizeAppLanguage(state.settings.language),
         state.settings.talkGroupUnlimited === true ? "group-unlimited" : "group-limited",
         draft?.cardId || "",
-        JSON.stringify(draft?.groupMembers || []),
+        toJson(draft?.groupMembers || []),
         getRpCardCollection(kind)
-          .map((card) => [card.id, card.updatedAt || "", card.name || "", card.profileImage?.id || "", card.isGroupChat ? "group" : "", JSON.stringify(card.groupMembers || [])].join(":"))
+          .map((card) => [card.id, card.updatedAt || "", card.name || "", card.profileImage?.id || "", card.isGroupChat ? "group" : "", toJson(card.groupMembers || [])].join(":"))
           .join("|")
       ].join("~");
     }
@@ -7545,7 +7570,7 @@
         holdTimerId: 0
       };
       if (rpCardDragState.pointerType === "touch") {
-        rpCardDragState.holdTimerId = window.setTimeout(() => {
+        rpCardDragState.holdTimerId = setTimeout(() => {
           if (rpCardDragState && rpCardDragState.pointerId === event.pointerId) {
             rpCardDragState.touchReady = true;
           }
@@ -7568,7 +7593,7 @@
           rpCardDragState.lastClientY = event.clientY;
           if (distance >= RP_CARD_TOUCH_DRAG_THRESHOLD_PX) {
             if (rpCardDragState.holdTimerId) {
-              window.clearTimeout(rpCardDragState.holdTimerId);
+              clearTimeout(rpCardDragState.holdTimerId);
             }
             rpCardDragState.touchCanceled = true;
           }
@@ -7611,7 +7636,7 @@
       }
       const { kind, cardId, dragging, holdTimerId } = rpCardDragState;
       if (holdTimerId) {
-        window.clearTimeout(holdTimerId);
+        clearTimeout(holdTimerId);
       }
       const listElement = kind === "character" ? elements.characterCardList : elements.personaCardList;
       const currentButton = listElement.querySelector(`[data-card-id="${cardId}"]`);
@@ -7627,7 +7652,7 @@
       }
       if (dragging) {
         suppressRpCardListClick = true;
-        window.setTimeout(() => {
+        setTimeout(() => {
           suppressRpCardListClick = false;
         }, 0);
         event.preventDefault();
@@ -7664,7 +7689,7 @@
         .sort((first, second) => new Date(second.updatedAt) - new Date(first.updatedAt));
     }
     function getChatListRenderSignature(sortedChats = getSortedCurrentChats()) {
-      const normalizedChats = Array.isArray(sortedChats) ? sortedChats : [];
+      const normalizedChats = isArray(sortedChats) ? sortedChats : [];
       return [
         normalizeAppLanguage(state.settings.language),
         state.activeMode,
@@ -7722,7 +7747,7 @@
     function buildChatListItem(chat, options = {}) {
       const item = createDiv(`chat-item${chat.id === getCurrentActiveChatId() ? " active" : ""}`);
       const isEditing = editingChatId === chat.id;
-      const mainButton = document.createElement("button");
+      const mainButton = createElement("button");
       mainButton.type = "button";
       mainButton.className = "chat-item-main";
       mainButton.addEventListener("click", () => {
@@ -7730,7 +7755,7 @@
       });
       const copy = createDiv("chat-item-copy");
       if (isEditing) {
-        const titleInput = document.createElement("input");
+        const titleInput = createElement("input");
         titleInput.type = "text";
         titleInput.className = "chat-item-title-input";
         titleInput.value = chatTitleDrafts.get(chat.id) ?? chat.title;
@@ -7802,7 +7827,7 @@
       if (nextTitle) {
         chat.title = nextTitle;
         chat.titleManuallyEdited = true;
-        chat.updatedAt = new Date().toISOString();
+        chat.updatedAt = nowIso();
         setChatStatus(t("tabRenamed"), "success");
       }
       editingChatId = "";
@@ -7880,7 +7905,7 @@
       if (chat?.messagesLoaded === false) {
         return [];
       }
-      const messages = Array.isArray(chat?.messages) ? chat.messages : [];
+      const messages = isArray(chat?.messages) ? chat.messages : [];
       const count = Math.min(messages.length, Math.max(INITIAL_MESSAGE_RENDER_LIMIT, renderedMessageCount));
       renderedMessageCount = count;
       return messages.slice(-count);
@@ -7892,7 +7917,7 @@
       if (!chat || renderedMessageChatId !== chat.id || !elements.messageStream?.childElementCount) {
         return false;
       }
-      const messages = Array.isArray(chat.messages) ? chat.messages : [];
+      const messages = isArray(chat.messages) ? chat.messages : [];
       const nextRenderedCount = Math.min(messages.length, Math.max(INITIAL_MESSAGE_RENDER_LIMIT, renderedMessageCount));
       const startIndex = Math.max(0, messages.length - nextRenderedCount);
       const endIndex = Math.max(0, messages.length - previousRenderedCount);
@@ -7926,7 +7951,7 @@
       if (activeChat?.messagesLoaded === false) {
         return;
       }
-      const messages = Array.isArray(activeChat?.messages) ? activeChat.messages : [];
+      const messages = isArray(activeChat?.messages) ? activeChat.messages : [];
       if (!messages.length || renderedMessageCount >= messages.length) {
         return;
       }
@@ -7994,7 +8019,7 @@
       syncThinkingTokenLimitControls(modelSettingsDraft);
     }
     function getPromptPresets() {
-      if (!Array.isArray(state.settings.promptPresets)) {
+      if (!isArray(state.settings.promptPresets)) {
         state.settings.promptPresets = [];
       }
       return state.settings.promptPresets;
@@ -8051,7 +8076,7 @@
       renderPromptPresetList();
       elements.promptPresetNameInput.value = "";
       openOverlay(elements.promptPresetOverlay);
-      window.requestAnimationFrame(() => elements.promptPresetNameInput.focus());
+      requestAnimationFrame(() => elements.promptPresetNameInput.focus());
     }
     function saveCurrentPromptPreset() {
       const name = elements.promptPresetNameInput.value.trim();
@@ -8061,7 +8086,7 @@
         return;
       }
       ensureModelSettingsDraft();
-      const now = new Date().toISOString();
+      const now = nowIso();
       const presets = getPromptPresets();
       const existingPreset = presets.find((preset) => preset.name.localeCompare(name, undefined, { sensitivity: "accent" }) === 0);
       if (existingPreset) {
@@ -8146,13 +8171,13 @@
         return standardChat;
       }
       for (const chats of Object.values(state.rp.chatsByCharacterId || {})) {
-        const match = Array.isArray(chats) ? chats.find((chat) => chat.id === chatId) : null;
+        const match = isArray(chats) ? chats.find((chat) => chat.id === chatId) : null;
         if (match) {
           return match;
         }
       }
       for (const chats of Object.values(state.talk?.chatsByCharacterId || {})) {
-        const match = Array.isArray(chats) ? chats.find((chat) => chat.id === chatId) : null;
+        const match = isArray(chats) ? chats.find((chat) => chat.id === chatId) : null;
         if (match) {
           return match;
         }
@@ -8245,7 +8270,7 @@
         return null;
       }
       const avatar = createDiv("message-avatar");
-      const image = document.createElement("img");
+      const image = createElement("img");
       image.alt = message.role === "assistant" ? roleLabel("assistant", message) : roleLabel("user", message);
       avatar.appendChild(image);
       queueImageElementSource(image, profileImage);
@@ -8348,7 +8373,7 @@
         container.innerHTML = "";
         pendingImageAttachments.forEach((attachment) => {
           const chip = createDiv("composer-attachment-chip");
-          const image = document.createElement("img");
+          const image = createElement("img");
           image.alt = attachment.name;
           chip.appendChild(image);
           queueImageElementSource(image, attachment);
@@ -8373,15 +8398,15 @@
       if (composerLayoutFrameId) {
         return;
       }
-      composerLayoutFrameId = window.requestAnimationFrame(() => {
+      composerLayoutFrameId = requestAnimationFrame(() => {
         composerLayoutFrameId = 0;
         updateComposerLayoutMetrics();
       });
     }
     function updateComposerLayoutMetrics() {
       const composerHeight = Math.ceil(elements.chatForm?.getBoundingClientRect().height || 0);
-      const headerHeight = Math.ceil(document.querySelector(".main-header")?.getBoundingClientRect().height || 0);
-      const mainPanelRect = document.querySelector(".main-panel")?.getBoundingClientRect();
+      const headerHeight = Math.ceil(query(".main-header")?.getBoundingClientRect().height || 0);
+      const mainPanelRect = query(".main-panel")?.getBoundingClientRect();
       const desktopSidebarRect = elements.desktopTabsSidebar?.getBoundingClientRect();
       const viewportWidth = document.documentElement.clientWidth || window.innerWidth || 0;
       if (!composerHeight) {
@@ -8484,13 +8509,12 @@
     }
     async function resetSettingsToDefault() {
       const nextDefaultSettings = createDefaultSettings(detectInitialAppLanguage());
-      state.settings.apiBaseUrl = nextDefaultSettings.apiBaseUrl;
-      state.settings.apiKey = nextDefaultSettings.apiKey;
-      state.settings.imageApiBaseUrl = nextDefaultSettings.imageApiBaseUrl;
-      state.settings.imageApiKey = nextDefaultSettings.imageApiKey;
       [
+        "apiBaseUrl", "apiKey", "imageApiBaseUrl", "imageApiKey",
         "ttsEnabled", "ttsUseLlmApi", "ttsApiBaseUrl", "ttsApiKey", "ttsModel", "ttsVoice",
-        "ttsCustomVoiceEnabled", "ttsTemperature", "ttsChunkLength", "ttsAudioProfile", "ttsProfilePresetId", "ttsProfilePresets"
+        "ttsCustomVoiceEnabled", "ttsTemperature", "ttsChunkLength", "ttsAudioProfile", "ttsProfilePresetId", "ttsProfilePresets",
+        "userAlias", "modelAlias", "language", "themeMode", "smoothStreaming", "autoContinue",
+        "chatT2iEnabled", "talkT2iEnabled", "talkGroupUnlimited"
       ].forEach((key) => {
         state.settings[key] = nextDefaultSettings[key];
       });
@@ -8498,15 +8522,6 @@
       stopTtsPlayback();
       state.imageModels = [];
       state.imageModelsSyncedAt = "";
-      state.settings.userAlias = nextDefaultSettings.userAlias;
-      state.settings.modelAlias = nextDefaultSettings.modelAlias;
-      state.settings.language = nextDefaultSettings.language;
-      state.settings.themeMode = nextDefaultSettings.themeMode;
-      state.settings.smoothStreaming = nextDefaultSettings.smoothStreaming;
-      state.settings.autoContinue = nextDefaultSettings.autoContinue;
-      state.settings.chatT2iEnabled = nextDefaultSettings.chatT2iEnabled;
-      state.settings.talkT2iEnabled = nextDefaultSettings.talkT2iEnabled;
-      state.settings.talkGroupUnlimited = nextDefaultSettings.talkGroupUnlimited;
       if (isRpModeActive() && state.rp) {
         state.rp.responsePerspective = DEFAULT_RP_RESPONSE_PERSPECTIVE;
         state.rp.responseLength = DEFAULT_RP_RESPONSE_LENGTH;
@@ -8531,7 +8546,7 @@
       }
       elements.authorsNoteInput.value = getActiveChatAuthorsNote();
       openOverlay(elements.authorsNoteOverlay);
-      window.requestAnimationFrame(() => elements.authorsNoteInput.focus());
+      requestAnimationFrame(() => elements.authorsNoteInput.focus());
     }
     function updateAuthorsNote() {
       const activeChat = getActiveChat();
@@ -8539,7 +8554,7 @@
         return;
       }
       activeChat.authorsNote = elements.authorsNoteInput.value;
-      activeChat.updatedAt = new Date().toISOString();
+      activeChat.updatedAt = nowIso();
       persistState();
       renderAuthorsNoteButton();
       renderChatList();
@@ -8621,7 +8636,7 @@
       setChatStatus(t("settingsSaved"), "success");
     }
     function getCustomTtsProfilePresets() {
-      if (!Array.isArray(state.settings.ttsProfilePresets)) {
+      if (!isArray(state.settings.ttsProfilePresets)) {
         state.settings.ttsProfilePresets = [];
       }
       return state.settings.ttsProfilePresets;
@@ -8673,7 +8688,7 @@
         return;
       }
       const presets = getCustomTtsProfilePresets();
-      const now = new Date().toISOString();
+      const now = nowIso();
       let preset = presets.find((entry) => entry.name.localeCompare(name, undefined, { sensitivity: "accent" }) === 0);
       if (preset) {
         preset.profile = profile;
@@ -8707,6 +8722,8 @@
         promptStyle: normalizeIllustrationPromptStyle(elements.illustrationPromptStyleSelect.value),
         artStyle: normalizeIllustrationArtStyle(elements.illustrationArtStyleSelect.value),
         imageModel: elements.imageModelSelect.value || "",
+        requiredPrompt: elements.illustrationRequiredPromptInput.value.trim(),
+        requiredNegativePrompt: elements.illustrationRequiredNegativePromptInput.value.trim(),
         ignoreNonCharacterPeople: elements.illustrationIgnoreNonCharacterPeopleInput.checked,
         cfgScale: normalizeOptionalNumber(elements.illustrationCfgScaleInput.value, { min: 1, max: 20 }) ?? DEFAULT_RP_ILLUSTRATION_SETTINGS.cfgScale,
         steps: normalizeOptionalInteger(elements.illustrationStepsInput.value, { min: 1, max: 60 }) ?? DEFAULT_RP_ILLUSTRATION_SETTINGS.steps,
@@ -8758,7 +8775,7 @@
       document.documentElement.dataset.resolvedTheme = resolvedTheme;
     }
     function updateOverlayScrollLock() {
-      const hasBlockingOverlay = Boolean(document.querySelector(".overlay-shell.open, .tab-lock-warning.open"));
+      const hasBlockingOverlay = Boolean(query(".overlay-shell.open, .tab-lock-warning.open"));
       document.documentElement.classList.toggle("overlay-open", hasBlockingOverlay);
       document.body.classList.toggle("overlay-open", hasBlockingOverlay);
     }
@@ -8782,7 +8799,7 @@
       overlay.classList.add("open");
       overlay.setAttribute("aria-hidden", "false");
       updateOverlayScrollLock();
-      window.requestAnimationFrame(() => resetOverlayScroll(overlay));
+      requestAnimationFrame(() => resetOverlayScroll(overlay));
     }
     function resetOverlayScroll(overlay) {
       overlay.scrollTop = 0;
@@ -8883,7 +8900,7 @@
       setImageElementPlaceholderSource(image);
       if (options.defer) {
         image.hidden = true;
-        const placeholder = document.createElement("div");
+        const placeholder = createElement("div");
         placeholder.className = "message-image-placeholder";
         placeholder.textContent = t("imageLoading");
         image.before(placeholder);
@@ -9037,13 +9054,16 @@
       const nextZoom = Number(event.target.value);
       updateRpImageCropZoom(nextZoom);
     }
+    function getRpImageCropScale() {
+      const frameSize = Math.max(1, rpImageCropState.frameSize || Math.round(elements.rpImageCropViewport.clientWidth || 320));
+      return [frameSize, Math.max(frameSize / rpImageCropState.naturalWidth, frameSize / rpImageCropState.naturalHeight)];
+    }
     function updateRpImageCropZoom(nextZoom, focalPoint = null) {
       if (!rpImageCropState) {
         return;
       }
       const clampedZoom = clampNumber(Number.isFinite(nextZoom) ? nextZoom : 1, rpImageCropState.minZoom, rpImageCropState.maxZoom);
-      const frameSize = Math.max(1, rpImageCropState.frameSize || Math.round(elements.rpImageCropViewport.clientWidth || 320));
-      const fallbackScale = Math.max(frameSize / rpImageCropState.naturalWidth, frameSize / rpImageCropState.naturalHeight);
+      const [frameSize, fallbackScale] = getRpImageCropScale();
       const previousScale = Math.max(0.0001, rpImageCropState.displayScale || fallbackScale);
       const focalX = Number.isFinite(focalPoint?.x) ? focalPoint.x : frameSize / 2;
       const focalY = Number.isFinite(focalPoint?.y) ? focalPoint.y : frameSize / 2;
@@ -9146,8 +9166,7 @@
       if (!pinchMetrics || pinchMetrics.distance <= 0) {
         return;
       }
-      const frameSize = Math.max(1, rpImageCropState.frameSize || Math.round(elements.rpImageCropViewport.clientWidth || 320));
-      const fallbackScale = Math.max(frameSize / rpImageCropState.naturalWidth, frameSize / rpImageCropState.naturalHeight);
+      const [, fallbackScale] = getRpImageCropScale();
       rpImageCropState.pinchActive = true;
       rpImageCropState.pinchStartDistance = pinchMetrics.distance;
       rpImageCropState.pinchStartZoom = rpImageCropState.zoom;
@@ -9166,8 +9185,7 @@
       if (!pinchMetrics || pinchMetrics.distance <= 0 || rpImageCropState.pinchStartDistance <= 0) {
         return;
       }
-      const frameSize = Math.max(1, rpImageCropState.frameSize || Math.round(elements.rpImageCropViewport.clientWidth || 320));
-      const fallbackScale = Math.max(frameSize / rpImageCropState.naturalWidth, frameSize / rpImageCropState.naturalHeight);
+      const [, fallbackScale] = getRpImageCropScale();
       const nextZoom = clampNumber(rpImageCropState.pinchStartZoom * (pinchMetrics.distance / rpImageCropState.pinchStartDistance), rpImageCropState.minZoom, rpImageCropState.maxZoom);
       const nextScale = fallbackScale * nextZoom;
       const imageX = (rpImageCropState.pinchStartMidpointX - rpImageCropState.pinchStartOffsetX) / rpImageCropState.pinchStartScale;
@@ -9199,7 +9217,7 @@
         return;
       }
       try {
-        const frameSize = Math.max(1, rpImageCropState.frameSize || Math.round(elements.rpImageCropViewport.clientWidth || 320));
+        const [frameSize] = getRpImageCropScale();
         const scale = Math.max(0.0001, rpImageCropState.displayScale);
         const cropX = clampNumber(-rpImageCropState.offsetX / scale, 0, rpImageCropState.naturalWidth);
         const cropY = clampNumber(-rpImageCropState.offsetY / scale, 0, rpImageCropState.naturalHeight);
@@ -9242,7 +9260,7 @@
         return;
       }
       ensureRpModeReady();
-      const createdAt = new Date().toISOString();
+      const createdAt = nowIso();
       const rpLikeState = getActiveRpLikeState();
       const card = {
         id: createId("talk-group-card"),
@@ -9296,7 +9314,7 @@
         card.description = String(draft.description || "");
       }
       card.profileImage = card.isGroupChat ? null : (draft.profileImage ? cloneImageAttachment(draft.profileImage) : null);
-      card.updatedAt = new Date().toISOString();
+      card.updatedAt = nowIso();
       resetRpCardDraft(kind);
       renderAppSections({ chatList: kind === "character", activeChat: true, rpCards: true, header: true });
       requestInactiveChatUnload();
@@ -9318,7 +9336,7 @@
       if (!card) {
         return;
       }
-      const now = new Date().toISOString();
+      const now = nowIso();
       card.name = `${getRpCardKindLabel(kind)} 1`;
       card.description = "";
       card.profileImage = null;
@@ -9386,8 +9404,7 @@
       setChatStatus(t("rpCardDeleted", { kind: getRpCardKindNoun(kind) }), "success");
     }
     async function handleRpCardProfileImageSelection(kind, event) {
-      const file = event.target.files?.[0];
-      event.target.value = "";
+      const file = takeSelectedFile(event);
       if (!file) {
         return;
       }
@@ -9399,8 +9416,7 @@
       }
     }
     async function exportRpCard(kind) {
-      if (!isPrimaryTab) {
-        setChatStatus(t("activeTabOnlyExport"), "error");
+      if (!requirePrimaryTab("activeTabOnlyExport")) {
         return;
       }
       if (typeof window.JSZip !== "function") {
@@ -9417,7 +9433,7 @@
         format: "focusabove-rp-card",
         version: 1,
         kind,
-        exportedAt: new Date().toISOString(),
+        exportedAt: nowIso(),
         card: {
           name: card.name,
           description: card.description,
@@ -9436,19 +9452,14 @@
         manifest.card.imageMimeType = profileImage.mimeType || getImageMimeTypeFromExtension(extension);
         zip.file(fileName, extractBase64Payload(profileImage.dataUrl), { base64: true });
       }
-      zip.file("manifest.json", JSON.stringify(manifest, null, 2));
+      zip.file("manifest.json", toJson(manifest, null, 2));
       const blob = await zip.generateAsync({ type: "blob" });
       triggerBlobDownload(blob, `${sanitizeDownloadFileName(card.name || getRpCardKindLabel(kind), getRpCardKindLabel(kind))}.charcard`);
       setChatStatus(t("charcardExported", { name: card.name }), "success");
     }
     async function handleRpCardImport(kind, event) {
-      const file = event.target.files?.[0];
-      event.target.value = "";
+      const file = takeImportFile(event);
       if (!file) {
-        return;
-      }
-      if (!isPrimaryTab) {
-        setChatStatus(t("activeTabOnlyImport"), "error");
         return;
       }
       try {
@@ -9477,11 +9488,8 @@
       }
     }
     async function parseImportedRpCard(file, expectedKind) {
-      if (typeof window.JSZip !== "function") {
-        throw new Error(t("zipImportLibraryFailed"));
-      }
       validateImportFileSize(file);
-      const zip = await window.JSZip.loadAsync(await file.arrayBuffer());
+      const zip = await getZipLibrary("zipImportLibraryFailed").loadAsync(await file.arrayBuffer());
       const manifestEntry = zip.file("manifest.json");
       if (!manifestEntry) {
         throw new Error(t("missingManifestJson"));
@@ -9522,8 +9530,8 @@
           : "",
         firstMessage: expectedKind === "character" ? String(manifest?.card?.firstMessage || "") : "",
         profileImage,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        createdAt: nowIso(),
+        updatedAt: nowIso()
       };
     }
     function getImageFileExtension(mimeType) {
@@ -9592,8 +9600,7 @@
       setChatStatus(t("chatTabDeleted"), "success");
     }
     async function exportChatToJson(chatId) {
-      if (!isPrimaryTab) {
-        setChatStatus(t("activeTabOnlyExport"), "error");
+      if (!requirePrimaryTab("activeTabOnlyExport")) {
         return;
       }
       const chat = await ensureChatMessagesLoaded(chatId);
@@ -9604,10 +9611,10 @@
       const payload = {
         format: "focusabove-chat-tabs",
         version: 1,
-        exportedAt: new Date().toISOString(),
+        exportedAt: nowIso(),
         chats: [await hydrateChatMediaForExport(chat)]
       };
-      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const blob = new Blob([toJson(payload, null, 2)], { type: "application/json" });
       triggerBlobDownload(blob, `focusabove-tab-${buildTimestampForFilename()}.json`);
       requestInactiveChatUnload();
       setChatStatus(t("tabJsonExported", { title: chat.title }), "success");
@@ -9620,7 +9627,7 @@
       return normalized;
     }
     async function hydrateChatMediaForExport(chat) {
-      const copy = JSON.parse(JSON.stringify(chat));
+      const copy = JSON.parse(toJson(chat));
       for (const message of copy.messages || []) {
         message.attachments = await Promise.all(normalizeImageAttachments(message.attachments).map(hydrateImageAttachmentForExport));
         if (message.illustration?.image) {
@@ -9630,20 +9637,14 @@
       return copy;
     }
     function triggerImportChats() {
-      if (!isPrimaryTab) {
-        setChatStatus(t("activeTabOnlyImport"), "error");
+      if (!requirePrimaryTab("activeTabOnlyImport")) {
         return;
       }
       elements.importChatsInput.click();
     }
     async function handleImportChats(event) {
-      const file = event.target.files?.[0];
-      event.target.value = "";
+      const file = takeImportFile(event);
       if (!file) {
-        return;
-      }
-      if (!isPrimaryTab) {
-        setChatStatus(t("activeTabOnlyImport"), "error");
         return;
       }
       try {
@@ -9676,9 +9677,9 @@
       } catch {
         throw new Error(t("invalidJsonFormat"));
       }
-      const rawChats = Array.isArray(payload)
+      const rawChats = isArray(payload)
         ? payload
-        : Array.isArray(payload?.chats)
+        : isArray(payload?.chats)
           ? payload.chats
           : payload && typeof payload === "object"
             ? [payload]
@@ -9791,14 +9792,11 @@
       });
     }
     async function createFullBackupBlob(options = {}) {
-      if (typeof window.JSZip !== "function") {
-        throw new Error(t("zipExportLibraryFailed"));
-      }
       const includeSecrets = options.includeSecrets !== false;
       const onProgress = typeof options.onProgress === "function" ? options.onProgress : () => {};
       await flushStateBeforeFullBackup();
       onProgress({ detail: t("backupProgressAppState"), value: 5, max: 100 });
-      const zip = new window.JSZip();
+      const zip = createZip("zipExportLibraryFailed");
       const chatRecords = supportsIndexedDb()
         ? await readIndexedDbRecordsByKeyPrefix(APP_CHAT_RECORD_PREFIX)
         : getAllStateChats(state).map((chat) => ({
@@ -9820,14 +9818,14 @@
       const manifest = {
         format: FULL_BACKUP_FORMAT,
         version: FULL_BACKUP_VERSION,
-        exportedAt: new Date().toISOString(),
+        exportedAt: nowIso(),
         includeSecrets,
         records: {
           chats: [],
           media: []
         }
       };
-      zip.file("app-state.json", JSON.stringify(appState));
+      zip.file("app-state.json", toJson(appState));
       const chatTotal = chatRecords.length;
       for (let index = 0; index < chatRecords.length; index += 1) {
         const record = chatRecords[index];
@@ -9837,7 +9835,7 @@
         }
         const path = createBackupZipPath("chats", chatId);
         manifest.records.chats.push({ id: chatId, path });
-        zip.file(path, JSON.stringify({
+        zip.file(path, toJson({
           version: 1,
           chatId,
           messages: normalizeStoredChatMessages(record?.value?.messages)
@@ -9854,10 +9852,10 @@
         }
         const path = createBackupZipPath("media", mediaId);
         manifest.records.media.push({ id: mediaId, path });
-        zip.file(path, JSON.stringify({ version: 1, mediaId, dataUrl }));
+        zip.file(path, toJson({ version: 1, mediaId, dataUrl }));
         reportBackupProgress(onProgress, "backupProgressMedia", index + 1, mediaTotal, 45, 35);
       }
-      zip.file("manifest.json", JSON.stringify(manifest));
+      zip.file("manifest.json", toJson(manifest));
       onProgress({ detail: t("backupProgressZip"), value: 85, max: 100 });
       const blob = await zip.generateAsync({ type: "blob", streamFiles: true }, (metadata) => {
         onProgress({
@@ -9873,8 +9871,7 @@
       if (backupRestoreInProgress) {
         return;
       }
-      if (!isPrimaryTab) {
-        setChatStatus(t("activeTabOnlyExport"), "error");
+      if (!requirePrimaryTab("activeTabOnlyExport")) {
         return;
       }
       try {
@@ -9896,8 +9893,7 @@
       if (backupRestoreInProgress) {
         return;
       }
-      if (!isPrimaryTab) {
-        setChatStatus(t("activeTabOnlyImport"), "error");
+      if (!requirePrimaryTab("activeTabOnlyImport")) {
         return;
       }
       elements.importFullBackupInput.click();
@@ -9907,13 +9903,8 @@
         event.target.value = "";
         return;
       }
-      const file = event.target.files?.[0];
-      event.target.value = "";
+      const file = takeImportFile(event);
       if (!file) {
-        return;
-      }
-      if (!isPrimaryTab) {
-        setChatStatus(t("activeTabOnlyImport"), "error");
         return;
       }
       const shouldRestore = window.confirm(t("confirmRestoreFullBackup"));
@@ -9932,12 +9923,9 @@
       }
     }
     async function restoreFullBackupFromBlob(blob, options = {}) {
-      if (typeof window.JSZip !== "function") {
-        throw new Error(t("zipImportLibraryFailed"));
-      }
       const onProgress = typeof options.onProgress === "function" ? options.onProgress : () => {};
       onProgress({ detail: t("backupProgressPreparing"), value: 0, max: 100 });
-      const zip = await window.JSZip.loadAsync(await blob.arrayBuffer());
+      const zip = await getZipLibrary("zipImportLibraryFailed").loadAsync(await blob.arrayBuffer());
       const manifestEntry = zip.file("manifest.json");
       if (!manifestEntry) {
         throw new Error(t("missingBackupManifest"));
@@ -9954,8 +9942,8 @@
       const rawAppState = parseBackupJsonEntry(await appStateEntry.async("string"));
       const nextState = normalizeStoredAppState(rawAppState);
       const restoredSecrets = getSettingsSecretsFromState(nextState);
-      const chatEntries = Array.isArray(manifest?.records?.chats) ? manifest.records.chats : [];
-      const mediaEntries = Array.isArray(manifest?.records?.media) ? manifest.records.media : [];
+      const chatEntries = isArray(manifest?.records?.chats) ? manifest.records.chats : [];
+      const mediaEntries = isArray(manifest?.records?.media) ? manifest.records.media : [];
       const chatRecords = [];
       for (let index = 0; index < chatEntries.length; index += 1) {
         const entry = chatEntries[index];
@@ -10008,7 +9996,7 @@
         }
         localStorage.removeItem(APP_STORAGE_KEY);
       } else {
-        localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(nextState));
+        localStorage.setItem(APP_STORAGE_KEY, toJson(nextState));
       }
       onProgress({ detail: t("backupProgressFinalizing"), value: 95, max: 100 });
       mediaDataUrlCache.clear();
@@ -10016,9 +10004,7 @@
       syncPersistedChatRecordIds(state);
       ensureInitialChat();
       syncChatSelection();
-      resetModelSettingsDraft();
-      resetRpCardDraft("character");
-      resetRpCardDraft("persona");
+      resetAllSettingsDrafts();
       populateSettingsForm();
       renderAll({ persist: false });
       await ensureCurrentActiveChatLoaded();
@@ -10040,7 +10026,7 @@
       requestIndexedDbMediaGc(collectReferencedMediaIdsFromMessages(activeChat.messages));
       editingMessageId = "";
       activeChat.messages = [];
-      activeChat.updatedAt = new Date().toISOString();
+      activeChat.updatedAt = nowIso();
       renderChatInteractionSections();
     }
     function deleteMessage(chatId, messageId) {
@@ -10060,7 +10046,7 @@
       }
       requestIndexedDbMediaGc(collectReferencedMediaIdsFromMessages(targetMessage ? [targetMessage] : []));
       chat.messages = chat.messages.filter((message) => message.id !== messageId);
-      chat.updatedAt = new Date().toISOString();
+      chat.updatedAt = nowIso();
       renderChatInteractionSections();
     }
     function updateSelectedModel() {
@@ -10337,7 +10323,7 @@
           "Content-Type": "application/json"
         },
         signal,
-        body: JSON.stringify(requestBody)
+        body: toJson(requestBody)
       });
       if (!response.ok) {
         let detail = "";
@@ -10350,7 +10336,7 @@
       }
       const blob = await response.blob();
       if (!blob.size) {
-        throw new Error(t("missingResponseContent"));
+        throw missingResponseError();
       }
       return blob;
     }
@@ -10446,11 +10432,11 @@
           headers: buildHeaders()
         });
         if (!response.ok) {
-          throw new Error(`HTTP ${response.status} ${response.statusText}`);
+          throw createHttpError(response);
         }
         const payload = await response.json();
-        state.models = Array.isArray(payload?.data) ? payload.data : [];
-        state.modelsSyncedAt = new Date().toISOString();
+        state.models = isArray(payload?.data) ? payload.data : [];
+        state.modelsSyncedAt = nowIso();
         syncSelectedModelWithModels();
         renderAppSections({
           activeChat: true,
@@ -10510,7 +10496,7 @@
         return true;
       }
       const metadata = model && typeof model === "object"
-        ? [model.type, model.task, model.pipeline_tag, model.capability, ...(Array.isArray(model.capabilities) ? model.capabilities : [])]
+        ? [model.type, model.task, model.pipeline_tag, model.capability, ...(isArray(model.capabilities) ? model.capabilities : [])]
           .filter(Boolean)
           .join(" ")
         : "";
@@ -10548,10 +10534,10 @@
           headers: buildBearerHeaders(ttsApi.key)
         });
         if (!response.ok) {
-          throw new Error(`HTTP ${response.status} ${response.statusText}`);
+          throw createHttpError(response);
         }
         const payload = await response.json();
-        const responseModels = Array.isArray(payload?.data) ? payload.data : [];
+        const responseModels = isArray(payload?.data) ? payload.data : [];
         const useLlmApi = elements.ttsUseLlmApiInput.checked;
         state.ttsModels = normalizeImageModelList(useLlmApi
           ? responseModels.filter(isTtsModelCandidate)
@@ -10581,7 +10567,7 @@
       setImageModelsStatus(t("imageModelsLoading"), "default", options);
       try {
         state.imageModels = await fetchImageModelList(imageApiBase);
-        state.imageModelsSyncedAt = new Date().toISOString();
+        state.imageModelsSyncedAt = nowIso();
         syncSelectedImageModelWithModels();
         renderImageModelSelect();
         persistState();
@@ -10683,7 +10669,7 @@
         status: shouldEnhanceInput ? "enhancing" : "complete"
       });
       activeChat.messages.push(userMessage);
-      activeChat.updatedAt = new Date().toISOString();
+      activeChat.updatedAt = nowIso();
       elements.messageInput.value = "";
       clearPendingComposerAttachments();
       renderChatInteractionSections({
@@ -10710,7 +10696,7 @@
           }
         } finally {
           userMessage.status = "complete";
-          activeChat.updatedAt = new Date().toISOString();
+          activeChat.updatedAt = nowIso();
           isSending = false;
           if (shouldRetitleChat(activeChat)) {
             activeChat.title = suggestChatTitle(activeChat.messages);
@@ -10721,7 +10707,7 @@
         }
       } else if (shouldRetitleChat(activeChat)) {
         activeChat.title = suggestChatTitle(activeChat.messages);
-        activeChat.updatedAt = new Date().toISOString();
+        activeChat.updatedAt = nowIso();
         renderAppSections({
           chatList: true,
           activeChat: true,
@@ -10844,7 +10830,7 @@
       const text = cleanAuxiliaryText(value);
       try {
         const parsed = JSON.parse(text);
-        return Array.isArray(parsed?.speakerIds) ? parsed.speakerIds.filter((id) => typeof id === "string") : [];
+        return isArray(parsed?.speakerIds) ? parsed.speakerIds.filter((id) => typeof id === "string") : [];
       } catch (_error) {
         return [...text.matchAll(/["']([^"']+)["']/g)].map((match) => match[1]);
       }
@@ -10887,7 +10873,7 @@
       }
     }
     function getLatestUserMessageForChatT2i(messages) {
-      return (Array.isArray(messages) ? messages : [])
+      return (isArray(messages) ? messages : [])
         .slice()
         .reverse()
         .find((message) => message?.role === "user") || null;
@@ -10945,7 +10931,7 @@
         && normalizeRpAssistanceSettings(state.rp?.assistance).inputEnhancementEnabled;
     }
     function getMainRequestRpSummaryBoundary(chat, sourceMessages) {
-      const messages = Array.isArray(sourceMessages) ? sourceMessages : [];
+      const messages = isArray(sourceMessages) ? sourceMessages : [];
       if (!shouldUseRpSummary(chat) || !hasText(chat?.rpSummary)) {
         return 0;
       }
@@ -10954,7 +10940,7 @@
       return summarizedCount > 0 && summarizedCount <= summarizableCount ? summarizedCount : 0;
     }
     function buildMainRequestSourceMessages(chat, sourceMessages) {
-      const messages = normalizeChatMessagesForMode(Array.isArray(sourceMessages) ? sourceMessages : [], chat?.chatMode);
+      const messages = normalizeChatMessagesForMode(isArray(sourceMessages) ? sourceMessages : [], chat?.chatMode);
       const summarizedCount = getMainRequestRpSummaryBoundary(chat, messages);
       if (!summarizedCount) {
         return messages;
@@ -11012,7 +10998,7 @@
         }
         requestIndexedDbMediaGc(collectReferencedMediaIdsFromMessages(activeChat.messages.slice(userIndex + 1)));
         activeChat.messages = activeChat.messages.slice(0, userIndex + 1);
-        activeChat.updatedAt = new Date().toISOString();
+        activeChat.updatedAt = nowIso();
         renderChatInteractionSections({
           header: true
         });
@@ -11027,7 +11013,7 @@
         : "";
       requestIndexedDbMediaGc(collectReferencedMediaIdsFromMessages(activeChat.messages.slice(assistantIndex)));
       activeChat.messages = activeChat.messages.slice(0, assistantIndex);
-      activeChat.updatedAt = new Date().toISOString();
+      activeChat.updatedAt = nowIso();
       renderChatInteractionSections({
         header: true
       });
@@ -11101,9 +11087,9 @@
       const requestStatusRunId = postResponseStatusRunId + 1;
       postResponseStatusRunId = requestStatusRunId;
       const requestAbortController = new AbortController();
-      const rawSourceMessages = Array.isArray(options.sourceMessages)
+      const rawSourceMessages = isArray(options.sourceMessages)
         ? options.sourceMessages
-        : Array.isArray(chat?.messages) ? chat.messages : [];
+        : isArray(chat?.messages) ? chat.messages : [];
       const rpContext = buildRpPromptContext(chat, rawSourceMessages, options);
       const sourceMessages = buildMainRequestSourceMessages(chat, rawSourceMessages);
       const documentOutputInstructions = buildDocumentOutputSystemInstructions(sourceMessages);
@@ -11116,7 +11102,7 @@
       }
       const assistantMessage = createMessage("assistant", "", assistantOverrides);
       chat.messages.push(assistantMessage);
-      chat.updatedAt = new Date().toISOString();
+      chat.updatedAt = nowIso();
       currentStreamingMessageId = assistantMessage.id;
       currentRequestAbortController = requestAbortController;
       isSending = true;
@@ -11180,7 +11166,7 @@
           assistantMessage.content = assistantMessage.generatedDocument.displayContent || "";
           delete assistantMessage.generatedDocument.displayContent;
         }
-        chat.updatedAt = new Date().toISOString();
+        chat.updatedAt = nowIso();
         persistState();
         replaceMessageArticleDom(chat, assistantMessage, { scrollToBottom: true });
         renderChatList();
@@ -11197,7 +11183,7 @@
           console.error("Stream failed", error);
           const hasVisibleContent = assistantMessage.content.trim() && !isStreamingThinkingPlaceholder(assistantMessage.content);
           assistantMessage.isThinking = false;
-          assistantMessage.timestamp = new Date().toISOString();
+          assistantMessage.timestamp = nowIso();
           chat.updatedAt = assistantMessage.timestamp;
           if (hasVisibleContent) {
             assistantMessage.status = "complete";
@@ -11255,8 +11241,8 @@
         prompt: previousPrompt,
         image: null,
         error: "",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        createdAt: nowIso(),
+        updatedAt: nowIso()
       };
       updateIllustrationMessageState(chat, targetMessage, { scrollToBottom: shouldScrollToBottom });
       try {
@@ -11281,7 +11267,7 @@
           prompt,
           image,
           error: "",
-          updatedAt: new Date().toISOString()
+          updatedAt: nowIso()
         };
         updateIllustrationMessageState(chat, latestMessage, { scrollToBottom: shouldScrollToBottom });
       } catch (error) {
@@ -11294,7 +11280,7 @@
           ...latestMessage.illustration,
           status: "error",
           error: error?.message || String(error),
-          updatedAt: new Date().toISOString()
+          updatedAt: nowIso()
         };
         updateIllustrationMessageState(chat, latestMessage, { scrollToBottom: false });
       }
@@ -11307,7 +11293,7 @@
       if (!message) {
         return;
       }
-      chat.updatedAt = new Date().toISOString();
+      chat.updatedAt = nowIso();
       persistState();
       if (getActiveChat()?.id === chat.id) {
         replaceMessageArticleDom(chat, message, options);
@@ -11477,7 +11463,7 @@
           return;
         }
         chat.title = title;
-        chat.updatedAt = new Date().toISOString();
+        chat.updatedAt = nowIso();
         persistState();
         renderAppSections({ persist: false, chatList: true, activeChat: true, header: true });
       } catch (error) {
@@ -11535,7 +11521,7 @@
         }
         latestMessage.rpSceneState = sceneState;
         chat.rpSceneState = sceneState;
-        chat.updatedAt = new Date().toISOString();
+        chat.updatedAt = nowIso();
         persistState();
         if (getActiveChat()?.id === chat.id) {
           replaceMessageArticleDom(chat, latestMessage, { scrollToBottom: false });
@@ -11559,7 +11545,7 @@
         }
         chat.rpSummary = summary;
         chat.rpSummaryUpdatedMessageCount = getSummarizableRpMessages(chat).length;
-        chat.updatedAt = new Date().toISOString();
+        chat.updatedAt = nowIso();
         persistState();
         renderChatList();
       } catch (error) {
@@ -11598,7 +11584,7 @@
       if (!isRpChat(chat) || !apiBase || !auxiliaryModel) {
         return content;
       }
-      const rawMessages = Array.isArray(chat?.messages) ? chat.messages : [];
+      const rawMessages = isArray(chat?.messages) ? chat.messages : [];
       const sourceMessages = options.excludeMessageId
         ? rawMessages.filter((message) => message?.id !== options.excludeMessageId)
         : rawMessages;
@@ -11733,17 +11719,17 @@
           "Content-Type": "application/json"
         },
         signal: options.signal,
-        body: JSON.stringify(requestBody)
+        body: toJson(requestBody)
       });
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status} ${response.statusText}`);
+        throw createHttpError(response);
       }
       return cleanAuxiliaryText(extractFinalAssistantContent(await response.json()));
     }
     function buildRpAuxiliaryRequestMessages(chat, taskMessages, options = {}) {
       return [
         ...buildRpAuxiliaryPrefixMessages(chat, options.message || null),
-        ...(Array.isArray(taskMessages) ? taskMessages : [])
+        ...(isArray(taskMessages) ? taskMessages : [])
       ];
     }
     function buildRpAuxiliaryPrefixMessages(chat, message = null) {
@@ -11814,7 +11800,7 @@
       if (isTalkChat(chat)) {
         return "";
       }
-      const firstMessage = Array.isArray(chat?.messages)
+      const firstMessage = isArray(chat?.messages)
         ? chat.messages.find((message) => message?.isFirstMessage && message.role === "assistant")
         : null;
       if (!firstMessage) {
@@ -11823,7 +11809,7 @@
       return trimForAuxiliaryPrompt(replaceRpPromptPlaceholders(firstMessage.content || "", rpPlaceholders), 1000);
     }
     function getRecentAuxiliaryMessagesBefore(chat, targetMessageId = "", limit = 6) {
-      const messages = Array.isArray(chat?.messages) ? chat.messages : [];
+      const messages = isArray(chat?.messages) ? chat.messages : [];
       const targetIndex = messages.findIndex((message) => message?.id === targetMessageId);
       const sourceMessages = targetIndex >= 0 ? messages.slice(0, targetIndex) : messages;
       return sourceMessages
@@ -11831,13 +11817,13 @@
         .slice(-limit);
     }
     function getRecentAuxiliaryMessagesExcluding(chat, excludedMessageId = "", limit = 6) {
-      return (Array.isArray(chat?.messages) ? chat.messages : [])
+      return (isArray(chat?.messages) ? chat.messages : [])
         .filter((message) => message?.id !== excludedMessageId)
         .filter((message) => message.role === "user" || message.role === "assistant")
         .slice(-limit);
     }
     function formatMessagesForAuxiliary(messages, limit = 10, rpPlaceholders = null, maxLength = 700) {
-      return (Array.isArray(messages) ? messages : [])
+      return (isArray(messages) ? messages : [])
         .filter((message) => message.role === "user" || message.role === "assistant")
         .slice(-limit)
         .map((message) => {
@@ -11907,9 +11893,12 @@
           ].filter(Boolean).join("\n\n")
         }
       ], { message: assistantMessage }));
-      const prompt = applyIllustrationArtStylePrefix(cleanIllustrationPrompt(generatedPrompt), illustrationSettings.artStyle);
+      const prompt = appendImagePromptSuffix(
+        applyIllustrationArtStylePrefix(cleanIllustrationPrompt(generatedPrompt), illustrationSettings.artStyle),
+        illustrationSettings.requiredPrompt
+      );
       if (!prompt) {
-        throw new Error(t("missingResponseContent"));
+        throw missingResponseError();
       }
       return prompt;
     }
@@ -11957,7 +11946,10 @@
       const cleanPrompt = cleanIllustrationPrompt(value);
       return !cleanPrompt || isChatT2iSkipPrompt(cleanPrompt)
         ? CHAT_T2I_SKIP_TOKEN
-        : applyIllustrationArtStylePrefix(cleanPrompt, illustrationSettings.artStyle);
+        : appendImagePromptSuffix(
+          applyIllustrationArtStylePrefix(cleanPrompt, illustrationSettings.artStyle),
+          illustrationSettings.requiredPrompt
+        );
     }
     async function createPostResponseT2iPrompt(chat, assistantMessage, options = {}) {
       const illustrationSettings = normalizeRpIllustrationSettings(state.rp?.illustration);
@@ -12053,7 +12045,7 @@
     }
     function requireUsableChatT2iPrompt(prompt) {
       if (!prompt || isChatT2iSkipPrompt(prompt)) {
-        throw new Error(t("missingResponseContent"));
+        throw missingResponseError();
       }
       return prompt;
     }
@@ -12147,6 +12139,11 @@
           : "";
       return [prefix, cleanPrompt].filter(Boolean).join(", ");
     }
+    function appendImagePromptSuffix(prompt, suffix) {
+      const cleanPrompt = String(prompt || "").trim().replace(/[\s,]+$/g, "");
+      const cleanSuffix = String(suffix || "").trim().replace(/^[\s,]+|[\s,]+$/g, "");
+      return [cleanPrompt, cleanSuffix].filter(Boolean).join(", ");
+    }
     async function generateStableDiffusionImage(prompt) {
       const imageApiBase = normalizeImageApiBase(state.settings.imageApiBaseUrl);
       if (!imageApiBase) {
@@ -12186,7 +12183,7 @@
           ...buildImageApiHeaders(),
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(requestBody)
+        body: toJson(requestBody)
       });
       if (!response.ok) {
         throw createHttpError(response);
@@ -12194,7 +12191,7 @@
       const payload = await response.json();
       const imageData = extractGeneratedImageData(payload);
       if (!imageData) {
-        throw new Error(t("missingResponseContent"));
+        throw missingResponseError();
       }
       return {
         id: createId("image"),
@@ -12208,13 +12205,12 @@
     }
     function buildIllustrationNegativePrompt(illustrationSettings) {
       const basePrompt = "text, watermark, signature, logo, speech bubble, low quality, blurry, distorted";
-      if (!normalizeRpIllustrationSettings(illustrationSettings).ignoreNonCharacterPeople) {
-        return basePrompt;
-      }
-      return [
+      const settings = normalizeRpIllustrationSettings(illustrationSettings);
+      const prompt = settings.ignoreNonCharacterPeople ? [
         basePrompt,
         "multiple people, two people, couple, group, crowd, background people, extra person, other person, second character, companion"
-      ].join(", ");
+      ].join(", ") : basePrompt;
+      return appendImagePromptSuffix(prompt, settings.requiredNegativePrompt);
     }
     function shouldTryComfyUiFallback(error) {
       return error?.status === 404 || error?.status === 405;
@@ -12241,7 +12237,7 @@
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({
+        body: toJson({
           client_id: clientId,
           prompt: promptGraph
         })
@@ -12288,7 +12284,7 @@
     }
     function getComfyUiInputOptions(objectInfo, nodeName, inputName) {
       const values = objectInfo?.[nodeName]?.input?.required?.[inputName]?.[0];
-      return Array.isArray(values) ? values.filter((value) => typeof value === "string" && value) : [];
+      return isArray(values) ? values.filter((value) => typeof value === "string" && value) : [];
     }
     function buildComfyUiPromptGraph(options) {
       const { prompt, checkpointName, samplerName, schedulerName, settings } = options;
@@ -12366,7 +12362,7 @@
     function extractComfyUiImageRef(historyItem) {
       const outputs = historyItem?.outputs || {};
       for (const output of Object.values(outputs)) {
-        const image = Array.isArray(output?.images) ? output.images[0] : null;
+        const image = isArray(output?.images) ? output.images[0] : null;
         if (image?.filename) {
           return image;
         }
@@ -12374,7 +12370,7 @@
       return null;
     }
     function delay(ms) {
-      return new Promise((resolve) => window.setTimeout(resolve, ms));
+      return new Promise((resolve) => setTimeout(resolve, ms));
     }
     function blobToDataUrl(blob) {
       return new Promise((resolve, reject) => {
@@ -12389,8 +12385,20 @@
       error.status = response.status;
       return error;
     }
+    function missingResponseError() {
+      return new Error(t("missingResponseContent"));
+    }
+    function getZipLibrary(messageKey) {
+      if (typeof window.JSZip !== "function") {
+        throw new Error(t(messageKey));
+      }
+      return window.JSZip;
+    }
+    function createZip(messageKey) {
+      return new (getZipLibrary(messageKey))();
+    }
     function extractGeneratedImageData(payload) {
-      const imageValue = Array.isArray(payload?.images) ? payload.images[0] : payload?.image;
+      const imageValue = isArray(payload?.images) ? payload.images[0] : payload?.image;
       if (typeof imageValue !== "string" || !imageValue.trim()) {
         return null;
       }
@@ -12412,7 +12420,7 @@
         const payload = await response.json();
         const assistantContent = sanitizeChatModeFakeImageToolCallOutput(extractFinalAssistantContent(payload), chat);
         if (!assistantContent.trim()) {
-          throw new Error(t("missingResponseContent"));
+          throw missingResponseError();
         }
         assistantMessage.content = mergeContinuedAssistantContent(assistantMessage.content, assistantContent.trim());
         applyTokenUsageToMessage(
@@ -12475,13 +12483,13 @@
       const hasVisibleContent = assistantMessage.content.trim() && !isStreamingThinkingPlaceholder(assistantMessage.content);
       if (!hasVisibleContent) {
         chat.messages = chat.messages.filter((message) => message.id !== assistantMessage.id);
-        chat.updatedAt = new Date().toISOString();
+        chat.updatedAt = nowIso();
         renderChatInteractionSections();
         return;
       }
       assistantMessage.status = "complete";
       assistantMessage.isThinking = false;
-      assistantMessage.timestamp = new Date().toISOString();
+      assistantMessage.timestamp = nowIso();
       chat.updatedAt = assistantMessage.timestamp;
       persistState();
       replaceMessageArticleDom(chat, assistantMessage, { scrollToBottom: streamingAutoScrollPinnedToBottom });
@@ -12552,7 +12560,7 @@
         helpers.setFinishReason?.(finishReason);
       }
       if (changed) {
-        assistantMessage.timestamp = new Date().toISOString();
+        assistantMessage.timestamp = nowIso();
         chat.updatedAt = assistantMessage.timestamp;
         if (shouldPersistStreamingProgress()) {
           persistState();
@@ -12587,7 +12595,7 @@
         : SMOOTH_STREAMING_RENDER_THROTTLE_MS;
       const elapsed = Date.now() - lastStreamingMessageRenderAt;
       if (elapsed < renderThrottleMs) {
-        streamingRenderTimeoutId = window.setTimeout(() => {
+        streamingRenderTimeoutId = setTimeout(() => {
           streamingRenderTimeoutId = 0;
           updateStreamingMessageDom(message);
         }, renderThrottleMs - elapsed);
@@ -12596,7 +12604,7 @@
       if (streamingMessageRenderFrameId) {
         return;
       }
-      streamingMessageRenderFrameId = window.requestAnimationFrame(() => {
+      streamingMessageRenderFrameId = requestAnimationFrame(() => {
         streamingMessageRenderFrameId = 0;
         lastStreamingMessageRenderAt = Date.now();
         const nextMessage = pendingStreamingMessageRender;
@@ -12682,7 +12690,7 @@
         attachments: [],
         documents: [],
         generatedDocument: null,
-        timestamp: new Date().toISOString(),
+        timestamp: nowIso(),
         status: "complete",
         isThinking: false,
         isFirstMessage: false,
@@ -12743,7 +12751,7 @@
     }
     function getEagerAssistantImageMessageIds(chat) {
       const eagerIds = new Set();
-      const messages = Array.isArray(chat?.messages) ? chat.messages : [];
+      const messages = isArray(chat?.messages) ? chat.messages : [];
       for (let index = messages.length - 1; index >= 0 && eagerIds.size < EAGER_ASSISTANT_IMAGE_LIMIT; index -= 1) {
         const message = messages[index];
         const illustration = normalizeMessageIllustration(message?.illustration);
@@ -12788,7 +12796,7 @@
       if (streamingAutoScrollFrameId) {
         return;
       }
-      streamingAutoScrollFrameId = window.requestAnimationFrame(() => {
+      streamingAutoScrollFrameId = requestAnimationFrame(() => {
         streamingAutoScrollFrameId = 0;
         if (!shouldAutoScrollDuringStreaming()) {
           return;
@@ -12811,7 +12819,7 @@
         && element.dataset.streamingMode === "plain"
         && nextContent.startsWith(previousContent);
       if (!canAppendTail) {
-        const block = document.createElement("div");
+        const block = createElement("div");
         block.className = "message-streaming-text";
         block.textContent = nextContent;
         element.replaceChildren(block);
@@ -12872,7 +12880,7 @@
           "aria-controls": contentId
         }
       });
-      const content = document.createElement("pre");
+      const content = createElement("pre");
       content.id = contentId;
       content.className = "message-rp-state-content";
       content.hidden = true;
@@ -13010,15 +13018,15 @@
       if (contentText) {
         stack.appendChild(createDiv("message-user-text", contentText));
       }
-      if (Array.isArray(message.attachments) && message.attachments.length) {
+      if (isArray(message.attachments) && message.attachments.length) {
         stack.appendChild(buildUserAttachmentGrid(message.attachments));
       }
       if (documents.length) {
         stack.appendChild(buildUserDocumentAttachmentList(documents));
       }
-      if (!contentText && Array.isArray(message.attachments) && message.attachments.length) {
+      if (!contentText && isArray(message.attachments) && message.attachments.length) {
         stack.insertBefore(createDiv("message-image-only-label", t("imageOnly")), stack.firstChild);
-      } else if (!contentText && documents.length && !(Array.isArray(message.attachments) && message.attachments.length)) {
+      } else if (!contentText && documents.length && !(isArray(message.attachments) && message.attachments.length)) {
         stack.insertBefore(createDiv("message-image-only-label", t("fileOnly")), stack.firstChild);
       }
       element.replaceChildren(stack);
@@ -13044,14 +13052,14 @@
           title: t("clickToPreview"),
           onClick: () => openImagePreview(attachment)
         });
-        const image = document.createElement("img");
+        const image = createElement("img");
         image.alt = attachment.name;
         image.loading = "lazy";
         button.appendChild(image);
         queueImageElementSource(image, attachment, { defer: deferImages });
         figure.appendChild(button);
         if (showCaptions) {
-          const caption = document.createElement("figcaption");
+          const caption = createElement("figcaption");
           caption.textContent = attachment.name;
           figure.appendChild(caption);
         }
@@ -13060,7 +13068,7 @@
       return grid;
     }
     function renderMessageEditor(element, message) {
-      const editor = document.createElement("textarea");
+      const editor = createElement("textarea");
       editor.className = "message-content-editor";
       editor.value = message.content;
       editor.setAttribute("aria-label", "메시지 수정");
@@ -13124,7 +13132,7 @@
         return;
       }
       message.content = nextContent;
-      message.timestamp = new Date().toISOString();
+      message.timestamp = nowIso();
       chat.updatedAt = message.timestamp;
       editingMessageId = "";
       persistState();
@@ -13268,7 +13276,7 @@
       if (!epub || typeof epub !== "object") {
         return null;
       }
-      const textEntries = Array.isArray(epub.textEntries)
+      const textEntries = isArray(epub.textEntries)
         ? epub.textEntries
           .map((entry) => ({
             path: normalizePosixPath(entry?.path),
@@ -13312,14 +13320,14 @@
       };
     }
     function normalizeDocumentAttachments(attachments) {
-      return Array.isArray(attachments)
+      return isArray(attachments)
         ? attachments
           .map(cloneDocumentAttachment)
           .filter((attachment) => attachment.text)
         : [];
     }
     function normalizeImageAttachments(attachments) {
-      return Array.isArray(attachments)
+      return isArray(attachments)
         ? attachments
           .map(cloneImageAttachment)
           .filter((attachment) => attachment.dataUrl || attachment.mediaId)
@@ -13397,7 +13405,7 @@
             : await file.text();
       const normalizedText = String(text || "").replace(/\r\n?/g, "\n").trim();
       if (!normalizedText) {
-        throw new Error(t("missingResponseContent"));
+        throw missingResponseError();
       }
       return {
         mimeType: getDocumentMimeType(kind),
@@ -13408,14 +13416,10 @@
       };
     }
     async function extractEpubTemplate(file) {
-      if (typeof window.JSZip !== "function") {
-        throw new Error(t("documentLibraryMissing"));
-      }
-      const arrayBuffer = await file.arrayBuffer();
-      const zip = await window.JSZip.loadAsync(arrayBuffer);
+      const zip = await getZipLibrary("documentLibraryMissing").loadAsync(await file.arrayBuffer());
       const parser = typeof DOMParser === "function" ? new DOMParser() : null;
       if (!parser) {
-        throw new Error(t("missingResponseContent"));
+        throw missingResponseError();
       }
       const containerEntry = zip.file("META-INF/container.xml");
       let packagePath = "";
@@ -13462,7 +13466,7 @@
         };
       }))).filter(Boolean);
       if (!textEntries.length) {
-        throw new Error(t("missingResponseContent"));
+        throw missingResponseError();
       }
       return {
         archiveBase64: arrayBufferToBase64(arrayBuffer),
@@ -13484,15 +13488,11 @@
       ].filter(Boolean).join("\n")).join("\n\n");
     }
     async function extractDocxText(file) {
-      if (typeof window.JSZip !== "function") {
-        throw new Error(t("documentLibraryMissing"));
-      }
-      const arrayBuffer = await file.arrayBuffer();
-      const zip = await window.JSZip.loadAsync(arrayBuffer);
+      const zip = await getZipLibrary("documentLibraryMissing").loadAsync(await file.arrayBuffer());
       const documentEntry = zip.file("word/document.xml");
       const parser = typeof DOMParser === "function" ? new DOMParser() : null;
       if (!documentEntry || !parser) {
-        throw new Error(t("missingResponseContent"));
+        throw missingResponseError();
       }
       const documentMarkup = await documentEntry.async("string");
       const documentNode = parser.parseFromString(documentMarkup, "application/xml");
@@ -13502,7 +13502,7 @@
         .map((paragraph) => paragraph.replace(/[ \t]+\n/g, "\n").replace(/[ \t]{2,}/g, " ").trim())
         .filter(Boolean);
       if (!paragraphs.length) {
-        throw new Error(t("missingResponseContent"));
+        throw missingResponseError();
       }
       return paragraphs.join("\n\n");
     }
@@ -13536,7 +13536,7 @@
       const streamTexts = await extractPdfStreamTexts(binary, bytes);
       const text = normalizeExtractedPdfText(streamTexts.join("\n\n") || extractPdfContentText(binary));
       if (!text) {
-        throw new Error(t("missingResponseContent"));
+        throw missingResponseError();
       }
       return text;
     }
@@ -13774,7 +13774,7 @@
       return extractFirstTextContent(documentNode, ["body h1", "body h2", "title", "head > title"]) || getPosixBasename(fallbackPath).replace(/\.[^.]+$/u, "");
     }
     function extractFirstTextContent(documentNode, selectors) {
-      for (const selector of Array.isArray(selectors) ? selectors : []) {
+      for (const selector of isArray(selectors) ? selectors : []) {
         try {
           const text = documentNode?.querySelector(selector)?.textContent;
           if (hasText(text)) {
@@ -13838,6 +13838,22 @@
     function sumDocumentAttachmentBytes(attachments) {
       return normalizeDocumentAttachments(attachments)
         .reduce((total, attachment) => total + (attachment.sizeBytes || 0), 0);
+    }
+    function takeSelectedFile(event) {
+      const file = event.target.files?.[0];
+      event.target.value = "";
+      return file;
+    }
+    function takeImportFile(event) {
+      const file = takeSelectedFile(event);
+      return file && requirePrimaryTab("activeTabOnlyImport") ? file : null;
+    }
+    function requirePrimaryTab(messageKey) {
+      if (isPrimaryTab) {
+        return true;
+      }
+      setChatStatus(t(messageKey), "error");
+      return false;
     }
     function validateImportFileSize(file) {
       const fileSize = normalizeOptionalInteger(file?.size, { min: 0 }) ?? 0;
@@ -13968,7 +13984,7 @@
       return buildImageDataUrlResult(canvas, mimeType);
     }
     function createImageTransformCanvas(width, height, errorKey) {
-      const canvas = document.createElement("canvas");
+      const canvas = createElement("canvas");
       canvas.width = width;
       canvas.height = height;
       const context = canvas.getContext("2d", { alpha: true });
@@ -14295,7 +14311,7 @@
           normalizedPrompt
         ].join("\n"));
       }
-      (Array.isArray(extraSystemInstructions) ? extraSystemInstructions : [extraSystemInstructions])
+      (isArray(extraSystemInstructions) ? extraSystemInstructions : [extraSystemInstructions])
         .filter(Boolean)
         .forEach((instruction) => systemInstructions.push(String(instruction)));
       if (rpContext?.mode === "talk") {
@@ -14576,7 +14592,7 @@
       if (typeof value === "string") {
         return value;
       }
-      if (Array.isArray(value)) {
+      if (isArray(value)) {
         return value.map((item) => {
           if (typeof item === "string") {
             return item;
@@ -14630,10 +14646,10 @@
           ...buildHeaders(),
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(requestBody)
+        body: toJson(requestBody)
       });
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status} ${response.statusText}`);
+        throw createHttpError(response);
       }
       return readAssistantResponseStream(response, assistantMessage, chat, options);
     }
@@ -14652,7 +14668,7 @@
     }
     function buildAutoContinueRequestMessages(baseMessages, assistantContent) {
       return [
-        ...(Array.isArray(baseMessages) ? baseMessages : []),
+        ...(isArray(baseMessages) ? baseMessages : []),
         { role: "assistant", content: String(assistantContent || "") },
         { role: "user", content: t("autoContinueInstruction") }
       ];
@@ -14776,13 +14792,13 @@
           return false;
         }
         return message.content.trim()
-          || (Array.isArray(message.attachments) && message.attachments.length)
+          || (isArray(message.attachments) && message.attachments.length)
           || normalizeDocumentAttachments(message.documents).length;
       });
       if (!firstUserMessage) {
         return t("newChatTitle", { count: state.chats.length + 1 });
       }
-      if (!firstUserMessage.content.trim() && Array.isArray(firstUserMessage.attachments) && firstUserMessage.attachments.length) {
+      if (!firstUserMessage.content.trim() && isArray(firstUserMessage.attachments) && firstUserMessage.attachments.length) {
         return firstUserMessage.attachments.length === 1
           ? t("imageTitleSingle")
           : t("imageTitleMultiple", { count: firstUserMessage.attachments.length });
@@ -14892,7 +14908,7 @@
       return [instructions.join("\n")];
     }
     function getLatestDocumentOutputRequest(messages) {
-      const normalizedMessages = Array.isArray(messages) ? messages : [];
+      const normalizedMessages = isArray(messages) ? messages : [];
       let latestUserIndex = -1;
       for (let index = normalizedMessages.length - 1; index >= 0; index -= 1) {
         if (normalizedMessages[index]?.role === "user") {
@@ -14935,7 +14951,7 @@
       };
     }
     function findLatestGeneratedDocumentBefore(messages, beforeIndex) {
-      const limit = Math.min(Math.max(0, beforeIndex), Array.isArray(messages) ? messages.length : 0);
+      const limit = Math.min(Math.max(0, beforeIndex), isArray(messages) ? messages.length : 0);
       for (let index = limit - 1; index >= 0; index -= 1) {
         const generatedDocument = normalizeGeneratedDocument(messages[index]?.generatedDocument);
         if (generatedDocument?.rawContent) {
@@ -15026,7 +15042,7 @@
       }
     }
     function resolveGeneratedDocumentSourceDocument(chat, generatedDocument) {
-      const sourceMessage = (Array.isArray(chat?.messages) ? chat.messages : [])
+      const sourceMessage = (isArray(chat?.messages) ? chat.messages : [])
         .find((message) => message?.id === generatedDocument?.sourceMessageId);
       const sourceDocuments = normalizeDocumentAttachments(sourceMessage?.documents);
       return sourceDocuments.find((documentAttachment) => documentAttachment.id === generatedDocument?.sourceDocumentId)
@@ -15046,12 +15062,9 @@
       if (generatedDocument?.format === "pdf") {
         return createGeneratedPdfBlob(text, generatedDocument);
       }
-      throw new Error(t("missingResponseContent"));
+      throw missingResponseError();
     }
     async function createGeneratedEpubBlob(text, generatedDocument, sourceDocument = null) {
-      if (typeof window.JSZip !== "function") {
-        throw new Error(t("documentLibraryMissing"));
-      }
       const generatedTemplate = normalizeEpubTemplate(generatedDocument?.epubTemplate);
       if (generatedTemplate?.archiveBase64) {
         return createGeneratedTemplateEpubBlob(text, generatedDocument, { epub: generatedTemplate });
@@ -15060,7 +15073,7 @@
       if (normalizedSourceDocument?.kind === "EPUB" && normalizedSourceDocument.epub?.archiveBase64) {
         return createGeneratedTemplateEpubBlob(text, generatedDocument, normalizedSourceDocument);
       }
-      const zip = new window.JSZip();
+      const zip = createZip("documentLibraryMissing");
       zip.file("mimetype", "application/epub+zip", { compression: "STORE" });
       zip.file("META-INF/container.xml", `<?xml version="1.0" encoding="UTF-8"?><container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>`);
       zip.file("OEBPS/content.opf", buildGeneratedEpubPackageDocument(generatedDocument));
@@ -15072,7 +15085,7 @@
       if (!template?.archiveBase64 || !template.textEntries?.length) {
         return createGeneratedEpubBlob(text, generatedDocument, null);
       }
-      const zip = await window.JSZip.loadAsync(base64ToArrayBuffer(template.archiveBase64));
+      const zip = await getZipLibrary("documentLibraryMissing").loadAsync(base64ToArrayBuffer(template.archiveBase64));
       const sectionMap = buildGeneratedEpubSectionMap(text, template.textEntries);
       for (const entry of template.textEntries) {
         const nextText = sectionMap.get(entry.path) || "";
@@ -15095,10 +15108,7 @@
       return `<?xml version="1.0" encoding="UTF-8"?><html xmlns="http://www.w3.org/1999/xhtml" lang="${escapeHtml(getUiLanguage())}"><head><title>${title}</title></head><body><h1>${title}</h1>${paragraphs || `<p>${escapeHtml(String(text || ""))}</p>`}</body></html>`;
     }
     async function createGeneratedDocxBlob(text, generatedDocument) {
-      if (typeof window.JSZip !== "function") {
-        throw new Error(t("documentLibraryMissing"));
-      }
-      const zip = new window.JSZip();
+      const zip = createZip("documentLibraryMissing");
       zip.file("[Content_Types].xml", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`);
       zip.file("_rels/.rels", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`);
       zip.file("word/document.xml", buildGeneratedDocxDocument(text, generatedDocument));
@@ -15164,7 +15174,7 @@
       const margin = 72;
       const fontSize = 11;
       const lineHeight = 14;
-      const canvas = document.createElement("canvas");
+      const canvas = createElement("canvas");
       canvas.width = pageWidth * scale;
       canvas.height = pageHeight * scale;
       const context = canvas.getContext("2d");
@@ -15327,7 +15337,7 @@
       return output;
     }
     function buildGeneratedEpubSectionMap(text, templateEntries) {
-      const entries = Array.isArray(templateEntries) ? templateEntries : [];
+      const entries = isArray(templateEntries) ? templateEntries : [];
       const explicitSections = parseGeneratedEpubSections(text);
       const fallbackSections = splitGeneratedEpubSections(stripGeneratedEpubSectionMarkers(text), entries.length);
       const sectionMap = new Map();
@@ -15380,7 +15390,7 @@
     }
     function triggerBlobDownload(blob, fileName) {
       const downloadUrl = URL.createObjectURL(blob);
-      const link = document.createElement("a");
+      const link = createElement("a");
       link.href = downloadUrl;
       link.download = sanitizeDownloadFileName(fileName, "document");
       document.body.appendChild(link);
@@ -15488,7 +15498,7 @@
       if (typeof navigator === "undefined") {
         return "en";
       }
-      const locales = Array.isArray(navigator.languages) && navigator.languages.length
+      const locales = isArray(navigator.languages) && navigator.languages.length
         ? navigator.languages
         : [navigator.language, navigator.userLanguage].filter(Boolean);
       return locales.some((locale) => /^ko(?:[-_]|$)/i.test(trimmed(locale))) ? "ko" : "en";
@@ -15825,9 +15835,9 @@
         ["text", "saveIllustrationSettingsButton", "saveSettings"],
         ["field", "illustrationPromptStyleSelect", "illustrationPromptStyle"],
         ["field", "illustrationArtStyleSelect", "illustrationArtStyle"],
-        ["field", "imageModelSelect", "imageModelSelect"]
-      ]);
-      applyElementTranslationBindings([
+        ["field", "imageModelSelect", "imageModelSelect"],
+        ["field", "illustrationRequiredPromptInput", "illustrationRequiredPrompt"],
+        ["field", "illustrationRequiredNegativePromptInput", "illustrationRequiredNegativePrompt"],
         ["text", "settingsTtsSectionTitle", "ttsSettingsTitle"],
         ["text", "saveTtsSettingsButton", "saveSettings"],
         ["text", "refreshTtsModelsButton", "refreshModels"],
@@ -15909,7 +15919,7 @@
         chatStatusToastHideFrameId = 0;
       }
       if (chatStatusToastTimerId) {
-        window.clearTimeout(chatStatusToastTimerId);
+        clearTimeout(chatStatusToastTimerId);
         chatStatusToastTimerId = 0;
       }
       element.textContent = String(message ?? "");
@@ -15917,10 +15927,10 @@
       element.classList.add("open");
       element.setAttribute("aria-hidden", "false");
       const duration = tone === "error" ? 2200 : 1500;
-      chatStatusToastHideFrameId = window.requestAnimationFrame(() => {
-        chatStatusToastHideFrameId = window.requestAnimationFrame(() => {
+      chatStatusToastHideFrameId = requestAnimationFrame(() => {
+        chatStatusToastHideFrameId = requestAnimationFrame(() => {
           chatStatusToastHideFrameId = 0;
-          chatStatusToastTimerId = window.setTimeout(() => {
+          chatStatusToastTimerId = setTimeout(() => {
             element.className = "status-toast";
             element.setAttribute("aria-hidden", "true");
             chatStatusToastTimerId = 0;
