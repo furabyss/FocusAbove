@@ -264,6 +264,12 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
     }
+    .reasoning-effort-fields {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .reasoning-effort-fields.has-custom-effort {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
     .rp-assistance-fields,
     .talk-group-members {
       display: flex;
@@ -836,8 +842,7 @@
       opacity: 0.85;
     }
     .message-meta-main,
-    .message-meta-actions,
-    .thinking-limit-row {
+    .message-meta-actions {
       display: flex;
       align-items: center;
       gap: 10px;
@@ -987,6 +992,52 @@
     }
     .message-content > :last-child {
       margin-bottom: 0;
+    }
+    .message-disclosure {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .message-reasoning {
+      margin: 0 0 12px;
+    }
+    .message-disclosure-toggle {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--primary-strong);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      box-shadow: none;
+    }
+    .message-disclosure-toggle:hover:not(:disabled) {
+      transform: none;
+      box-shadow: none;
+    }
+    .message-disclosure-content {
+      box-sizing: border-box;
+      width: 100%;
+      margin: 0;
+      border-radius: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: pre-wrap;
+    }
+    .message-reasoning-content {
+      padding: 11px 13px;
+      border: 1px solid rgba(var(--primary-rgb), 0.12);
+      background: rgba(var(--primary-rgb), 0.055);
+      font-family: inherit;
+      line-height: 1.65;
+      overflow-wrap: anywhere;
+    }
+    :root[data-resolved-theme="dark"] .message-reasoning-content {
+      border-color: rgba(var(--primary-rgb), 0.18);
+      background: rgba(var(--primary-rgb), 0.1);
     }
     .message-content p,
     .message-content ul,
@@ -1322,39 +1373,14 @@
       font-weight: 700;
     }
     .message-rp-state {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
       margin-top: 16px;
       padding-top: 12px;
       border-top: 1px solid rgba(var(--border-rgb), 0.1);
     }
-    .message-rp-state-toggle {
-      align-self: flex-start;
-      padding: 0;
-      border: 0;
-      background: transparent;
-      color: var(--primary-strong);
-      font: inherit;
-      font-size: 12px;
-      font-weight: 800;
-      text-decoration: underline;
-      text-underline-offset: 3px;
-      box-shadow: none;
-    }
-    .message-rp-state-toggle:hover:not(:disabled) {
-      transform: none;
-      box-shadow: none;
-    }
     .message-rp-state-content {
-      margin: 0;
       padding: 10px 12px;
-      border-radius: 12px;
       background: rgba(var(--border-rgb), 0.06);
-      color: var(--muted);
-      font-size: 12px;
       line-height: 1.6;
-      white-space: pre-wrap;
     }
     .composer-attachment-chip.document {
       width: 148px;
@@ -1630,7 +1656,6 @@
       font-size: 13px;
       color: var(--muted);
     }
-    .image-crop-help,
     .image-crop-meta {
       margin: 0;
       font-size: 13px;
@@ -1972,10 +1997,6 @@
     }
     .model-tuning-field,
     .range-field {
-      min-width: 0;
-    }
-    .thinking-limit-row input[type="number"] {
-      flex: 1 1 auto;
       min-width: 0;
     }
     .inline-checkbox {
@@ -2755,7 +2776,7 @@
             <section class="brand">
               <a class="brand-mark-link" href="https://github.com/furabyss/FocusAbove" target="_blank" rel="noopener noreferrer"><div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#icon-brand"></use></svg><span>FocusAbove</span></div></a>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.9.2, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.10.0, ⓒ 2026 Fur-Abyss</p>
             </section>
             <div class="settings-tab-strip" role="tablist">
               <button id="settingsGeneralTabButton" type="button" class="settings-tab-button active" role="tab" aria-selected="true" aria-controls="settingsGeneralPanel"></button>
@@ -2806,6 +2827,13 @@
                       <input id="modelAliasInput" name="modelAlias" type="text" placeholder="채찍피티" autocomplete="off">
                     </label>
                   </div>
+                  <label>
+                    <select id="chatToneSelect" name="chatTone">
+                      <option value=""></option>
+                      <option value="friendly"></option>
+                      <option value="polite"></option>
+                    </select>
+                  </label>
                   <label>
                     <select id="themeModeSelect" name="themeMode">
                       <option value="system"></option>
@@ -2915,12 +2943,29 @@
                       <input id="temperatureInput" type="number" min="0" max="2" step="0.1">
                     </label>
                     <label class="model-tuning-field">
-                      <div class="thinking-limit-row">
-                        <input id="thinkingTokenLimitInput" type="number" min="0" step="1">
-                        <label class="inline-checkbox" for="thinkingUnlimitedInput">
-                          <input id="thinkingUnlimitedInput" type="checkbox">
-                        </label>
-                      </div>
+                      <select id="reasoningControlSelect">
+                        <option value="none"></option>
+                        <option value="token-limit"></option>
+                        <option value="effort"></option>
+                      </select>
+                    </label>
+                  </div>
+                  <label id="thinkingTokenLimitField" hidden>
+                    <input id="thinkingTokenLimitInput" type="number" min="0" step="1">
+                  </label>
+                  <div id="reasoningEffortFields" class="model-tuning-grid reasoning-effort-fields" hidden>
+                    <label class="model-tuning-field">
+                      <select id="reasoningEffortSelect">
+                        <option value="low">low</option>
+                        <option value="medium">medium</option>
+                        <option value="high">high</option>
+                        <option value="xhigh">xhigh</option>
+                        <option value="max">max</option>
+                        <option value="custom"></option>
+                      </select>
+                    </label>
+                    <label id="reasoningEffortCustomField" class="model-tuning-field" hidden>
+                      <input id="reasoningEffortCustomInput" type="text" autocomplete="off">
                     </label>
                   </div>
                   <div class="hint"></div>
@@ -3161,7 +3206,6 @@
             </div>
             <div class="image-crop-controls">
               <p id="rpImageCropMeta" class="image-crop-meta"></p>
-              <p class="image-crop-help"></p>
               <label for="rpImageCropZoomInput">
                 <input id="rpImageCropZoomInput" type="range" min="1" max="4" step="0.01" value="1">
               </label>
@@ -3199,6 +3243,7 @@
   </div>
   <script>
     const APP_STORAGE_KEY = "focusabove.app-state.v1";
+    const APP_STORAGE_ENVELOPE_FORMAT = "focusabove.pending-state.v1";
     const APP_STATE_SYNC_KEY = "focusabove.app-state-sync.v1";
     const APP_DB_NAME = "focusabove.storage.v1";
     const APP_DB_VERSION = 1;
@@ -3220,6 +3265,7 @@
     const query = document.querySelector.bind(document);
     const createElement = document.createElement.bind(document);
     const isArray = Array.isArray;
+    const values = Object.values;
     const toJson = JSON.stringify;
     const nowIso = () => new Date().toISOString();
     function iconSvg(iconName, viewBox = "0 0 24 24") {
@@ -3493,8 +3539,10 @@
     RP_CARD_KINDS.forEach(populateRpCardEditorMarkup);
     RP_CARD_KINDS.forEach(populateRpCardControlMarkup);
     const TAB_LOCK_KEY = "focusabove.active-tab.v1";
+    const TAB_LOCK_PROBE_KEY = "focusabove.active-tab-probe.v1";
     const TAB_LOCK_TTL_MS = 15000;
     const TAB_LOCK_HEARTBEAT_MS = 4000;
+    const TAB_LOCK_PROBE_TIMEOUT_MS = 1200;
     const PERSIST_STATE_DEBOUNCE_MS = 80;
     const STREAMING_PERSIST_STATE_DEBOUNCE_MS = 450;
     const STREAMING_PERSIST_MIN_INTERVAL_MS = 1200;
@@ -3554,7 +3602,6 @@
         authorsNote: "작가 노트",
         authorsNoteActive: "작가 노트 적용 중",
         authorsNoteField: "노트",
-        authorsNotePlaceholder: "캐릭터의 다음 응답에서 특히 강조할 디테일, 연출, 감정선, 금지사항을 적어 주세요.",
         clear: "비우기",
         settingsCategory: "설정 범주",
         settingsGeneral: "일반",
@@ -3576,6 +3623,10 @@
         ttsApiKey: "TTS API 키",
         userAlias: "사용자 별명",
         modelAlias: "모델 별명",
+        chatTone: "모델 말투 (채팅 모드 전용)",
+        chatToneNone: "설정하지 않음",
+        chatToneFriendly: "친근함",
+        chatTonePolite: "정중함",
         themeMode: "다크 모드",
         themeSystem: "시스템 설정값",
         themeDark: "사용",
@@ -3603,7 +3654,7 @@
         rpResponseLength2000To3000: "2000~3000단어",
         rpSummaryEnabled: "대화 요약 사용 [보조 모델]",
         rpSummaryTokenThreshold: "요약 시작 컨텍스트 토큰",
-        rpSummaryTokenThresholdPlaceholder: "예: 12000",
+        rpSummaryThresholdPlaceholder: "예: 12000",
         rpSummaryMaxTokens: "요약 최대 토큰",
         rpSummaryMaxTokensPlaceholder: "예: 1000",
         rpInputEnhancementEnabled: "인풋 보강 사용 [보조 모델]",
@@ -3626,7 +3677,7 @@
         backupExported: ({ size }) => `전체 백업을 내보냈습니다. (${size})`,
         backupRestored: "전체 백업을 복원했습니다.",
         backupFailed: ({ error }) => `백업/복원 실패: ${error}`,
-        confirmRestoreFullBackup: "현재 저장된 모든 채팅, RP 카드, 이미지와 설정을 백업 파일 내용으로 교체합니다. 계속할까요?",
+        confirmRestoreFullBackup: "현재 저장된 데이터와 설정을 백업 파일 내용으로 교체합니다. 계속할까요?",
         invalidBackupFile: "지원하지 않는 백업 파일입니다.",
         missingBackupManifest: "백업 manifest.json을 찾을 수 없습니다.",
         saveSettings: "설정 저장",
@@ -3637,11 +3688,17 @@
         auxiliaryModelSelect: "보조 모델",
         noAuxiliaryModel: "선택하지 않음",
         temperature: "온도",
-        thinkingTokenLimit: "Thinking 토큰 제한",
+        reasoningControl: "추론 제어",
+        reasoningControlNone: "사용하지 않음",
+        reasoningControlTokenLimit: "추론 토큰 제한",
+        reasoningControlEffort: "reasoning_effort",
+        thinkingTokenLimit: "추론 토큰 제한",
         thinkingDefaultPlaceholder: "기본값 사용",
         serverDefaultPlaceholder: "서버 기본값 사용",
-        unlimited: "무제한",
-        thinkingHint: "서버 지원 시 적용됩니다. 0은 추론 금지입니다.",
+        reasoningEffort: "reasoning_effort",
+        reasoningEffortCustom: "사용자 지정 값",
+        reasoningEffortCustomOption: "사용자 지정",
+        reasoningHint: "추론 제어는 서버가 지원하는 경우에만 적용됩니다.",
         systemPrompt: "시스템 프롬프트",
         systemPromptPlaceholder: "모든 채팅에 적용할 시스템 프롬프트를 입력하세요.",
         forbiddenWords: "금지어",
@@ -3655,12 +3712,12 @@
         savedPromptPresets: "저장된 프리셋",
         loadPreset: "불러오기",
         noPromptPresets: "저장된 프롬프트 프리셋이 없습니다.",
-        promptPresetNameRequired: "프리셋 이름을 입력해 주세요.",
+        presetNameRequired: "프리셋 이름을 입력해 주세요.",
+        presetSaved: ({ name }) => `'${name}' 프리셋을 저장했습니다.`,
+        presetDeleted: ({ name }) => `'${name}' 프리셋을 삭제했습니다.`,
+        confirmDeletePreset: ({ name }) => `'${name}' 프리셋을 삭제할까요?`,
         promptPresetNotFound: "프롬프트 프리셋을 찾지 못했습니다.",
-        promptPresetSaved: ({ name }) => `'${name}' 프리셋을 저장했습니다.`,
         promptPresetLoaded: ({ name }) => `'${name}' 프리셋을 불러왔습니다.`,
-        promptPresetDeleted: ({ name }) => `'${name}' 프리셋을 삭제했습니다.`,
-        confirmDeletePromptPreset: ({ name }) => `'${name}' 프리셋을 삭제할까요?`,
         refreshModels: "모델 새로고침",
         ttsSettingsTitle: "텍스트 음성 변환",
         ttsModel: "TTS 모델",
@@ -3671,7 +3728,7 @@
         ttsTemperature: "TTS 온도",
         ttsChunkLength: "청크당 최대 글자 수",
         ttsAudioProfile: "오디오 프로필",
-        ttsAudioProfilePlaceholder: "화자의 성별, 나이대, 성격, 직업적 페르소나, 말투와 속도 등을 작성하세요.",
+        ttsAudioProfilePlaceholder: "화자의 성별, 나이대, 성격, 말투와 속도 등을 작성하세요.",
         ttsProfilePreset: "오디오 프로필 프리셋",
         ttsCustomProfile: "직접 작성",
         ttsPresetIntellectualMale: "지적인 남성",
@@ -3679,14 +3736,10 @@
         ttsPresetIntellectualFemale: "지적인 여성",
         ttsPresetKindFemale: "다정한 여성",
         ttsProfilePresetName: "새 프리셋 이름",
-        ttsProfilePresetNamePlaceholder: "커스텀 프리셋 이름",
+        ttsProfileNamePlaceholder: "커스텀 프리셋 이름",
         saveTtsProfilePreset: "프리셋 추가",
         deleteTtsProfilePreset: "프리셋 제거",
-        ttsProfilePresetNameRequired: "프리셋 이름을 입력해 주세요.",
         ttsProfileRequired: "저장할 오디오 프로필을 작성해 주세요.",
-        ttsProfilePresetSaved: ({ name }) => `'${name}' 오디오 프로필 프리셋을 저장했습니다.`,
-        ttsProfilePresetDeleted: ({ name }) => `'${name}' 오디오 프로필 프리셋을 삭제했습니다.`,
-        confirmDeleteTtsProfilePreset: ({ name }) => `'${name}' 오디오 프로필 프리셋을 삭제할까요?`,
         ttsModelsLoading: "TTS 모델 목록을 불러오는 중입니다.",
         ttsModelsLoaded: ({ count }) => `TTS 모델 ${count}개를 불러왔습니다.`,
         ttsModelsFailed: ({ error }) => `TTS 모델 조회 실패: ${error}`,
@@ -3696,27 +3749,27 @@
         stopSpeech: "음성 정지",
         ttsPreparing: "음성을 생성하는 중입니다.",
         ttsPlaybackFailed: ({ error }) => `TTS 재생 실패: ${error}`,
-        illustrationGeneration: "이미지 생성",
-        illustrationEnabled: "RP 모드에서 자동으로 삽화 생성 [보조 모델, 이미지 API]",
+        illuGeneration: "이미지 생성",
+        illuEnabled: "RP 모드에서 자동으로 삽화 생성 [보조 모델, 이미지 API]",
         chatT2iEnabled: "채팅 모드에서 T2I 이미지 생성 사용 [보조 모델, 이미지 API]",
         talkT2iEnabled: "톡 모드에서 이미지 생성 사용 [보조 모델, 이미지 API]",
-        illustrationIgnoreNonCharacterPeople: "페르소나 및 기타 인물 무시",
-        illustrationPromptStyle: "프롬프트 형식",
-        illustrationPromptStyleTags: "일반 프롬프트",
-        illustrationPromptStyleNatural: "자연어 프롬프트",
-        illustrationArtStyle: "화풍 유형",
-        illustrationArtStyleNone: "선택하지 않음",
-        illustrationArtStyleAnime: "아니메",
-        illustrationArtStylePhoto: "사진",
+        illuIgnoreNonCharPeople: "페르소나 및 기타 인물 무시",
+        illuPromptStyle: "프롬프트 형식",
+        illuPromptStyleTags: "일반 프롬프트",
+        illuPromptStyleNatural: "자연어 프롬프트",
+        illuArtStyle: "화풍 유형",
+        illuArtStyleNone: "선택하지 않음",
+        illuArtStyleAnime: "아니메",
+        illuArtStylePhoto: "사진",
         imageModelSelect: "이미지 모델",
-        illustrationRequiredPrompt: "항상 포함할 프롬프트",
-        illustrationRequiredNegativePrompt: "항상 포함할 네거티브 프롬프트",
+        illuRequiredPrompt: "항상 포함할 프롬프트",
+        illuRequiredNegPrompt: "항상 포함할 네거티브 프롬프트",
         autoImageModel: "자동 선택",
         imageModelsLoading: "이미지 API에서 모델 목록을 불러오는 중입니다.",
         imageModelsLoaded: ({ count }) => `이미지 모델 ${count}개를 불러왔습니다.`,
         imageModelsFailed: ({ error }) => `이미지 모델 조회 실패: ${error}`,
-        illustrationAuxiliaryModelRequired: "보조 모델을 선택해야 삽화 생성을 사용할 수 있습니다.",
-        illustrationImageApiRequired: "이미지 API 주소를 입력해야 삽화 생성을 사용할 수 있습니다.",
+        illuAuxModelRequired: "보조 모델을 선택해야 삽화 생성을 사용할 수 있습니다.",
+        illuImageApiRequired: "이미지 API 주소를 입력해야 삽화 생성을 사용할 수 있습니다.",
         cfgScale: "CFG 스케일",
         steps: "스텝",
         imageWidth: "가로",
@@ -3725,11 +3778,11 @@
         generatedIllustration: "생성된 삽화",
         attachedImage: "첨부 이미지",
         regenerateIllustration: "삽화 재생성",
-        illustrationRegenerated: "삽화를 다시 생성했습니다.",
+        illuRegenerated: "삽화를 다시 생성했습니다.",
         imageGenerating: "이미지 생성 중",
         imageSending: "이미지 전송 중",
-        illustrationGenerating: "삽화 생성 중",
-        illustrationError: ({ error }) => `삽화 생성 실패: ${error}`,
+        illuGenerating: "삽화 생성 중",
+        illuError: ({ error }) => `삽화 생성 실패: ${error}`,
         rpPostProcessing: "후처리 중",
         rpSceneStateToggleShow: "펼치기",
         rpSceneStateToggleHide: "접기",
@@ -3760,16 +3813,16 @@
         personaName: "페르소나 이름",
         characterDescription: "캐릭터 설정",
         worldCardDescription: "월드 설정",
-        worldCardMainCharacterDescription: "주요 캐릭터 설정",
+        worldCardMainCharDesc: "주요 캐릭터 설정",
         personaDescription: "페르소나 설정",
         characterNamePlaceholder: "캐릭터 이름",
         personaNamePlaceholder: "페르소나 이름",
-        characterDescriptionPlaceholder: "캐릭터의 성격, 배경, 말투, 금지사항, 상황 설정 등을 적어 주세요.",
-        worldCardDescriptionPlaceholder: "세계관의 규칙, 분위기, 세력, 지역, 기술 수준, 금기, 핵심 갈등 등을 적어 주세요.",
-        worldCardMainCharacterDescriptionPlaceholder: "이 세계관 RP에서 우선적으로 등장시킬 주요 캐릭터들의 프로필, 관계, 역할, 말투, 외형 포인트를 적어 주세요.",
+        charDescPlaceholder: "캐릭터의 프로필을 기입하세요.",
+        worldCardDescPlaceholder: "세계관의 규칙, 분위기, 세력, 지역, 기술 수준, 금기, 핵심 갈등 등을 적어 주세요.",
+        worldCardMainCharDescPlaceholder: "이 세계관 RP에서 우선적으로 등장시킬 주요 캐릭터들의 프로필을 적어 주세요.",
         characterFirstMessage: "첫 메시지",
-        characterFirstMessagePlaceholder: "새 RP 채팅에서 먼저 표시할 캐릭터의 첫 메시지를 적어 주세요.",
-        personaDescriptionPlaceholder: "사용자 캐릭터의 정체성, 말투, 배경, 관계 설정 등을 적어 주세요.",
+        charFirstMsgPlaceholder: "새 RP 채팅에서 먼저 표시할 캐릭터의 첫 메시지를 적어 주세요.",
+        personaDescPlaceholder: "사용자 캐릭터의 프로필을 기입하세요.",
         save: "저장",
         export: "내보내기",
         delete: "삭제",
@@ -3782,12 +3835,11 @@
         cropTitle: "정사각형 이미지 자르기",
         cropViewport: "정사각형 자르기 영역",
         cropPreviewAlt: "자르기 미리보기",
-        cropHelp: "드래그로 위치를 맞추고 슬라이더나 핀치로 구도를 조정하세요.",
         zoom: "확대",
         cancel: "취소",
         apply: "적용",
         tabLockTitle: "다른 탭에서 이미 사용 중입니다",
-        tabLockMessage: "FocusAbove는 localStorage 충돌을 막기 위해 한 번에 하나의 탭에서만 사용할 수 있습니다. 가장 먼저 연 탭만 활성 상태로 유지됩니다.",
+        tabLockMessage: "FocusAbove는 localStorage 충돌을 막기 위해 한 번에 하나의 탭에서만 사용할 수 있습니다.",
         tabTitleInput: "탭 이름 입력",
         tabNameDone: "탭 이름 확정",
         tabNameEdit: "탭 이름 변경",
@@ -3814,9 +3866,8 @@
         documentsAttached: ({ count }) => `${count}개 파일을 첨부했습니다.`,
         documentAttachFailed: ({ error }) => `파일 첨부 실패: ${error}`,
         documentFilesOnly: "txt, epub, docx, pdf 파일만 업로드할 수 있습니다.",
-        documentLibraryMissing: "EPUB/DOCX/PDF 처리를 위한 압축 라이브러리를 불러오지 못했습니다.",
+        documentLibraryMissing: "파일 처리를 위한 압축 라이브러리를 불러오지 못했습니다.",
         documentTooLarge: ({ bytes }) => `파일 크기 제한을 초과했습니다. 총 ${bytes}까지 업로드할 수 있습니다.`,
-        attachedFileLabel: ({ name }) => `첨부 파일: ${name}`,
         attachedDocumentBlockTitle: ({ name, kind }) => `[첨부 파일: ${name} | 형식: ${kind}]`,
         attachedDocumentBlockBody: "아래는 이 파일에서 추출한 전체 텍스트입니다. 사용자의 요청이 이 파일과 관련되어 있다면 이 내용을 근거로 처리하세요.",
         documentOutputReady: "다운로드 가능한 파일을 만들었습니다.",
@@ -3832,6 +3883,8 @@
         previewWithName: ({ name }) => `${name} 크게 보기`,
         streamingThinking: "생각 중",
         streamingResponse: "응답 생성 중",
+        reasoningToggleShow: "추론 펼치기",
+        reasoningToggleHide: "추론 접기",
         requestFailed: "요청 실패",
         firstMessageStatus: "첫 메시지",
         responseComplete: "응답 완료",
@@ -3860,7 +3913,7 @@
         generalSettingsRestored: "일반 설정을 기본값으로 복원했습니다.",
         authorsNoteCleared: "작가 노트를 비웠습니다.",
         imageCropCanceled: "이미지 자르기를 취소했습니다.",
-        rpImageApplied: ({ kind }) => `${kind} 이미지를 정사각형으로 반영했습니다. 저장해 확정하세요.`,
+        rpImageApplied: ({ kind }) => `${kind} 이미지를 정사각형으로 반영했습니다.`,
         imageCropFailed: ({ error }) => `이미지 자르기 실패: ${error}`,
         rpCardCreated: ({ kind }) => `${kind} 카드를 만들었습니다.`,
         rpCardNotFound: ({ kind }) => `${kind} 카드를 찾지 못했습니다.`,
@@ -3876,7 +3929,7 @@
         importFailed: ({ error }) => `가져오기 실패: ${error}`,
         selectChatTabFirst: "먼저 채팅 탭을 선택해 주세요.",
         saveMessageEditsFirst: "메시지 수정을 먼저 저장해 주세요.",
-        apiBaseUrlRequired: "API 주소가 비어 있습니다. 왼쪽 설정에서 입력해 주세요.",
+        apiBaseUrlRequired: "API 주소가 비어 있습니다.",
         selectModelRequired: "사용할 모델을 선택해 주세요. 필요하면 모델 새로고침을 먼저 실행해 주세요.",
         noResponseToReroll: "다시 생성할 응답이 없습니다.",
         streamingResponseActive: "응답을 스트리밍하는 중입니다.",
@@ -3906,10 +3959,10 @@
         noChatsToImport: "가져올 채팅 탭이 없습니다.",
         invalidJsonFormat: "JSON 형식이 올바르지 않습니다.",
         importFileSizeLimitExceeded: ({ bytes }) => `가져올 수 있는 파일 용량은 ${bytes}까지입니다.`,
-        importedImageSizeLimitExceeded: ({ bytes }) => `가져온 이미지 용량은 ${bytes}까지입니다.`,
-        unsupportedImportedImageFormat: "PNG, JPEG, WebP 형식 이미지만 지원합니다.",
+        importImageSizeExceeded: ({ bytes }) => `가져온 이미지 용량은 ${bytes}까지입니다.`,
+        unsupportedImportImageFormat: "PNG, JPEG, WebP 형식 이미지만 지원합니다.",
         missingResponseContent: "응답 본문에 content가 없습니다.",
-        missingStreamingResponseContent: "스트리밍 응답에 표시할 content가 없습니다.",
+        missingStreamResponseContent: "스트리밍 응답에 표시할 content가 없습니다.",
         imageSizeLimitExceeded: ({ bytes }) => `한 번에 첨부할 수 있는 전체 이미지 용량은 ${bytes}까지입니다.`,
         imageFilesOnly: "이미지 파일만 업로드할 수 있습니다.",
         resizeCanvasUnavailable: "이미지 리사이징을 위한 캔버스를 만들지 못했습니다.",
@@ -3945,7 +3998,6 @@
         authorsNote: "Author's Note",
         authorsNoteActive: "Author's Note active",
         authorsNoteField: "Note",
-        authorsNotePlaceholder: "Write details, staging, emotions, or constraints to emphasize in the character's next reply.",
         clear: "Clear",
         settingsCategory: "Settings categories",
         settingsGeneral: "General",
@@ -3967,6 +4019,10 @@
         ttsApiKey: "TTS API key",
         userAlias: "User alias",
         modelAlias: "Model alias",
+        chatTone: "Model attitude (Chat mode only)",
+        chatToneNone: "Not set",
+        chatToneFriendly: "Friendly",
+        chatTonePolite: "Polite",
         themeMode: "Dark mode",
         themeSystem: "Use system default",
         themeDark: "On",
@@ -3994,7 +4050,7 @@
         rpResponseLength2000To3000: "2000 to 3000 words",
         rpSummaryEnabled: "Summary [Aux. model]",
         rpSummaryTokenThreshold: "Summary trigger tokens",
-        rpSummaryTokenThresholdPlaceholder: "e.g. 12000",
+        rpSummaryThresholdPlaceholder: "e.g. 12000",
         rpSummaryMaxTokens: "Summary max",
         rpSummaryMaxTokensPlaceholder: "e.g. 1000",
         rpInputEnhancementEnabled: "Input enhancement [Aux. model]",
@@ -4017,7 +4073,7 @@
         backupExported: ({ size }) => `Exported full backup. (${size})`,
         backupRestored: "Restored full backup.",
         backupFailed: ({ error }) => `Backup/restore failed: ${error}`,
-        confirmRestoreFullBackup: "This will replace all current chats, RP cards, images, and settings with the backup contents. Continue?",
+        confirmRestoreFullBackup: "This will replace all current data and settings with the backup contents. Continue?",
         invalidBackupFile: "This backup file is not supported.",
         missingBackupManifest: "Backup manifest.json was not found.",
         saveSettings: "Save settings",
@@ -4028,11 +4084,17 @@
         auxiliaryModelSelect: "Aux. model",
         noAuxiliaryModel: "None",
         temperature: "Temperature",
-        thinkingTokenLimit: "Thinking token limit",
+        reasoningControl: "Reasoning control",
+        reasoningControlNone: "Do not use",
+        reasoningControlTokenLimit: "Reasoning token limit",
+        reasoningControlEffort: "reasoning_effort",
+        thinkingTokenLimit: "Reasoning token limit",
         thinkingDefaultPlaceholder: "Use default",
         serverDefaultPlaceholder: "Use server default",
-        unlimited: "Unlimited",
-        thinkingHint: "Requires server support. 0 disables reasoning.",
+        reasoningEffort: "reasoning_effort",
+        reasoningEffortCustom: "Custom value",
+        reasoningEffortCustomOption: "Custom",
+        reasoningHint: "Reasoning control is only available if the API server supports it.",
         systemPrompt: "System prompt",
         systemPromptPlaceholder: "Global system prompt for all chats.",
         forbiddenWords: "Forbidden words",
@@ -4046,12 +4108,12 @@
         savedPromptPresets: "Saved presets",
         loadPreset: "Load",
         noPromptPresets: "No prompt presets.",
-        promptPresetNameRequired: "Enter a preset name.",
+        presetNameRequired: "Enter a preset name.",
+        presetSaved: ({ name }) => `Saved the preset '${name}'.`,
+        presetDeleted: ({ name }) => `Deleted the preset '${name}'.`,
+        confirmDeletePreset: ({ name }) => `Delete the preset '${name}'?`,
         promptPresetNotFound: "Prompt preset not found.",
-        promptPresetSaved: ({ name }) => `Saved the preset '${name}'.`,
         promptPresetLoaded: ({ name }) => `Loaded the preset '${name}'.`,
-        promptPresetDeleted: ({ name }) => `Deleted the preset '${name}'.`,
-        confirmDeletePromptPreset: ({ name }) => `Delete the preset '${name}'?`,
         refreshModels: "Refresh models",
         ttsSettingsTitle: "Text to speech",
         ttsModel: "TTS model",
@@ -4062,7 +4124,7 @@
         ttsTemperature: "TTS temperature",
         ttsChunkLength: "Maximum characters per chunk",
         ttsAudioProfile: "Audio profile",
-        ttsAudioProfilePlaceholder: "Describe the speaker's gender, age range, personality, professional persona, delivery, and pace.",
+        ttsAudioProfilePlaceholder: "Describe the speaker's gender, age range, personality, delivery, and pace.",
         ttsProfilePreset: "Audio profile preset",
         ttsCustomProfile: "Custom",
         ttsPresetIntellectualMale: "Intellectual man",
@@ -4070,14 +4132,10 @@
         ttsPresetIntellectualFemale: "Intellectual woman",
         ttsPresetKindFemale: "Kind woman",
         ttsProfilePresetName: "New preset name",
-        ttsProfilePresetNamePlaceholder: "Custom preset name",
+        ttsProfileNamePlaceholder: "Custom preset name",
         saveTtsProfilePreset: "Add preset",
         deleteTtsProfilePreset: "Remove preset",
-        ttsProfilePresetNameRequired: "Enter a preset name.",
         ttsProfileRequired: "Write an audio profile to save.",
-        ttsProfilePresetSaved: ({ name }) => `Saved the audio profile preset '${name}'.`,
-        ttsProfilePresetDeleted: ({ name }) => `Deleted the audio profile preset '${name}'.`,
-        confirmDeleteTtsProfilePreset: ({ name }) => `Delete the audio profile preset '${name}'?`,
         ttsModelsLoading: "Loading TTS models.",
         ttsModelsLoaded: ({ count }) => `Loaded ${count} TTS model${count === 1 ? "" : "s"}.`,
         ttsModelsFailed: ({ error }) => `Failed to load TTS models: ${error}`,
@@ -4087,27 +4145,27 @@
         stopSpeech: "Stop speech",
         ttsPreparing: "Generating speech.",
         ttsPlaybackFailed: ({ error }) => `TTS playback failed: ${error}`,
-        illustrationGeneration: "Image generation",
-        illustrationEnabled: "Auto illustrations in RP [Aux. model, Image API]",
+        illuGeneration: "Image generation",
+        illuEnabled: "Auto illustrations in RP [Aux. model, Image API]",
         chatT2iEnabled: "T2I images in Chat Mode [Aux. model, Image API]",
         talkT2iEnabled: "T2I images in Messenger Mode [Aux. model, Image API]",
-        illustrationIgnoreNonCharacterPeople: "Ignore persona and other people",
-        illustrationPromptStyle: "Prompt style",
-        illustrationPromptStyleTags: "Standard prompt",
-        illustrationPromptStyleNatural: "Natural language prompt",
-        illustrationArtStyle: "Art style",
-        illustrationArtStyleNone: "None",
-        illustrationArtStyleAnime: "Anime",
-        illustrationArtStylePhoto: "Photo",
+        illuIgnoreNonCharPeople: "Ignore persona and other people",
+        illuPromptStyle: "Prompt style",
+        illuPromptStyleTags: "Standard prompt",
+        illuPromptStyleNatural: "Natural language prompt",
+        illuArtStyle: "Art style",
+        illuArtStyleNone: "None",
+        illuArtStyleAnime: "Anime",
+        illuArtStylePhoto: "Photo",
         imageModelSelect: "Image model",
-        illustrationRequiredPrompt: "Always include prompt",
-        illustrationRequiredNegativePrompt: "Always include negative prompt",
+        illuRequiredPrompt: "Always include prompt",
+        illuRequiredNegPrompt: "Always include negative prompt",
         autoImageModel: "Auto select",
         imageModelsLoading: "Loading image models.",
         imageModelsLoaded: ({ count }) => `Loaded ${count} image model${count === 1 ? "" : "s"}.`,
         imageModelsFailed: ({ error }) => `Failed to load image models: ${error}`,
-        illustrationAuxiliaryModelRequired: "Select an auxiliary model for illustrations.",
-        illustrationImageApiRequired: "Enter an image API base URL for illustrations.",
+        illuAuxModelRequired: "Select an auxiliary model for illustrations.",
+        illuImageApiRequired: "Enter an image API base URL for illustrations.",
         cfgScale: "CFG scale",
         steps: "Steps",
         imageWidth: "Width",
@@ -4116,11 +4174,11 @@
         generatedIllustration: "Generated illustration",
         attachedImage: "Attached image",
         regenerateIllustration: "Regenerate illustration",
-        illustrationRegenerated: "Regenerated the illustration.",
+        illuRegenerated: "Regenerated the illustration.",
         imageGenerating: "Generating image",
         imageSending: "Sending image",
-        illustrationGenerating: "Generating illustration",
-        illustrationError: ({ error }) => `Illustration failed: ${error}`,
+        illuGenerating: "Generating illustration",
+        illuError: ({ error }) => `Illustration failed: ${error}`,
         rpPostProcessing: "Post-processing",
         rpSceneStateToggleShow: "Expand",
         rpSceneStateToggleHide: "Collapse",
@@ -4151,16 +4209,16 @@
         personaName: "Persona name",
         characterDescription: "Character profile",
         worldCardDescription: "World profile",
-        worldCardMainCharacterDescription: "Main character profiles",
+        worldCardMainCharDesc: "Main character profiles",
         personaDescription: "Persona profile",
         characterNamePlaceholder: "Character name",
         personaNamePlaceholder: "Persona name",
-        characterDescriptionPlaceholder: "Describe the character's personality, background, voice, constraints, and scenario.",
-        worldCardDescriptionPlaceholder: "Describe the world's rules, tone, factions, locations, tech level, taboos, and core conflicts.",
-        worldCardMainCharacterDescriptionPlaceholder: "Describe key recurring characters in this world RP: profiles, relationships, roles, voice, and visual traits.",
+        charDescPlaceholder: "Describe the character's profile.",
+        worldCardDescPlaceholder: "Describe the world's rules, tone, factions, locations, tech level, taboos, and core conflicts.",
+        worldCardMainCharDescPlaceholder: "Describe key recurring characters in this world RP.",
         characterFirstMessage: "First Message",
-        characterFirstMessagePlaceholder: "Opening message shown at the start of a new RP chat.",
-        personaDescriptionPlaceholder: "Describe the user's RP identity, voice, background, and relationships.",
+        charFirstMsgPlaceholder: "Opening message shown at the start of a new RP chat.",
+        personaDescPlaceholder: "Describe the user's RP profile.",
         save: "Save",
         export: "Export",
         delete: "Delete",
@@ -4173,12 +4231,11 @@
         cropTitle: "Square image crop",
         cropViewport: "Square crop area",
         cropPreviewAlt: "Crop preview",
-        cropHelp: "Drag to position, then use the slider or pinch to frame the square.",
         zoom: "Zoom",
         cancel: "Cancel",
         apply: "Apply",
         tabLockTitle: "Already in use in another tab",
-        tabLockMessage: "Only one FocusAbove tab can stay active to avoid localStorage conflicts. The first tab opened stays active.",
+        tabLockMessage: "Only one FocusAbove tab can stay active to avoid localStorage conflicts.",
         tabTitleInput: "Tab title input",
         tabNameDone: "Confirm tab title",
         tabNameEdit: "Rename tab",
@@ -4205,9 +4262,8 @@
         documentsAttached: ({ count }) => `Attached ${count} file${count === 1 ? "" : "s"}.`,
         documentAttachFailed: ({ error }) => `Failed to attach files: ${error}`,
         documentFilesOnly: "Only txt, epub, docx, and pdf files can be uploaded.",
-        documentLibraryMissing: "Failed to load the zip library required for EPUB/DOCX/PDF processing.",
+        documentLibraryMissing: "Failed to load the zip library required for file processing.",
         documentTooLarge: ({ bytes }) => `File size limit exceeded. You can upload up to ${bytes} total.`,
-        attachedFileLabel: ({ name }) => `Attached file: ${name}`,
         attachedDocumentBlockTitle: ({ name, kind }) => `[Attached file: ${name} | Format: ${kind}]`,
         attachedDocumentBlockBody: "Below is the full text extracted from this file. If the user's request concerns this file, use this content as the basis for your answer.",
         documentOutputReady: "Prepared a downloadable file.",
@@ -4223,6 +4279,8 @@
         previewWithName: ({ name }) => `Preview ${name}`,
         streamingThinking: "Thinking",
         streamingResponse: "Generating response",
+        reasoningToggleShow: "Expand reasoning",
+        reasoningToggleHide: "Collapse reasoning",
         requestFailed: "Request failed",
         firstMessageStatus: "First Message",
         responseComplete: "Response complete",
@@ -4251,7 +4309,7 @@
         generalSettingsRestored: "Restored default general settings.",
         authorsNoteCleared: "Cleared the Author's Note.",
         imageCropCanceled: "Canceled image cropping.",
-        rpImageApplied: ({ kind }) => `Applied the ${kind} image as a square. Save to confirm.`,
+        rpImageApplied: ({ kind }) => `Applied the ${kind} image as a square.`,
         imageCropFailed: ({ error }) => `Image crop failed: ${error}`,
         rpCardCreated: ({ kind }) => `Created the ${kind} card.`,
         rpCardNotFound: ({ kind }) => `Could not find the ${kind} card.`,
@@ -4267,7 +4325,7 @@
         importFailed: ({ error }) => `Import failed: ${error}`,
         selectChatTabFirst: "Select a chat tab first.",
         saveMessageEditsFirst: "Save your message edits first.",
-        apiBaseUrlRequired: "API base URL is empty. Enter it in Settings.",
+        apiBaseUrlRequired: "API base URL is empty.",
         selectModelRequired: "Select a model. Refresh first if needed.",
         noResponseToReroll: "There is no response to reroll.",
         streamingResponseActive: "Streaming response.",
@@ -4297,10 +4355,10 @@
         noChatsToImport: "There are no chat tabs to import.",
         invalidJsonFormat: "The JSON format is invalid.",
         importFileSizeLimitExceeded: ({ bytes }) => `You can import files up to ${bytes}.`,
-        importedImageSizeLimitExceeded: ({ bytes }) => `Imported images can be up to ${bytes}.`,
-        unsupportedImportedImageFormat: "Imported images must be PNG, JPEG, or WebP.",
+        importImageSizeExceeded: ({ bytes }) => `Imported images can be up to ${bytes}.`,
+        unsupportedImportImageFormat: "Imported images must be PNG, JPEG, or WebP.",
         missingResponseContent: "Response body has no content.",
-        missingStreamingResponseContent: "Streaming response has no displayable content.",
+        missingStreamResponseContent: "Streaming response has no displayable content.",
         imageSizeLimitExceeded: ({ bytes }) => `You can attach up to ${bytes} of images at once.`,
         imageFilesOnly: "Only image files can be uploaded.",
         resizeCanvasUnavailable: "Could not create a canvas for image resizing.",
@@ -4343,6 +4401,7 @@
         ttsProfilePresets: [],
         userAlias: getDefaultUserAlias(normalizedLanguage),
         modelAlias: getDefaultModelAlias(normalizedLanguage),
+        chatTone: "",
         language: normalizedLanguage,
         themeMode: "system",
         smoothStreaming: true,
@@ -4356,6 +4415,9 @@
         forbiddenWords: [],
         promptPresets: [],
         temperature: null,
+        reasoningControl: "token-limit",
+        reasoningEffort: "medium",
+        reasoningEffortCustom: "",
         thinkingTokenLimit: 2000,
         thinkingUnlimited: false
       };
@@ -4498,7 +4560,6 @@
       backupIncludeSecretsLabel: query('label.inline-checkbox[for="backupIncludeSecretsInput"]'),
       rpSummaryEnabledLabel: query('label.inline-checkbox[for="rpSummaryEnabledInput"]'),
       rpInputEnhancementEnabledLabel: query('label.inline-checkbox[for="rpInputEnhancementEnabledInput"]'),
-      thinkingUnlimitedLabel: query('label.inline-checkbox[for="thinkingUnlimitedInput"]'),
       illustrationEnabledLabel: query('label.inline-checkbox[for="illustrationEnabledInput"]'),
       chatT2iEnabledLabel: query('label.inline-checkbox[for="chatT2iEnabledInput"]'),
       talkT2iEnabledLabel: query('label.inline-checkbox[for="talkT2iEnabledInput"]'),
@@ -4521,6 +4582,7 @@
       ttsApiKeyInput: byId("ttsApiKeyInput"),
       userAliasInput: byId("userAliasInput"),
       modelAliasInput: byId("modelAliasInput"),
+      chatToneSelect: byId("chatToneSelect"),
       themeModeSelect: byId("themeModeSelect"),
       languageSelect: byId("languageSelect"),
       smoothStreamingInput: byId("smoothStreamingInput"),
@@ -4569,8 +4631,13 @@
       modelSelect: byId("modelSelect"),
       auxiliaryModelSelect: byId("auxiliaryModelSelect"),
       temperatureInput: byId("temperatureInput"),
+      reasoningControlSelect: byId("reasoningControlSelect"),
+      thinkingTokenLimitField: byId("thinkingTokenLimitField"),
       thinkingTokenLimitInput: byId("thinkingTokenLimitInput"),
-      thinkingUnlimitedInput: byId("thinkingUnlimitedInput"),
+      reasoningEffortFields: byId("reasoningEffortFields"),
+      reasoningEffortSelect: byId("reasoningEffortSelect"),
+      reasoningEffortCustomField: byId("reasoningEffortCustomField"),
+      reasoningEffortCustomInput: byId("reasoningEffortCustomInput"),
       rpResponsePerspectiveField: byId("rpResponsePerspectiveField"),
       rpResponsePerspectiveSelect: byId("rpResponsePerspectiveSelect"),
       rpResponseLengthField: byId("rpResponseLengthField"),
@@ -4631,7 +4698,6 @@
       rpImageCropMeta: byId("rpImageCropMeta"),
       rpImageCropZoomInput: byId("rpImageCropZoomInput"),
       rpImageCropZoomValue: byId("rpImageCropZoomValue"),
-      rpImageCropHelp: query(".image-crop-help"),
       cancelRpImageCropButton: byId("cancelRpImageCropButton"),
       applyRpImageCropButton: byId("applyRpImageCropButton"),
       characterCardList: byId("characterCardList"),
@@ -4691,6 +4757,7 @@
     let chatStatusToastHideFrameId = 0;
     let isPrimaryTab = false;
     let tabLockIntervalId = 0;
+    let pendingTabLockProbe = null;
     let pendingImageAttachments = [];
     let pendingDocumentAttachments = [];
     let storageDbPromise = null;
@@ -4926,6 +4993,7 @@
       bindInputActions([
         [elements.temperatureInput, updateActiveTemperature],
         [elements.thinkingTokenLimitInput, updateActiveThinkingTokenLimit],
+        [elements.reasoningEffortCustomInput, updateActiveReasoningEffortCustom],
         [elements.systemPromptInput, updateActiveSystemPrompt],
         [elements.forbiddenWordsInput, updateActiveForbiddenWords],
         [elements.ttsModelInput, handleTtsModelChange],
@@ -4934,7 +5002,8 @@
       bindInputActions([
         [elements.modelSelect, updateSelectedModel],
         [elements.auxiliaryModelSelect, updateSelectedAuxiliaryModel],
-        [elements.thinkingUnlimitedInput, updateActiveThinkingUnlimited],
+        [elements.reasoningControlSelect, updateActiveReasoningControl],
+        [elements.reasoningEffortSelect, updateActiveReasoningEffort],
         [elements.rpSummaryEnabledInput, syncRpAssistanceControls],
         [elements.illustrationEnabledInput, syncIllustrationControls],
         [elements.chatT2iEnabledInput, syncIllustrationControls],
@@ -5077,11 +5146,17 @@
       }
     }
     async function loadState() {
-      const legacyState = readLegacyLocalStorageState();
+      const legacyRecord = readLegacyLocalStorageState();
+      const legacyState = legacyRecord?.state || null;
       if (!supportsIndexedDb()) {
         return legacyState || structuredClone(DEFAULT_APP_STATE);
       }
       try {
+        if (legacyRecord?.pending) {
+          await hydrateSettingsSecrets(legacyState);
+          await writeStoredState(cloneStateForPersistence(legacyState));
+          return legacyState;
+        }
         const storedState = await readStateFromIndexedDb();
         if (storedState) {
           const normalizedState = normalizeStoredAppState(storedState);
@@ -5114,7 +5189,12 @@
         if (!raw) {
           return null;
         }
-        return normalizeStoredAppState(JSON.parse(raw));
+        const parsed = JSON.parse(raw);
+        const pending = parsed?.format === APP_STORAGE_ENVELOPE_FORMAT;
+        return {
+          state: normalizeStoredAppState(pending ? parsed.state : parsed),
+          pending
+        };
       } catch (error) {
         console.error("Legacy load failed", error);
         return null;
@@ -5126,6 +5206,10 @@
       const thinkingUnlimited = typeof parsed?.settings?.thinkingUnlimited === "boolean"
         ? parsed.settings.thinkingUnlimited
         : DEFAULT_SETTINGS.thinkingUnlimited;
+      const reasoningControl = normalizeReasoningControl(
+        parsed?.settings?.reasoningControl,
+        thinkingUnlimited ? "none" : "token-limit"
+      );
       const smoothStreaming = typeof parsed?.settings?.smoothStreaming === "boolean"
         ? parsed.settings.smoothStreaming
         : DEFAULT_SETTINGS.smoothStreaming;
@@ -5159,6 +5243,7 @@
         ttsProfilePresets,
         userAlias: parsed?.settings?.userAlias || getDefaultUserAlias(language),
         modelAlias: parsed?.settings?.modelAlias || getDefaultModelAlias(language),
+        chatTone: normalizeChatTone(parsed?.settings?.chatTone),
         language,
         themeMode: normalizeThemeMode(parsed?.settings?.themeMode),
         smoothStreaming,
@@ -5182,10 +5267,15 @@
         forbiddenWords: normalizeForbiddenWords(parsed?.settings?.forbiddenWords),
         promptPresets: normalizePromptPresets(parsed?.settings?.promptPresets),
         temperature: settingsTemperature ?? DEFAULT_SETTINGS.temperature,
-        thinkingTokenLimit: thinkingUnlimited
+        reasoningControl,
+        reasoningEffort: normalizeReasoningEffort(parsed?.settings?.reasoningEffort),
+        reasoningEffortCustom: typeof parsed?.settings?.reasoningEffortCustom === "string"
+          ? parsed.settings.reasoningEffortCustom.trim()
+          : DEFAULT_SETTINGS.reasoningEffortCustom,
+        thinkingTokenLimit: reasoningControl !== "token-limit"
           ? null
           : settingsThinkingLimit ?? DEFAULT_SETTINGS.thinkingTokenLimit,
-        thinkingUnlimited
+        thinkingUnlimited: reasoningControl !== "token-limit"
       };
       return {
         settings,
@@ -5558,8 +5648,8 @@
     function getAllStateChats(targetState = state) {
       return [
         targetState?.chats,
-        ...Object.values(targetState?.rp?.chatsByCharacterId || {}),
-        ...Object.values(targetState?.talk?.chatsByCharacterId || {})
+        ...values(targetState?.rp?.chatsByCharacterId || {}),
+        ...values(targetState?.talk?.chatsByCharacterId || {})
       ]
         .flatMap((chats) => isArray(chats) ? chats : []);
     }
@@ -5780,7 +5870,7 @@
           console.error("IDB write failed", error);
         }
       }
-      localStorage.setItem(APP_STORAGE_KEY, toJson(snapshot));
+      writePendingStateSnapshot(snapshot);
     }
     function cloneStateForPersistence(nextState) {
       let snapshot;
@@ -5812,8 +5902,8 @@
     function scrubEphemeralMessageStateFromSnapshot(snapshot) {
       const chatGroups = [
         snapshot?.chats,
-        ...Object.values(snapshot?.rp?.chatsByCharacterId || {}),
-        ...Object.values(snapshot?.talk?.chatsByCharacterId || {})
+        ...values(snapshot?.rp?.chatsByCharacterId || {}),
+        ...values(snapshot?.talk?.chatsByCharacterId || {})
       ];
       chatGroups.forEach((chats) => {
         if (!isArray(chats)) {
@@ -5835,7 +5925,7 @@
       if (!targetState || typeof callback !== "function") {
         return;
       }
-      [targetState.chats, ...Object.values(targetState.rp?.chatsByCharacterId || {}), ...Object.values(targetState.talk?.chatsByCharacterId || {})].forEach((chats) => {
+      [targetState.chats, ...values(targetState.rp?.chatsByCharacterId || {}), ...values(targetState.talk?.chatsByCharacterId || {})].forEach((chats) => {
         (isArray(chats) ? chats : []).forEach((chat) => {
           (isArray(chat?.messages) ? chat.messages : []).forEach((message) => {
             (isArray(message?.attachments) ? message.attachments : []).forEach(callback);
@@ -6136,10 +6226,10 @@
       return base64ToBytes(value).buffer;
     }
     function signalStateSync() {
-      localStorage.setItem(APP_STATE_SYNC_KEY, toJson({
+      storeJson(APP_STATE_SYNC_KEY, {
         updatedAt: nowIso(),
         nonce: Math.random().toString(36).slice(2, 10)
-      }));
+      });
     }
     function hasPendingStatePersistWork() {
       return pendingStatePersistRequested || Boolean(persistStateTimerId) || isStatePersistWriteInFlight;
@@ -6157,10 +6247,16 @@
     }
     function writeLegacyEmergencyStateSnapshot() {
       try {
-        localStorage.setItem(APP_STORAGE_KEY, toJson(cloneStateForPersistence(state)));
+        writePendingStateSnapshot(cloneStateForPersistence(state));
       } catch (error) {
         console.error("Emergency snapshot failed", error);
       }
+    }
+    function writePendingStateSnapshot(snapshot) {
+      storeJson(APP_STORAGE_KEY, { format: APP_STORAGE_ENVELOPE_FORMAT, state: snapshot });
+    }
+    function storeJson(key, value) {
+      localStorage.setItem(key, toJson(value));
     }
     function persistState() {
       if (!isPrimaryTab) {
@@ -6267,6 +6363,7 @@
             id: typeof message.id === "string" && message.id ? message.id : createId("msg"),
             role: ["system", "user", "assistant"].includes(message.role) ? message.role : "assistant",
             content: message.content,
+            reasoningContent: typeof message.reasoningContent === "string" ? message.reasoningContent : "",
             attachments: normalizeImageAttachments(message.attachments),
             documents: normalizeDocumentAttachments(message.documents),
             generatedDocument: normalizeGeneratedDocument(message.generatedDocument),
@@ -6416,7 +6513,7 @@
     }
     function claimPrimaryTab(options = {}) {
       const lockRecord = readTabLockRecord();
-      if (lockRecord && lockRecord.tabId !== tabSessionId && isFreshTabLock(lockRecord)) {
+      if (!options.force && lockRecord && lockRecord.tabId !== tabSessionId && isFreshTabLock(lockRecord)) {
         setPrimaryTabState(false);
         return false;
       }
@@ -6425,7 +6522,7 @@
         acquiredAt: lockRecord?.tabId === tabSessionId ? lockRecord.acquiredAt || tabOpenedAt : tabOpenedAt,
         heartbeatAt: nowIso()
       };
-      localStorage.setItem(TAB_LOCK_KEY, toJson(nextLock));
+      storeJson(TAB_LOCK_KEY, nextLock);
       const confirmedLock = readTabLockRecord();
       const claimed = Boolean(confirmedLock && confirmedLock.tabId === tabSessionId);
       if (claimed) {
@@ -6459,6 +6556,9 @@
     }
     function setPrimaryTabState(nextValue) {
       isPrimaryTab = nextValue;
+      if (nextValue) {
+        clearPendingTabLockProbe();
+      }
       renderTabLockState();
     }
     function renderTabLockState() {
@@ -6479,6 +6579,9 @@
       if (tabLockIntervalId) {
         return;
       }
+      if (!isPrimaryTab) {
+        requestPrimaryTabProbe();
+      }
       tabLockIntervalId = window.setInterval(() => {
         if (isPrimaryTab) {
           const currentLock = readTabLockRecord();
@@ -6486,19 +6589,81 @@
             setPrimaryTabState(false);
             return;
           }
-          localStorage.setItem(TAB_LOCK_KEY, toJson({
+          storeJson(TAB_LOCK_KEY, {
             tabId: tabSessionId,
             acquiredAt: currentLock?.tabId === tabSessionId ? currentLock.acquiredAt || tabOpenedAt : tabOpenedAt,
             heartbeatAt: nowIso()
-          }));
+          });
           return;
         }
-        claimPrimaryTab();
+        requestPrimaryTabProbe();
       }, TAB_LOCK_HEARTBEAT_MS);
+    }
+    function clearPendingTabLockProbe() {
+      if (!pendingTabLockProbe) {
+        return;
+      }
+      window.clearTimeout(pendingTabLockProbe.timerId);
+      pendingTabLockProbe = null;
+    }
+    function requestPrimaryTabProbe() {
+      if (isPrimaryTab || pendingTabLockProbe) {
+        return;
+      }
+      const lockRecord = readTabLockRecord();
+      if (!lockRecord || !isFreshTabLock(lockRecord)) {
+        claimPrimaryTab();
+        return;
+      }
+      const nonce = createId("probe");
+      const ownerId = lockRecord.tabId;
+      const timerId = window.setTimeout(() => {
+        if (pendingTabLockProbe?.nonce !== nonce) {
+          return;
+        }
+        pendingTabLockProbe = null;
+        const currentLock = readTabLockRecord();
+        claimPrimaryTab({ force: currentLock?.tabId === ownerId });
+      }, TAB_LOCK_PROBE_TIMEOUT_MS);
+      pendingTabLockProbe = { nonce, ownerId, timerId };
+      storeJson(TAB_LOCK_PROBE_KEY, {
+        kind: "request",
+        nonce,
+        requesterId: tabSessionId,
+        ownerId
+      });
+    }
+    function handleTabLockProbe(event) {
+      let probe;
+      try {
+        probe = JSON.parse(event.newValue || "null");
+      } catch {
+        return;
+      }
+      if (probe?.kind === "request") {
+        const lockRecord = readTabLockRecord();
+        if (isPrimaryTab && lockRecord?.tabId === tabSessionId && probe.ownerId === tabSessionId) {
+          storeJson(TAB_LOCK_PROBE_KEY, {
+            kind: "response",
+            nonce: probe.nonce,
+            requesterId: probe.requesterId,
+            ownerId: tabSessionId
+          });
+        }
+        return;
+      }
+      if (probe?.kind === "response"
+        && pendingTabLockProbe
+        && probe.requesterId === tabSessionId
+        && probe.nonce === pendingTabLockProbe.nonce
+        && probe.ownerId === pendingTabLockProbe.ownerId) {
+        clearPendingTabLockProbe();
+      }
     }
     function releasePrimaryTab() {
       writeLegacyEmergencyStateSnapshot();
       persistStateNow();
+      clearPendingTabLockProbe();
       if (tabLockIntervalId) {
         window.clearInterval(tabLockIntervalId);
         tabLockIntervalId = 0;
@@ -6520,6 +6685,10 @@
       }
     }
     function handleStorageSync(event) {
+      if (event.key === TAB_LOCK_PROBE_KEY) {
+        handleTabLockProbe(event);
+        return;
+      }
       if (event.key === APP_STATE_SYNC_KEY && !isPrimaryTab) {
         void refreshStateFromStorage();
         return;
@@ -6605,6 +6774,7 @@
         id: createId("msg"),
         role: "assistant",
         content: String(content || ""),
+        reasoningContent: "",
         attachments: [],
         timestamp,
         status: "complete",
@@ -6668,8 +6838,13 @@
         selectedModel: state.settings.selectedModel || "",
         auxiliaryModel: state.settings.auxiliaryModel || "",
         temperature: state.settings.temperature,
+        reasoningControl: normalizeReasoningControl(
+          state.settings.reasoningControl,
+          state.settings.thinkingUnlimited === false ? "token-limit" : "none"
+        ),
+        reasoningEffort: normalizeReasoningEffort(state.settings.reasoningEffort),
+        reasoningEffortCustom: trimmed(state.settings.reasoningEffortCustom),
         thinkingTokenLimit: state.settings.thinkingTokenLimit,
-        thinkingUnlimited: state.settings.thinkingUnlimited !== false,
         rpResponsePerspective: normalizeRpResponsePerspective(state.rp?.responsePerspective),
         rpResponseLength: normalizeRpResponseLength(state.rp?.responseLength),
         systemPrompt: state.settings.systemPrompt || "",
@@ -6888,11 +7063,11 @@
     }
     function getCharacterCardDescriptionPlaceholderKey(draft = getRpCardDraft("character")) {
       if (!draft?.isWorldCard) {
-        return "characterDescriptionPlaceholder";
+        return "charDescPlaceholder";
       }
       return normalizeCharacterCardDescriptionMode(draft.descriptionMode) === "main-character"
-        ? "worldCardMainCharacterDescriptionPlaceholder"
-        : "worldCardDescriptionPlaceholder";
+        ? "worldCardMainCharDescPlaceholder"
+        : "worldCardDescPlaceholder";
     }
     function syncCharacterCardEditorModeControls() {
       const draft = getRpCardDraft("character");
@@ -7219,6 +7394,7 @@
       elements.ttsApiKeyInput.value = state.settings.ttsApiKey || "";
       elements.userAliasInput.value = state.settings.userAlias || "";
       elements.modelAliasInput.value = state.settings.modelAlias || "";
+      elements.chatToneSelect.value = normalizeChatTone(state.settings.chatTone);
       elements.themeModeSelect.value = normalizeThemeMode(state.settings.themeMode);
       elements.languageSelect.value = normalizeAppLanguage(state.settings.language);
       elements.smoothStreamingInput.checked = state.settings.smoothStreaming !== false;
@@ -8014,9 +8190,12 @@
       elements.modelsSyncedAt.textContent = state.modelsSyncedAt ? formatRelativeTimeShort(state.modelsSyncedAt) : "-";
       elements.temperatureInput.value = modelSettingsDraft.temperature ?? "";
       elements.thinkingTokenLimitInput.value = modelSettingsDraft.thinkingTokenLimit ?? "";
+      elements.reasoningControlSelect.value = normalizeReasoningControl(modelSettingsDraft.reasoningControl);
+      elements.reasoningEffortSelect.value = normalizeReasoningEffort(modelSettingsDraft.reasoningEffort);
+      elements.reasoningEffortCustomInput.value = modelSettingsDraft.reasoningEffortCustom || "";
       elements.systemPromptInput.value = modelSettingsDraft.systemPrompt || "";
       elements.forbiddenWordsInput.value = formatForbiddenWords(modelSettingsDraft.forbiddenWords);
-      syncThinkingTokenLimitControls(modelSettingsDraft);
+      syncReasoningControls(modelSettingsDraft);
     }
     function getPromptPresets() {
       if (!isArray(state.settings.promptPresets)) {
@@ -8081,7 +8260,7 @@
     function saveCurrentPromptPreset() {
       const name = elements.promptPresetNameInput.value.trim();
       if (!name) {
-        setChatStatus(t("promptPresetNameRequired"), "error");
+        setChatStatus(t("presetNameRequired"), "error");
         elements.promptPresetNameInput.focus();
         return;
       }
@@ -8103,7 +8282,7 @@
       persistState();
       renderPromptPresetList();
       elements.promptPresetNameInput.select();
-      setChatStatus(t("promptPresetSaved", { name }), "success");
+      setChatStatus(t("presetSaved", { name }), "success");
     }
     function loadPromptPreset(presetId) {
       const preset = getPromptPresets().find((entry) => entry.id === presetId);
@@ -8124,14 +8303,14 @@
         setChatStatus(t("promptPresetNotFound"), "error");
         return;
       }
-      const shouldDelete = window.confirm(t("confirmDeletePromptPreset", { name: preset.name }));
+      const shouldDelete = window.confirm(t("confirmDeletePreset", { name: preset.name }));
       if (!shouldDelete) {
         return;
       }
       state.settings.promptPresets = getPromptPresets().filter((entry) => entry.id !== presetId);
       persistState();
       renderPromptPresetList();
-      setChatStatus(t("promptPresetDeleted", { name: preset.name }), "success");
+      setChatStatus(t("presetDeleted", { name: preset.name }), "success");
     }
     function getActiveChat() {
       return getCurrentChatCollection().find((chat) => chat.id === getCurrentActiveChatId()) || null;
@@ -8170,13 +8349,13 @@
       if (standardChat) {
         return standardChat;
       }
-      for (const chats of Object.values(state.rp.chatsByCharacterId || {})) {
+      for (const chats of values(state.rp.chatsByCharacterId || {})) {
         const match = isArray(chats) ? chats.find((chat) => chat.id === chatId) : null;
         if (match) {
           return match;
         }
       }
-      for (const chats of Object.values(state.talk?.chatsByCharacterId || {})) {
+      for (const chats of values(state.talk?.chatsByCharacterId || {})) {
         const match = isArray(chats) ? chats.find((chat) => chat.id === chatId) : null;
         if (match) {
           return match;
@@ -8480,6 +8659,7 @@
       }
       state.settings.userAlias = elements.userAliasInput.value.trim() || getDefaultUserAlias(nextLanguage);
       state.settings.modelAlias = elements.modelAliasInput.value.trim() || getDefaultModelAlias(nextLanguage);
+      state.settings.chatTone = normalizeChatTone(elements.chatToneSelect.value);
       state.settings.language = nextLanguage;
       state.settings.themeMode = normalizeThemeMode(elements.themeModeSelect.value);
       state.settings.smoothStreaming = elements.smoothStreamingInput.checked;
@@ -8513,7 +8693,7 @@
         "apiBaseUrl", "apiKey", "imageApiBaseUrl", "imageApiKey",
         "ttsEnabled", "ttsUseLlmApi", "ttsApiBaseUrl", "ttsApiKey", "ttsModel", "ttsVoice",
         "ttsCustomVoiceEnabled", "ttsTemperature", "ttsChunkLength", "ttsAudioProfile", "ttsProfilePresetId", "ttsProfilePresets",
-        "userAlias", "modelAlias", "language", "themeMode", "smoothStreaming", "autoContinue",
+        "userAlias", "modelAlias", "chatTone", "language", "themeMode", "smoothStreaming", "autoContinue",
         "chatT2iEnabled", "talkT2iEnabled", "talkGroupUnlimited"
       ].forEach((key) => {
         state.settings[key] = nextDefaultSettings[key];
@@ -8575,7 +8755,10 @@
       state.settings.systemPrompt = modelSettingsDraft.systemPrompt || "";
       state.settings.forbiddenWords = normalizeForbiddenWords(modelSettingsDraft.forbiddenWords);
       state.settings.temperature = modelSettingsDraft.temperature;
-      state.settings.thinkingUnlimited = modelSettingsDraft.thinkingUnlimited !== false;
+      state.settings.reasoningControl = normalizeReasoningControl(modelSettingsDraft.reasoningControl);
+      state.settings.reasoningEffort = normalizeReasoningEffort(modelSettingsDraft.reasoningEffort);
+      state.settings.reasoningEffortCustom = trimmed(modelSettingsDraft.reasoningEffortCustom);
+      state.settings.thinkingUnlimited = state.settings.reasoningControl !== "token-limit";
       state.settings.thinkingTokenLimit = state.settings.thinkingUnlimited ? null : modelSettingsDraft.thinkingTokenLimit;
       persistState();
       renderChatInteractionSections({
@@ -8678,7 +8861,7 @@
       const name = trimmed(elements.ttsProfilePresetNameInput.value);
       const profile = trimmed(elements.ttsAudioProfileInput.value);
       if (!name) {
-        setChatStatus(t("ttsProfilePresetNameRequired"), "error");
+        setChatStatus(t("presetNameRequired"), "error");
         elements.ttsProfilePresetNameInput.focus();
         return;
       }
@@ -8700,12 +8883,12 @@
       persistState();
       renderTtsProfilePresetOptions(preset.id);
       elements.ttsProfilePresetNameInput.select();
-      setChatStatus(t("ttsProfilePresetSaved", { name }), "success");
+      setChatStatus(t("presetSaved", { name }), "success");
     }
     function deleteSelectedTtsProfilePreset() {
       const presetId = elements.ttsProfilePresetSelect.value;
       const preset = getCustomTtsProfilePresets().find((entry) => entry.id === presetId);
-      if (!preset || !window.confirm(t("confirmDeleteTtsProfilePreset", { name: preset.name }))) {
+      if (!preset || !window.confirm(t("confirmDeletePreset", { name: preset.name }))) {
         return;
       }
       state.settings.ttsProfilePresets = getCustomTtsProfilePresets().filter((entry) => entry.id !== presetId);
@@ -8714,7 +8897,7 @@
       }
       persistState();
       renderTtsProfilePresetOptions();
-      setChatStatus(t("ttsProfilePresetDeleted", { name: preset.name }), "success");
+      setChatStatus(t("presetDeleted", { name: preset.name }), "success");
     }
     function readIllustrationSettingsForm() {
       return {
@@ -9996,7 +10179,7 @@
         }
         localStorage.removeItem(APP_STORAGE_KEY);
       } else {
-        localStorage.setItem(APP_STORAGE_KEY, toJson(nextState));
+        writePendingStateSnapshot(nextState);
       }
       onProgress({ detail: t("backupProgressFinalizing"), value: 95, max: 100 });
       mediaDataUrlCache.clear();
@@ -10072,13 +10255,21 @@
     function updateActiveThinkingTokenLimit() {
       ensureModelSettingsDraft();
       modelSettingsDraft.thinkingTokenLimit = normalizeOptionalInteger(elements.thinkingTokenLimitInput.value, { min: 0 });
-      modelSettingsDraft.thinkingUnlimited = false;
-      syncThinkingTokenLimitControls(modelSettingsDraft);
+      syncReasoningControls(modelSettingsDraft);
     }
-    function updateActiveThinkingUnlimited() {
+    function updateActiveReasoningControl() {
       ensureModelSettingsDraft();
-      modelSettingsDraft.thinkingUnlimited = elements.thinkingUnlimitedInput.checked;
-      syncThinkingTokenLimitControls(modelSettingsDraft);
+      modelSettingsDraft.reasoningControl = normalizeReasoningControl(elements.reasoningControlSelect.value);
+      syncReasoningControls(modelSettingsDraft);
+    }
+    function updateActiveReasoningEffort() {
+      ensureModelSettingsDraft();
+      modelSettingsDraft.reasoningEffort = normalizeReasoningEffort(elements.reasoningEffortSelect.value);
+      syncReasoningControls(modelSettingsDraft);
+    }
+    function updateActiveReasoningEffortCustom() {
+      ensureModelSettingsDraft();
+      modelSettingsDraft.reasoningEffortCustom = elements.reasoningEffortCustomInput.value;
     }
     function updateActiveRpResponsePerspective() {
       ensureModelSettingsDraft();
@@ -10088,10 +10279,18 @@
       ensureModelSettingsDraft();
       modelSettingsDraft.rpResponseLength = normalizeRpResponseLength(elements.rpResponseLengthSelect.value);
     }
-    function syncThinkingTokenLimitControls(settings) {
-      const isUnlimited = !settings || settings.thinkingUnlimited !== false;
-      elements.thinkingUnlimitedInput.checked = isUnlimited;
-      elements.thinkingTokenLimitInput.disabled = isUnlimited;
+    function syncReasoningControls(settings) {
+      const reasoningControl = normalizeReasoningControl(settings?.reasoningControl);
+      const usesTokenLimit = reasoningControl === "token-limit";
+      const usesEffort = reasoningControl === "effort";
+      const usesCustomEffort = usesEffort && normalizeReasoningEffort(settings?.reasoningEffort) === "custom";
+      elements.thinkingTokenLimitField.hidden = !usesTokenLimit;
+      elements.thinkingTokenLimitInput.disabled = !usesTokenLimit;
+      elements.reasoningEffortFields.hidden = !usesEffort;
+      elements.reasoningEffortFields.classList.toggle("has-custom-effort", usesCustomEffort);
+      elements.reasoningEffortSelect.disabled = !usesEffort;
+      elements.reasoningEffortCustomField.hidden = !usesCustomEffort;
+      elements.reasoningEffortCustomInput.disabled = !usesCustomEffort;
     }
     function updateActiveSystemPrompt() {
       ensureModelSettingsDraft();
@@ -11054,15 +11253,15 @@
         return;
       }
       if (!hasAuxiliaryModel()) {
-        setChatStatus(t("illustrationAuxiliaryModelRequired"), "error");
+        setChatStatus(t("illuAuxModelRequired"), "error");
         return;
       }
       if (!normalizeImageApiBase(state.settings.imageApiBaseUrl)) {
-        setChatStatus(t("illustrationImageApiRequired"), "error");
+        setChatStatus(t("illuImageApiRequired"), "error");
         return;
       }
       const generationStatusKey = isRpChat(activeChat)
-        ? "illustrationGenerating"
+        ? "illuGenerating"
         : isTalkChat(activeChat) ? "imageSending" : "imageGenerating";
       setAssistantAuxiliaryStatus(activeChat, targetMessage, generationStatusKey);
       setChatStatus(t(generationStatusKey));
@@ -11076,9 +11275,9 @@
       const latestMessage = findMessageInChat(activeChat, messageId);
       const latestIllustration = normalizeMessageIllustration(latestMessage?.illustration);
       if (latestIllustration?.status === "complete") {
-        setChatStatus(t("illustrationRegenerated"), "success");
+        setChatStatus(t("illuRegenerated"), "success");
       } else if (latestIllustration?.status === "error") {
-        setChatStatus(t("illustrationError", { error: latestIllustration.error || t("requestFailed") }), "error");
+        setChatStatus(t("illuError", { error: latestIllustration.error || t("requestFailed") }), "error");
       }
     }
     async function requestAssistantResponse(chat, options) {
@@ -11302,11 +11501,11 @@
     }
     async function finalizePostResponseAuxiliaryTasks(chat, assistantMessage, options, statusRunId) {
       if (options.notifyMissingAuxiliaryIllustrationModel) {
-        setPostResponseChatStatus(statusRunId, assistantMessage.id, t("illustrationAuxiliaryModelRequired"));
+        setPostResponseChatStatus(statusRunId, assistantMessage.id, t("illuAuxModelRequired"));
         return;
       }
       if (options.notifyMissingIllustrationImageApi) {
-        setPostResponseChatStatus(statusRunId, assistantMessage.id, t("illustrationImageApiRequired"));
+        setPostResponseChatStatus(statusRunId, assistantMessage.id, t("illuImageApiRequired"));
         return;
       }
       try {
@@ -11404,7 +11603,7 @@
         }
         let illustrationTask = null;
         if (shouldGenerateIllustrationForResponse(chat, assistantMessage)) {
-          setPostResponseAuxiliaryStatus(chat, assistantMessage, "illustrationGenerating", options);
+          setPostResponseAuxiliaryStatus(chat, assistantMessage, "illuGenerating", options);
           let resolveIllustrationPromptReady = null;
           const illustrationPromptReady = new Promise((resolve) => {
             resolveIllustrationPromptReady = resolve;
@@ -11852,7 +12051,7 @@
     }
     async function createIllustrationPrompt(chat, assistantMessage) {
       if (!normalizeImageApiBase(state.settings.imageApiBaseUrl)) {
-        throw new Error(t("illustrationImageApiRequired"));
+        throw new Error(t("illuImageApiRequired"));
       }
       const apiBase = normalizeApiBase(state.settings.apiBaseUrl);
       const auxiliaryModel = trimmed(state.settings.auxiliaryModel);
@@ -12147,7 +12346,7 @@
     async function generateStableDiffusionImage(prompt) {
       const imageApiBase = normalizeImageApiBase(state.settings.imageApiBaseUrl);
       if (!imageApiBase) {
-        throw new Error(t("illustrationImageApiRequired"));
+        throw new Error(t("illuImageApiRequired"));
       }
       const illustrationSettings = normalizeRpIllustrationSettings(state.rp?.illustration);
       try {
@@ -12361,7 +12560,7 @@
     }
     function extractComfyUiImageRef(historyItem) {
       const outputs = historyItem?.outputs || {};
-      for (const output of Object.values(outputs)) {
+      for (const output of values(outputs)) {
         const image = isArray(output?.images) ? output.images[0] : null;
         if (image?.filename) {
           return image;
@@ -12419,8 +12618,12 @@
       if (!response.body || !/event-stream/i.test(contentType)) {
         const payload = await response.json();
         const assistantContent = sanitizeChatModeFakeImageToolCallOutput(extractFinalAssistantContent(payload), chat);
+        const assistantReasoning = extractThinkingText(payload?.choices?.[0]?.message || {});
         if (!assistantContent.trim()) {
           throw missingResponseError();
+        }
+        if (assistantReasoning) {
+          assistantMessage.reasoningContent = `${assistantMessage.reasoningContent || ""}${assistantReasoning}`;
         }
         assistantMessage.content = mergeContinuedAssistantContent(assistantMessage.content, assistantContent.trim());
         applyTokenUsageToMessage(
@@ -12437,6 +12640,15 @@
       let buffer = "";
       let hasVisibleContent = Boolean(assistantMessage.content.trim() && !isStreamingThinkingPlaceholder(assistantMessage.content));
       let finishReason = "";
+      const streamHelpers = {
+        hasVisibleContentRef: () => hasVisibleContent,
+        setHasVisibleContent: (nextValue) => {
+          hasVisibleContent = nextValue;
+        },
+        setFinishReason: (nextValue) => {
+          finishReason = nextValue || finishReason;
+        }
+      };
       while (true) {
         const { value, done } = await reader.read();
         buffer += decoder.decode(value || new Uint8Array(), { stream: !done });
@@ -12446,15 +12658,7 @@
           if (!chunk.trim()) {
             continue;
           }
-          const shouldStop = applyStreamChunk(chunk, assistantMessage, chat, {
-            hasVisibleContentRef: () => hasVisibleContent,
-            setHasVisibleContent: (nextValue) => {
-              hasVisibleContent = nextValue;
-            },
-            setFinishReason: (nextValue) => {
-              finishReason = nextValue || finishReason;
-            }
-          }, options);
+          const shouldStop = applyStreamChunk(chunk, assistantMessage, chat, streamHelpers, options);
           if (shouldStop) {
             break;
           }
@@ -12464,18 +12668,10 @@
         }
       }
       if (buffer.trim()) {
-        applyStreamChunk(buffer, assistantMessage, chat, {
-          hasVisibleContentRef: () => hasVisibleContent,
-          setHasVisibleContent: (nextValue) => {
-            hasVisibleContent = nextValue;
-          },
-          setFinishReason: (nextValue) => {
-            finishReason = nextValue || finishReason;
-          }
-        }, options);
+        applyStreamChunk(buffer, assistantMessage, chat, streamHelpers, options);
       }
       if (!assistantMessage.content.trim()) {
-        throw new Error(t("missingStreamingResponseContent"));
+        throw new Error(t("missingStreamResponseContent"));
       }
       return { finishReason };
     }
@@ -12531,6 +12727,9 @@
       const hasVisibleContent = helpers.hasVisibleContentRef();
       const isThinkingOnlyChunk = Boolean(thinkingText && !contentText && !hasVisibleContent);
       const streamingThinkingPlaceholder = getStreamingThinkingPlaceholder();
+      if (thinkingText) {
+        assistantMessage.reasoningContent = `${assistantMessage.reasoningContent || ""}${thinkingText}`;
+      }
       if (thinkingText && !hasVisibleContent) {
         const thinkingStateChanged = !assistantMessage.isThinking || assistantMessage.content !== streamingThinkingPlaceholder;
         assistantMessage.isThinking = true;
@@ -12687,6 +12886,7 @@
         id: createId("msg"),
         role,
         content,
+        reasoningContent: "",
         attachments: [],
         documents: [],
         generatedDocument: null,
@@ -12857,6 +13057,10 @@
       if (renderResult.shouldRenderMath) {
         renderMathContent(element);
       }
+      const reasoningElement = buildMessageReasoningElement(message);
+      if (reasoningElement) {
+        element.prepend(reasoningElement);
+      }
       appendPresent(
         element,
         buildMessageGeneratedDocumentElement(message),
@@ -12864,17 +13068,27 @@
         buildMessageRpSceneStateElement(message)
       );
     }
-    function buildMessageRpSceneStateElement(message) {
-      const sceneState = trimmed(message?.rpSceneState);
-      if (!sceneState || message?.role !== "assistant") {
+    function buildMessageReasoningElement(message) {
+      const reasoningContent = typeof message?.reasoningContent === "string"
+        ? message.reasoningContent.trim()
+        : "";
+      if (message?.role !== "assistant" || message.status !== "complete" || !reasoningContent) {
         return null;
       }
-      const displaySceneState = replaceRpPromptPlaceholders(sceneState, getMessageRpPlaceholders(message));
-      const container = createDiv("message-rp-state");
-      const contentId = createId("rp-state-content");
+      return buildMessageDisclosureElement(
+        "message-reasoning",
+        "reasoning-content",
+        "reasoningToggleShow",
+        "reasoningToggleHide",
+        reasoningContent
+      );
+    }
+    function buildMessageDisclosureElement(containerClass, contentIdPrefix, showKey, hideKey, text) {
+      const container = createDiv(`message-disclosure ${containerClass}`);
+      const contentId = createId(contentIdPrefix);
       const toggle = createButton({
-        className: "message-rp-state-toggle",
-        textContent: t("rpSceneStateToggleShow"),
+        className: "message-disclosure-toggle",
+        textContent: t(showKey),
         attributes: {
           "aria-expanded": "false",
           "aria-controls": contentId
@@ -12882,17 +13096,31 @@
       });
       const content = createElement("pre");
       content.id = contentId;
-      content.className = "message-rp-state-content";
+      content.className = `message-disclosure-content ${containerClass}-content`;
       content.hidden = true;
-      content.textContent = `${t("rpSceneStateLabel")}\n${displaySceneState}`;
+      content.textContent = text;
       toggle.addEventListener("click", () => {
         const expanded = toggle.getAttribute("aria-expanded") === "true";
         toggle.setAttribute("aria-expanded", expanded ? "false" : "true");
-        toggle.textContent = expanded ? t("rpSceneStateToggleShow") : t("rpSceneStateToggleHide");
+        toggle.textContent = t(expanded ? showKey : hideKey);
         content.hidden = expanded;
       });
       container.append(toggle, content);
       return container;
+    }
+    function buildMessageRpSceneStateElement(message) {
+      const sceneState = trimmed(message?.rpSceneState);
+      if (!sceneState || message?.role !== "assistant") {
+        return null;
+      }
+      const displaySceneState = replaceRpPromptPlaceholders(sceneState, getMessageRpPlaceholders(message));
+      return buildMessageDisclosureElement(
+        "message-rp-state",
+        "rp-state-content",
+        "rpSceneStateToggleShow",
+        "rpSceneStateToggleHide",
+        `${t("rpSceneStateLabel")}\n${displaySceneState}`
+      );
     }
     function buildMessageGeneratedDocumentElement(message) {
       const generatedDocument = normalizeGeneratedDocument(message?.generatedDocument);
@@ -12941,12 +13169,12 @@
       header.appendChild(regenerateButton);
       container.appendChild(header);
       if (illustration.status === "generating") {
-        const placeholder = createDiv("message-illustration-placeholder", t(isTalkImage ? "imageSending" : isRpIllustration ? "illustrationGenerating" : "imageGenerating"));
+        const placeholder = createDiv("message-illustration-placeholder", t(isTalkImage ? "imageSending" : isRpIllustration ? "illuGenerating" : "imageGenerating"));
         container.appendChild(placeholder);
         return container;
       }
       if (illustration.status === "error") {
-        const error = createDiv("message-illustration-error", t("illustrationError", { error: illustration.error || t("requestFailed") }));
+        const error = createDiv("message-illustration-error", t("illuError", { error: illustration.error || t("requestFailed") }));
         container.appendChild(error);
         return container;
       }
@@ -13442,7 +13670,7 @@
         }
       }
       if (!textEntryPaths.length) {
-        textEntryPaths = Object.values(zip.files || {})
+        textEntryPaths = values(zip.files || {})
           .filter((entry) => !entry.dir)
           .map((entry) => normalizePosixPath(entry.name))
           .filter((entryPath) => /\.(xhtml|html|htm)$/i.test(entryPath || ""))
@@ -13888,11 +14116,11 @@
       const match = trimmed(dataUrl).match(/^data:([^;,]+);base64,([\s\S]+)$/i);
       const mimeType = normalizeSupportedImageMimeType(match?.[1]);
       if (!match || !mimeType) {
-        throw new Error(t("unsupportedImportedImageFormat"));
+        throw new Error(t("unsupportedImportImageFormat"));
       }
       const base64 = match[2].replace(/\s+/g, "");
       if (!base64 || !/^[A-Za-z0-9+/]*={0,2}$/.test(base64)) {
-        throw new Error(t("unsupportedImportedImageFormat"));
+        throw new Error(t("unsupportedImportImageFormat"));
       }
       const normalizedDataUrl = `data:${mimeType};base64,${base64}`;
       return {
@@ -13903,7 +14131,7 @@
     }
     function validateImportedImageSize(sizeBytes) {
       if ((normalizeOptionalInteger(sizeBytes, { min: 0 }) ?? 0) > MAX_PENDING_IMAGE_BYTES) {
-        throw new Error(t("importedImageSizeLimitExceeded", { bytes: formatByteSize(MAX_PENDING_IMAGE_BYTES) }));
+        throw new Error(t("importImageSizeExceeded", { bytes: formatByteSize(MAX_PENDING_IMAGE_BYTES) }));
       }
     }
     function normalizeSupportedImageMimeType(mimeType) {
@@ -14272,6 +14500,22 @@
         .split("|")
         .map((cell) => cell.trim());
     }
+    function buildChatToneInstruction(value) {
+      const chatTone = normalizeChatTone(value);
+      if (chatTone === "friendly") {
+        return [
+          `[Chat Mode Attitude - Friendly]`,
+          `Treat the user warmly and casually like a close friend. Use relaxed, approachable wording and friendly familiarity. When responding in Korean, consistently use natural informal speech(반말) rather than formal speech(존댓말).`
+        ].join("\n");
+      }
+      if (chatTone === "polite") {
+        return [
+          `[Chat Mode Attitude - Polite]`,
+          `Treat the user with exceptional courtesy and deference, as you would respectfully serve a superior or valued customer. Use consistently formal, considerate wording. When responding in Korean, consistently use formal speech(존댓말).`
+        ].join("\n");
+      }
+      return "";
+    }
     async function buildChatRequestMessages(messages, systemPrompt, rpContext = null, extraSystemInstructions = []) {
       const rpPlaceholders = createRpPromptPlaceholders(rpContext);
       const requestMessages = await Promise.all(messages
@@ -14310,6 +14554,12 @@
           `[User Custom System Prompt]`,
           normalizedPrompt
         ].join("\n"));
+      }
+      if (!rpContext) {
+        const chatToneInstruction = buildChatToneInstruction(state.settings.chatTone);
+        if (chatToneInstruction) {
+          systemInstructions.push(chatToneInstruction);
+        }
       }
       (isArray(extraSystemInstructions) ? extraSystemInstructions : [extraSystemInstructions])
         .filter(Boolean)
@@ -14631,10 +14881,19 @@
       if (typeof state.settings.temperature === "number") {
         requestBody.temperature = state.settings.temperature;
       }
-      if (state.settings.thinkingUnlimited === false && typeof state.settings.thinkingTokenLimit === "number") {
+      const reasoningControl = normalizeReasoningControl(
+        state.settings.reasoningControl,
+        state.settings.thinkingUnlimited === false ? "token-limit" : "none"
+      );
+      if (reasoningControl === "token-limit" && typeof state.settings.thinkingTokenLimit === "number") {
         requestBody.reasoning = {
           max_tokens: state.settings.thinkingTokenLimit
         };
+      } else if (reasoningControl === "effort") {
+        const reasoningEffort = getReasoningEffortValue(state.settings);
+        if (reasoningEffort) {
+          requestBody.reasoning_effort = reasoningEffort;
+        }
       }
       return requestBody;
     }
@@ -15491,6 +15750,21 @@
         max: TTS_TEXT_CHUNK_MAX_LENGTH
       }) ?? TTS_TEXT_CHUNK_DEFAULT_LENGTH;
     }
+    function normalizeChatTone(value) {
+      return ["friendly", "polite"].includes(value) ? value : "";
+    }
+    function normalizeReasoningControl(value, fallback = DEFAULT_SETTINGS.reasoningControl) {
+      return ["none", "token-limit", "effort"].includes(value) ? value : fallback;
+    }
+    function normalizeReasoningEffort(value) {
+      return ["low", "medium", "high", "xhigh", "max", "custom"].includes(value)
+        ? value
+        : DEFAULT_SETTINGS.reasoningEffort;
+    }
+    function getReasoningEffortValue(settings) {
+      const effort = normalizeReasoningEffort(settings?.reasoningEffort);
+      return effort === "custom" ? trimmed(settings?.reasoningEffortCustom) : effort;
+    }
     function normalizeThemeMode(value) {
       return ["system", "dark", "light"].includes(value) ? value : DEFAULT_SETTINGS.themeMode;
     }
@@ -15699,18 +15973,18 @@
           ["field", "characterCardNameInput", "characterName"],
           ["field", "characterCardFirstMessageInput", "characterFirstMessage"],
           ["placeholder", "characterCardNameInput", "characterNamePlaceholder"],
-          ["placeholder", "characterCardFirstMessageInput", "characterFirstMessagePlaceholder"]
+          ["placeholder", "characterCardFirstMessageInput", "charFirstMsgPlaceholder"]
         ]);
         setLeadingLabelText(elements.characterCardIsWorldCardInput.closest("label"), t("characterIsWorldCard"));
         setAriaLabelIfPresent(elements.characterCardDescriptionModeSelect, t("worldCardDescription"));
-        setSelectOptionTexts(elements.characterCardDescriptionModeSelect, ["worldCardDescription", "worldCardMainCharacterDescription"]);
+        setSelectOptionTexts(elements.characterCardDescriptionModeSelect, ["worldCardDescription", "worldCardMainCharDesc"]);
         syncCharacterCardEditorModeControls();
       } else {
         applyElementTranslationBindings([
           ["field", "personaCardNameInput", "personaName"],
           ["field", "personaCardDescriptionInput", "personaDescription"],
           ["placeholder", "personaCardNameInput", "personaNamePlaceholder"],
-          ["placeholder", "personaCardDescriptionInput", "personaDescriptionPlaceholder"]
+          ["placeholder", "personaCardDescriptionInput", "personaDescPlaceholder"]
         ]);
       }
       applyElementTranslationBindings([
@@ -15744,7 +16018,6 @@
         ["text", "closeAuthorsNoteOverlayButton", "close"],
         ["text", "clearAuthorsNoteButton", "clear"],
         ["field", "authorsNoteInput", "authorsNoteField"],
-        ["placeholder", "authorsNoteInput", "authorsNotePlaceholder"],
         ["text", "settingsOverlayTitle", "settings"],
         ["text", "closeSettingsOverlayButton", "close"],
         ["text", "settingsGeneralTabButton", "settingsGeneral"],
@@ -15768,6 +16041,7 @@
         ["field", "ttsApiKeyInput", "ttsApiKey"],
         ["field", "userAliasInput", "userAlias"],
         ["field", "modelAliasInput", "modelAlias"],
+        ["field", "chatToneSelect", "chatTone"],
         ["field", "themeModeSelect", "themeMode"],
         ["field", "languageSelect", "language"],
         ["placeholder", "apiBaseUrlInput", "apiBaseUrlPlaceholder"],
@@ -15779,6 +16053,7 @@
       }
       setSelectOptionTexts(elements.themeModeSelect, ["themeSystem", "themeDark", "themeLight"]);
       setSelectOptionTexts(elements.languageSelect, ["languageKo", "languageEn"]);
+      setSelectOptionTexts(elements.chatToneSelect, ["chatToneNone", "chatToneFriendly", "chatTonePolite"]);
       applyElementTranslationBindings([
         ["leading", "smoothStreamingLabel", "smoothStreaming"],
         ["leading", "autoContinueLabel", "autoContinue"],
@@ -15789,16 +16064,15 @@
         ["leading", "ttsEnabledLabel", "ttsEnabled"],
         ["leading", "ttsUseLlmApiLabel", "ttsUseLlmApi"],
         ["leading", "ttsCustomVoiceLabel", "ttsCustomVoiceId"],
-        ["leading", "thinkingUnlimitedLabel", "unlimited"],
-        ["leading", "illustrationEnabledLabel", "illustrationEnabled"],
+        ["leading", "illustrationEnabledLabel", "illuEnabled"],
         ["leading", "chatT2iEnabledLabel", "chatT2iEnabled"],
         ["leading", "talkT2iEnabledLabel", "talkT2iEnabled"],
-        ["leading", "illustrationIgnorePeopleLabel", "illustrationIgnoreNonCharacterPeople"],
+        ["leading", "illustrationIgnorePeopleLabel", "illuIgnoreNonCharPeople"],
         ["field", "rpResponsePerspectiveSelect", "rpResponsePerspective"],
         ["field", "rpResponseLengthSelect", "rpResponseLength"],
         ["field", "rpSummaryTokenThresholdInput", "rpSummaryTokenThreshold"],
         ["field", "rpSummaryMaxTokensInput", "rpSummaryMaxTokens"],
-        ["placeholder", "rpSummaryTokenThresholdInput", "rpSummaryTokenThresholdPlaceholder"],
+        ["placeholder", "rpSummaryTokenThresholdInput", "rpSummaryThresholdPlaceholder"],
         ["placeholder", "rpSummaryMaxTokensInput", "rpSummaryMaxTokensPlaceholder"]
       ]);
       setSelectOptionTexts(elements.rpResponsePerspectiveSelect, ["rpPerspectiveCharacter", "rpPerspectivePersona", "rpPerspectiveThird"]);
@@ -15814,8 +16088,16 @@
       ]);
       applyTranslatedIndexedTextContent(elements.settingsActionButtons, ["saveSettings", "restoreDefaults"]);
       applyTranslatedIndexedTextContent(elements.modelStatLabels, ["modelsCount", "lastSynced"]);
+      setSelectOptionTexts(elements.reasoningControlSelect, [
+        "reasoningControlNone",
+        "reasoningControlTokenLimit",
+        "reasoningControlEffort"
+      ]);
+      if (elements.reasoningEffortSelect.options[5]) {
+        elements.reasoningEffortSelect.options[5].textContent = t("reasoningEffortCustomOption");
+      }
       applyElementTranslationBindings([
-        ["text", "settingsModelHint", "thinkingHint"],
+        ["text", "settingsModelHint", "reasoningHint"],
         ["text", "forbiddenWordsHint", "forbiddenWordsHint"],
         ["text", "openPromptPresetOverlayButton", "promptPresetsButton"],
         ["text", "saveModelSettingsButton", "saveSettings"],
@@ -15823,21 +16105,24 @@
         ["field", "modelSelect", "modelSelect"],
         ["field", "auxiliaryModelSelect", "auxiliaryModelSelect"],
         ["field", "temperatureInput", "temperature"],
+        ["field", "reasoningControlSelect", "reasoningControl"],
         ["field", "thinkingTokenLimitInput", "thinkingTokenLimit"],
+        ["field", "reasoningEffortSelect", "reasoningEffort"],
+        ["field", "reasoningEffortCustomInput", "reasoningEffortCustom"],
         ["field", "systemPromptInput", "systemPrompt"],
         ["field", "forbiddenWordsInput", "forbiddenWords"],
         ["placeholder", "temperatureInput", "thinkingDefaultPlaceholder"],
         ["placeholder", "thinkingTokenLimitInput", "serverDefaultPlaceholder"],
         ["placeholder", "systemPromptInput", "systemPromptPlaceholder"],
         ["placeholder", "forbiddenWordsInput", "forbiddenWordsPlaceholder"],
-        ["text", "settingsIllustrationSectionTitle", "illustrationGeneration"],
+        ["text", "settingsIllustrationSectionTitle", "illuGeneration"],
         ["text", "refreshImageModelsButton", "refreshModels"],
         ["text", "saveIllustrationSettingsButton", "saveSettings"],
-        ["field", "illustrationPromptStyleSelect", "illustrationPromptStyle"],
-        ["field", "illustrationArtStyleSelect", "illustrationArtStyle"],
+        ["field", "illustrationPromptStyleSelect", "illuPromptStyle"],
+        ["field", "illustrationArtStyleSelect", "illuArtStyle"],
         ["field", "imageModelSelect", "imageModelSelect"],
-        ["field", "illustrationRequiredPromptInput", "illustrationRequiredPrompt"],
-        ["field", "illustrationRequiredNegativePromptInput", "illustrationRequiredNegativePrompt"],
+        ["field", "illustrationRequiredPromptInput", "illuRequiredPrompt"],
+        ["field", "illustrationRequiredNegativePromptInput", "illuRequiredNegPrompt"],
         ["text", "settingsTtsSectionTitle", "ttsSettingsTitle"],
         ["text", "saveTtsSettingsButton", "saveSettings"],
         ["text", "refreshTtsModelsButton", "refreshModels"],
@@ -15854,12 +16139,12 @@
         ["placeholder", "ttsVoiceInput", "ttsVoicePlaceholder"],
         ["placeholder", "ttsTemperatureInput", "serverDefaultPlaceholder"],
         ["placeholder", "ttsAudioProfileInput", "ttsAudioProfilePlaceholder"],
-        ["placeholder", "ttsProfilePresetNameInput", "ttsProfilePresetNamePlaceholder"]
+        ["placeholder", "ttsProfilePresetNameInput", "ttsProfileNamePlaceholder"]
       ]);
       renderTtsProfilePresetOptions();
       renderTtsModelOptions();
-      setSelectOptionTexts(elements.illustrationPromptStyleSelect, ["illustrationPromptStyleTags", "illustrationPromptStyleNatural"]);
-      setSelectOptionTexts(elements.illustrationArtStyleSelect, ["illustrationArtStyleNone", "illustrationArtStyleAnime", "illustrationArtStylePhoto"]);
+      setSelectOptionTexts(elements.illustrationPromptStyleSelect, ["illuPromptStyleTags", "illuPromptStyleNatural"]);
+      setSelectOptionTexts(elements.illustrationArtStyleSelect, ["illuArtStyleNone", "illuArtStyleAnime", "illuArtStylePhoto"]);
       applyElementTranslationBindings([
         ["range", "illustrationCfgScaleInput", "cfgScale"],
         ["range", "illustrationStepsInput", "steps"],
@@ -15891,7 +16176,6 @@
         ["text", "closeImagePreviewButton", "close"],
         ["text", "rpImageCropTitle", "cropTitle"],
         ["text", "closeRpImageCropButton", "close"],
-        ["text", "rpImageCropHelp", "cropHelp"],
         ["text", "cancelRpImageCropButton", "cancel"],
         ["text", "applyRpImageCropButton", "apply"],
         ["text", "tabLockWarningTitle", "tabLockTitle"]
