@@ -2776,7 +2776,7 @@
             <section class="brand">
               <a class="brand-mark-link" href="https://github.com/furabyss/FocusAbove" target="_blank" rel="noopener noreferrer"><div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#icon-brand"></use></svg><span>FocusAbove</span></div></a>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.10.0, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.10.1, ⓒ 2026 Fur-Abyss</p>
             </section>
             <div class="settings-tab-strip" role="tablist">
               <button id="settingsGeneralTabButton" type="button" class="settings-tab-button active" role="tab" aria-selected="true" aria-controls="settingsGeneralPanel"></button>
@@ -3659,10 +3659,10 @@
         rpSummaryMaxTokensPlaceholder: "예: 1000",
         rpInputEnhancementEnabled: "인풋 보강 사용 [보조 모델]",
         talkSettingsSection: "톡 모드",
-        talkGroupUnlimited: "실험적인 옵션: 단톡방 최대 인원 제한 해제",
+        talkGroupUnlimited: "실험적 옵션: 단톡방 최대 인원 제한 해제",
         settingsBackupSection: "설정 백업 및 복원",
         backupIncludeSecrets: "API 키를 평문으로 백업에 포함",
-        settingsBackupHint: "모든 설정과 저장 데이터를 ZIP 파일로 백업/복원합니다.",
+        settingsBackupHint: "설정과 저장 데이터를 ZIP 파일로 백업/복원합니다.",
         exportFullBackup: "백업",
         importFullBackup: "복원",
         backupProgressExportTitle: "백업 내보내는 중",
@@ -3818,10 +3818,10 @@
         characterNamePlaceholder: "캐릭터 이름",
         personaNamePlaceholder: "페르소나 이름",
         charDescPlaceholder: "캐릭터의 프로필을 기입하세요.",
-        worldCardDescPlaceholder: "세계관의 규칙, 분위기, 세력, 지역, 기술 수준, 금기, 핵심 갈등 등을 적어 주세요.",
-        worldCardMainCharDescPlaceholder: "이 세계관 RP에서 우선적으로 등장시킬 주요 캐릭터들의 프로필을 적어 주세요.",
+        worldCardDescPlaceholder: "이 RP의 세계관에 대한 정보를 기입하세요.",
+        worldCardMainCharDescPlaceholder: "이 RP에서 우선적으로 등장시킬 주요 캐릭터들의 프로필을 적어 주세요.",
         characterFirstMessage: "첫 메시지",
-        charFirstMsgPlaceholder: "새 RP 채팅에서 먼저 표시할 캐릭터의 첫 메시지를 적어 주세요.",
+        charFirstMsgPlaceholder: "이 RP의 첫 메시지를 적어 주세요.",
         personaDescPlaceholder: "사용자 캐릭터의 프로필을 기입하세요.",
         save: "저장",
         export: "내보내기",
@@ -4058,7 +4058,7 @@
         talkGroupUnlimited: "Experimental: remove Group Chat member limit",
         settingsBackupSection: "Settings Backup and Restore",
         backupIncludeSecrets: "Include API keys in plaintext",
-        settingsBackupHint: "Back up or restore all settings and saved data as a ZIP file.",
+        settingsBackupHint: "Back up or restore settings and saved data as a ZIP file.",
         exportFullBackup: "Backup",
         importFullBackup: "Restore",
         backupProgressExportTitle: "Exporting backup",
@@ -4214,7 +4214,7 @@
         characterNamePlaceholder: "Character name",
         personaNamePlaceholder: "Persona name",
         charDescPlaceholder: "Describe the character's profile.",
-        worldCardDescPlaceholder: "Describe the world's rules, tone, factions, locations, tech level, taboos, and core conflicts.",
+        worldCardDescPlaceholder: "Describe the world info.",
         worldCardMainCharDescPlaceholder: "Describe key recurring characters in this world RP.",
         characterFirstMessage: "First Message",
         charFirstMsgPlaceholder: "Opening message shown at the start of a new RP chat.",
@@ -7913,7 +7913,7 @@
         }
         container.innerHTML = "";
         const fragment = document.createDocumentFragment();
-        sortedChats.forEach((chat) => {
+      sortedChats.forEach((chat) => {
           fragment.appendChild(buildChatListItem(chat, { closeOverlayOnSelect }));
         });
         container.appendChild(fragment);
@@ -7923,12 +7923,14 @@
     function buildChatListItem(chat, options = {}) {
       const item = createDiv(`chat-item${chat.id === getCurrentActiveChatId() ? " active" : ""}`);
       const isEditing = editingChatId === chat.id;
-      const mainButton = createElement("button");
-      mainButton.type = "button";
-      mainButton.className = "chat-item-main";
-      mainButton.addEventListener("click", () => {
-        void selectChatById(chat.id, { closeOverlayOnSelect: options.closeOverlayOnSelect });
-      });
+      const mainControl = createElement(isEditing ? "div" : "button");
+      mainControl.className = "chat-item-main";
+      if (!isEditing) {
+        mainControl.type = "button";
+        mainControl.addEventListener("click", () => {
+          void selectChatById(chat.id, { closeOverlayOnSelect: options.closeOverlayOnSelect });
+        });
+      }
       const copy = createDiv("chat-item-copy");
       if (isEditing) {
         const titleInput = createElement("input");
@@ -7957,7 +7959,7 @@
       const messageCount = getChatMessageCount(chat);
       const meta = createP("chat-item-meta", t("chatMeta", { count: messageCount, date: formatDate(chat.updatedAt, true) }));
       copy.appendChild(meta);
-      mainButton.appendChild(copy);
+      mainControl.appendChild(copy);
       const actions = createDiv("chat-item-actions");
       [
         [isEditing ? t("tabNameDone") : t("tabNameEdit"), "edit", () => toggleChatTitleEdit(chat.id)],
@@ -7968,7 +7970,7 @@
       ].forEach(([label, icon, onClick, tone = "default"]) => {
         actions.appendChild(createChatItemIconButton(label, icon, onClick, tone));
       });
-      item.append(mainButton, actions);
+      item.append(mainControl, actions);
       return item;
     }
     function createChatItemIconButton(label, icon, onClick, tone = "default") {
