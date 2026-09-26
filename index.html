@@ -2776,7 +2776,7 @@
             <section class="brand">
               <a class="brand-mark-link" href="https://github.com/furabyss/FocusAbove" target="_blank" rel="noopener noreferrer"><div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#icon-brand"></use></svg><span>FocusAbove</span></div></a>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.10.1, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.10.2, ⓒ 2026 Fur-Abyss</p>
             </section>
             <div class="settings-tab-strip" role="tablist">
               <button id="settingsGeneralTabButton" type="button" class="settings-tab-button active" role="tab" aria-selected="true" aria-controls="settingsGeneralPanel"></button>
@@ -3575,6 +3575,10 @@
     const UI_STRINGS = {
       ko: {
         locale: "ko-KR",
+        stateSaveFailed: "자동 저장에 실패했습니다. 대화를 메모리에 유지하고 다시 시도합니다. 이 창을 닫지 마세요.",
+        stateLoadFailedTitle: "저장소를 읽지 못했습니다",
+        stateLoadFailed: "기존 데이터를 보호하기 위해 새 상태를 저장하지 않았습니다. 브라우저 저장소를 삭제하지 말고 페이지를 다시 열어 주세요.",
+        chatHistoryLoadFailed: "저장된 대화 본문을 불러오지 못했습니다. 빈 대화로 덮어쓰지 않고 기존 정보를 유지합니다.",
         promptLanguageName: "Korean",
         modeToggleLabel: "대화 모드",
         chatMode: "채팅",
@@ -3971,6 +3975,10 @@
       },
       en: {
         locale: "en-US",
+        stateSaveFailed: "Autosave failed. Keeping the conversation in memory and retrying. Please keep this window open.",
+        stateLoadFailedTitle: "Could not read saved data",
+        stateLoadFailed: "No new state was saved, to protect existing data. Reopen this page without clearing browser storage.",
+        chatHistoryLoadFailed: "Could not load the saved conversation. Existing metadata is preserved instead of saving an empty conversation.",
         promptLanguageName: "English",
         modeToggleLabel: "Conversation mode",
         chatMode: "Chat",
@@ -4485,74 +4493,85 @@
       rp: createDefaultRpState(),
       talk: createDefaultTalkState()
     };
+    function getElementsById(...ids) {
+      return Object.fromEntries(ids.map((id) => [id, byId(id)]));
+    }
     const elements = {
-      appShell: byId("appShell"),
-      settingsOverlay: byId("settingsOverlay"),
-      promptPresetOverlay: byId("promptPresetOverlay"),
-      authorsNoteOverlay: byId("authorsNoteOverlay"),
-      tabsOverlay: byId("tabsOverlay"),
-      characterOverlay: byId("characterOverlay"),
-      personaOverlay: byId("personaOverlay"),
-      talkGroupMemberOverlay: byId("talkGroupMemberOverlay"),
-      imagePreviewOverlay: byId("imagePreviewOverlay"),
-      rpImageCropOverlay: byId("rpImageCropOverlay"),
-      tabLockWarning: byId("tabLockWarning"),
-      tabLockWarningMessage: byId("tabLockWarningMessage"),
-      desktopTabsSidebar: byId("desktopTabsSidebar"),
+      ...getElementsById(
+        "appShell",
+        "settingsOverlay",
+        "promptPresetOverlay",
+        "authorsNoteOverlay",
+        "tabsOverlay",
+        "characterOverlay",
+        "personaOverlay",
+        "talkGroupMemberOverlay",
+        "imagePreviewOverlay",
+        "rpImageCropOverlay",
+        "tabLockWarning",
+        "tabLockWarningMessage",
+        "desktopTabsSidebar"
+      ),
       modeToggle: query(".header-mode-toggle"),
-      chatModeButton: byId("chatModeButton"),
-      rpModeButton: byId("rpModeButton"),
-      talkModeButton: byId("talkModeButton"),
-      rpHeaderActions: byId("rpHeaderActions"),
-      openCharacterOverlayButton: byId("openCharacterOverlayButton"),
-      openPersonaOverlayButton: byId("openPersonaOverlayButton"),
-      authorsNoteButton: byId("authorsNoteButton"),
-      openSettingsOverlayButton: byId("openSettingsOverlayButton"),
-      openTabsOverlayButton: byId("openTabsOverlayButton"),
-      desktopTabsTitle: byId("desktopTabsTitle"),
+      ...getElementsById(
+        "chatModeButton",
+        "rpModeButton",
+        "talkModeButton",
+        "rpHeaderActions",
+        "openCharacterOverlayButton",
+        "openPersonaOverlayButton",
+        "authorsNoteButton",
+        "openSettingsOverlayButton",
+        "openTabsOverlayButton",
+        "desktopTabsTitle"
+      ),
       messageInputLabel: query('label:has(#messageInput) .sr-only'),
       scrollJumpStack: query(".scroll-jump-stack"),
-      authorsNoteOverlayTitle: byId("authorsNoteOverlayTitle"),
-      settingsOverlayTitle: byId("settingsOverlayTitle"),
-      promptPresetOverlayTitle: byId("promptPresetOverlayTitle"),
-      tabsOverlayTitle: byId("tabsOverlayTitle"),
-      tabsOverlayListTitle: byId("tabsOverlayListTitle"),
-      promptPresetListTitle: byId("promptPresetListTitle"),
-      characterOverlayTitle: byId("characterOverlayTitle"),
-      personaOverlayTitle: byId("personaOverlayTitle"),
-      talkGroupMemberOverlayTitle: byId("talkGroupMemberOverlayTitle"),
-      talkGroupMemberCandidateTitle: byId("talkGroupMemberCandidateTitle"),
-      imagePreviewTitle: byId("imagePreviewTitle"),
-      rpImageCropTitle: byId("rpImageCropTitle"),
-      tabLockWarningTitle: byId("tabLockWarningTitle"),
-      closeSettingsOverlayButton: byId("closeSettingsOverlayButton"),
-      closePromptPresetOverlayButton: byId("closePromptPresetOverlayButton"),
-      closeAuthorsNoteOverlayButton: byId("closeAuthorsNoteOverlayButton"),
-      closeTabsOverlayButton: byId("closeTabsOverlayButton"),
-      closeCharacterOverlayButton: byId("closeCharacterOverlayButton"),
-      closePersonaOverlayButton: byId("closePersonaOverlayButton"),
-      closeTalkGroupMemberOverlayButton: byId("closeTalkGroupMemberOverlayButton"),
-      downloadImagePreviewButton: byId("downloadImagePreviewButton"),
-      closeImagePreviewButton: byId("closeImagePreviewButton"),
-      closeRpImageCropButton: byId("closeRpImageCropButton"),
-      settingsSection: byId("settingsSection"),
-      settingsGeneralTabButton: byId("settingsGeneralTabButton"),
-      settingsModelTabButton: byId("settingsModelTabButton"),
-      settingsIllustrationTabButton: byId("settingsIllustrationTabButton"),
-      settingsTtsTabButton: byId("settingsTtsTabButton"),
+      ...getElementsById(
+        "authorsNoteOverlayTitle",
+        "settingsOverlayTitle",
+        "promptPresetOverlayTitle",
+        "tabsOverlayTitle",
+        "tabsOverlayListTitle",
+        "promptPresetListTitle",
+        "characterOverlayTitle",
+        "personaOverlayTitle",
+        "talkGroupMemberOverlayTitle",
+        "talkGroupMemberCandidateTitle",
+        "imagePreviewTitle",
+        "rpImageCropTitle",
+        "tabLockWarningTitle",
+        "closeSettingsOverlayButton",
+        "closePromptPresetOverlayButton",
+        "closeAuthorsNoteOverlayButton",
+        "closeTabsOverlayButton",
+        "closeCharacterOverlayButton",
+        "closePersonaOverlayButton",
+        "closeTalkGroupMemberOverlayButton",
+        "downloadImagePreviewButton",
+        "closeImagePreviewButton",
+        "closeRpImageCropButton",
+        "settingsSection",
+        "settingsGeneralTabButton",
+        "settingsModelTabButton",
+        "settingsIllustrationTabButton",
+        "settingsTtsTabButton"
+      ),
       settingsTabStrip: query(".settings-tab-strip"),
-      settingsGeneralPanel: byId("settingsGeneralPanel"),
-      settingsModelPanel: byId("settingsModelPanel"),
-      settingsIllustrationPanel: byId("settingsIllustrationPanel"),
-      settingsTtsPanel: byId("settingsTtsPanel"),
-      settingsConnectionSectionTitle: byId("settingsConnectionSectionTitle"),
-      settingsGeneralSectionTitle: byId("settingsGeneralSectionTitle"),
-      settingsRpSectionGroup: byId("settingsRpSectionGroup"),
-      settingsRpSectionTitle: byId("settingsRpSectionTitle"),
-      settingsTalkSectionGroup: byId("settingsTalkSectionGroup"),
-      settingsTalkSectionTitle: byId("settingsTalkSectionTitle"),
-      settingsBackupSectionTitle: byId("settingsBackupSectionTitle"),
-      settingsBackupHint: byId("settingsBackupHint"),
+      ...getElementsById(
+        "settingsGeneralPanel",
+        "settingsModelPanel",
+        "settingsIllustrationPanel",
+        "settingsTtsPanel",
+        "settingsConnectionSectionTitle",
+        "settingsGeneralSectionTitle",
+        "settingsRpSectionGroup",
+        "settingsRpSectionTitle",
+        "settingsTalkSectionGroup",
+        "settingsTalkSectionTitle",
+        "settingsBackupSectionTitle",
+        "settingsBackupHint"
+      ),
       settingsIllustrationSectionTitle: query("#settingsIllustrationPanel .section-title"),
       settingsTtsSectionTitle: byId("settingsTtsSectionTitle"),
       smoothStreamingLabel: query('label.inline-checkbox[for="smoothStreamingInput"]'),
@@ -4570,174 +4589,182 @@
       settingsActionButtons: document.querySelectorAll("#settingsForm .settings-tab-actions button"),
       modelStatLabels: document.querySelectorAll("#settingsModelPanel .stat-card span"),
       settingsModelHint: query("#settingsModelPanel .hint"),
-      settingsForm: byId("settingsForm"),
-      apiBaseUrlInput: byId("apiBaseUrlInput"),
-      apiKeyInput: byId("apiKeyInput"),
-      imageApiBaseUrlInput: byId("imageApiBaseUrlInput"),
-      imageApiKeyInput: byId("imageApiKeyInput"),
-      ttsEnabledInput: byId("ttsEnabledInput"),
-      ttsUseLlmApiInput: byId("ttsUseLlmApiInput"),
-      ttsApiSettings: byId("ttsApiSettings"),
-      ttsApiBaseUrlInput: byId("ttsApiBaseUrlInput"),
-      ttsApiKeyInput: byId("ttsApiKeyInput"),
-      userAliasInput: byId("userAliasInput"),
-      modelAliasInput: byId("modelAliasInput"),
-      chatToneSelect: byId("chatToneSelect"),
-      themeModeSelect: byId("themeModeSelect"),
-      languageSelect: byId("languageSelect"),
-      smoothStreamingInput: byId("smoothStreamingInput"),
-      autoContinueInput: byId("autoContinueInput"),
-      rpAssistanceFields: byId("rpAssistanceFields"),
-      rpSummaryEnabledInput: byId("rpSummaryEnabledInput"),
-      rpSummaryTokenThresholdField: byId("rpSummaryTokenThresholdField"),
-      rpSummaryTokenThresholdInput: byId("rpSummaryTokenThresholdInput"),
-      rpSummaryMaxTokensField: byId("rpSummaryMaxTokensField"),
-      rpSummaryMaxTokensInput: byId("rpSummaryMaxTokensInput"),
-      rpInputEnhancementEnabledInput: byId("rpInputEnhancementEnabledInput"),
-      resetSettingsButton: byId("resetSettingsButton"),
-      backupIncludeSecretsInput: byId("backupIncludeSecretsInput"),
-      exportFullBackupButton: byId("exportFullBackupButton"),
-      importFullBackupButton: byId("importFullBackupButton"),
-      importFullBackupInput: byId("importFullBackupInput"),
-      backupProgressOverlay: byId("backupProgressOverlay"),
-      backupProgressTitle: byId("backupProgressTitle"),
-      backupProgressBar: byId("backupProgressBar"),
-      backupProgressDetail: byId("backupProgressDetail"),
-      newChatButton: byId("newChatButton"),
-      desktopNewChatButton: byId("desktopNewChatButton"),
-      importChatsButton: byId("importChatsButton"),
-      desktopImportChatsButton: byId("desktopImportChatsButton"),
-      importChatsInput: byId("importChatsInput"),
-      clearMessagesButton: byId("clearMessagesButton"),
-      chatList: byId("chatList"),
-      desktopChatList: byId("desktopChatList"),
-      chatTitle: byId("chatTitle"),
-      chatSubtitle: byId("chatSubtitle"),
-      messageStream: byId("messageStream"),
-      chatForm: byId("chatForm"),
-      messageInput: byId("messageInput"),
+      ...getElementsById(
+        "settingsForm",
+        "apiBaseUrlInput",
+        "apiKeyInput",
+        "imageApiBaseUrlInput",
+        "imageApiKeyInput",
+        "ttsEnabledInput",
+        "ttsUseLlmApiInput",
+        "ttsApiSettings",
+        "ttsApiBaseUrlInput",
+        "ttsApiKeyInput",
+        "userAliasInput",
+        "modelAliasInput",
+        "chatToneSelect",
+        "themeModeSelect",
+        "languageSelect",
+        "smoothStreamingInput",
+        "autoContinueInput",
+        "rpAssistanceFields",
+        "rpSummaryEnabledInput",
+        "rpSummaryTokenThresholdField",
+        "rpSummaryTokenThresholdInput",
+        "rpSummaryMaxTokensField",
+        "rpSummaryMaxTokensInput",
+        "rpInputEnhancementEnabledInput",
+        "resetSettingsButton",
+        "backupIncludeSecretsInput",
+        "exportFullBackupButton",
+        "importFullBackupButton",
+        "importFullBackupInput",
+        "backupProgressOverlay",
+        "backupProgressTitle",
+        "backupProgressBar",
+        "backupProgressDetail",
+        "newChatButton",
+        "desktopNewChatButton",
+        "importChatsButton",
+        "desktopImportChatsButton",
+        "importChatsInput",
+        "clearMessagesButton",
+        "chatList",
+        "desktopChatList",
+        "chatTitle",
+        "chatSubtitle",
+        "messageStream",
+        "chatForm",
+        "messageInput"
+      ),
       composerUploadGroup: query(".composer-upload-group"),
-      imageUploadButton: byId("imageUploadButton"),
-      imageUploadInput: byId("imageUploadInput"),
-      documentUploadButton: byId("documentUploadButton"),
-      documentUploadInput: byId("documentUploadInput"),
-      imageUploadHint: byId("imageUploadHint"),
-      composerAttachments: byId("composerAttachments"),
-      scrollTopButton: byId("scrollTopButton"),
-      scrollBottomButton: byId("scrollBottomButton"),
-      chatStatusToast: byId("chatStatusToast"),
-      authorsNoteInput: byId("authorsNoteInput"),
-      clearAuthorsNoteButton: byId("clearAuthorsNoteButton"),
-      modelSelect: byId("modelSelect"),
-      auxiliaryModelSelect: byId("auxiliaryModelSelect"),
-      temperatureInput: byId("temperatureInput"),
-      reasoningControlSelect: byId("reasoningControlSelect"),
-      thinkingTokenLimitField: byId("thinkingTokenLimitField"),
-      thinkingTokenLimitInput: byId("thinkingTokenLimitInput"),
-      reasoningEffortFields: byId("reasoningEffortFields"),
-      reasoningEffortSelect: byId("reasoningEffortSelect"),
-      reasoningEffortCustomField: byId("reasoningEffortCustomField"),
-      reasoningEffortCustomInput: byId("reasoningEffortCustomInput"),
-      rpResponsePerspectiveField: byId("rpResponsePerspectiveField"),
-      rpResponsePerspectiveSelect: byId("rpResponsePerspectiveSelect"),
-      rpResponseLengthField: byId("rpResponseLengthField"),
-      rpResponseLengthSelect: byId("rpResponseLengthSelect"),
-      systemPromptInput: byId("systemPromptInput"),
-      forbiddenWordsInput: byId("forbiddenWordsInput"),
-      forbiddenWordsHint: byId("forbiddenWordsHint"),
-      openPromptPresetOverlayButton: byId("openPromptPresetOverlayButton"),
-      promptPresetNameInput: byId("promptPresetNameInput"),
-      savePromptPresetButton: byId("savePromptPresetButton"),
-      promptPresetList: byId("promptPresetList"),
-      sendButton: byId("sendButton"),
-      saveModelSettingsButton: byId("saveModelSettingsButton"),
-      refreshModelsButton: byId("refreshModelsButton"),
-      illustrationEnabledInput: byId("illustrationEnabledInput"),
-      chatT2iEnabledInput: byId("chatT2iEnabledInput"),
-      talkT2iEnabledInput: byId("talkT2iEnabledInput"),
-      talkGroupUnlimitedInput: byId("talkGroupUnlimitedInput"),
-      illustrationIgnoreNonCharacterPeopleInput: byId("illustrationIgnoreNonCharacterPeopleInput"),
-      illustrationPromptStyleSelect: byId("illustrationPromptStyleSelect"),
-      illustrationArtStyleSelect: byId("illustrationArtStyleSelect"),
-      imageModelSelect: byId("imageModelSelect"),
-      illustrationRequiredPromptInput: byId("illustrationRequiredPromptInput"),
-      illustrationRequiredNegativePromptInput: byId("illustrationRequiredNegativePromptInput"),
-      refreshImageModelsButton: byId("refreshImageModelsButton"),
-      illustrationGenerationControls: byId("illustrationGenerationControls"),
-      illustrationCfgScaleInput: byId("illustrationCfgScaleInput"),
-      illustrationCfgScaleValue: byId("illustrationCfgScaleValue"),
-      illustrationStepsInput: byId("illustrationStepsInput"),
-      illustrationStepsValue: byId("illustrationStepsValue"),
-      illustrationWidthInput: byId("illustrationWidthInput"),
-      illustrationWidthValue: byId("illustrationWidthValue"),
-      illustrationHeightInput: byId("illustrationHeightInput"),
-      illustrationHeightValue: byId("illustrationHeightValue"),
-      saveIllustrationSettingsButton: byId("saveIllustrationSettingsButton"),
-      ttsModelInput: byId("ttsModelInput"),
-      ttsCustomVoiceLabel: byId("ttsCustomVoiceLabel"),
-      ttsCustomVoiceInput: byId("ttsCustomVoiceInput"),
-      ttsVoicePresetField: byId("ttsVoicePresetField"),
-      ttsVoiceSelect: byId("ttsVoiceSelect"),
-      ttsVoiceCustomField: byId("ttsVoiceCustomField"),
-      ttsVoiceInput: byId("ttsVoiceInput"),
-      ttsTemperatureInput: byId("ttsTemperatureInput"),
-      ttsChunkLengthInput: byId("ttsChunkLengthInput"),
-      ttsProfilePresetSelect: byId("ttsProfilePresetSelect"),
-      deleteTtsProfilePresetButton: byId("deleteTtsProfilePresetButton"),
-      ttsAudioProfileInput: byId("ttsAudioProfileInput"),
-      ttsProfilePresetNameInput: byId("ttsProfilePresetNameInput"),
-      saveTtsProfilePresetButton: byId("saveTtsProfilePresetButton"),
-      saveTtsSettingsButton: byId("saveTtsSettingsButton"),
-      refreshTtsModelsButton: byId("refreshTtsModelsButton"),
-      modelCount: byId("modelCount"),
-      modelsSyncedAt: byId("modelsSyncedAt"),
-      imagePreviewImage: byId("imagePreviewImage"),
-      imagePreviewCaption: byId("imagePreviewCaption"),
-      rpImageCropViewport: byId("rpImageCropViewport"),
-      rpImageCropImage: byId("rpImageCropImage"),
-      rpImageCropMeta: byId("rpImageCropMeta"),
-      rpImageCropZoomInput: byId("rpImageCropZoomInput"),
-      rpImageCropZoomValue: byId("rpImageCropZoomValue"),
-      cancelRpImageCropButton: byId("cancelRpImageCropButton"),
-      applyRpImageCropButton: byId("applyRpImageCropButton"),
-      characterCardList: byId("characterCardList"),
+      ...getElementsById(
+        "imageUploadButton",
+        "imageUploadInput",
+        "documentUploadButton",
+        "documentUploadInput",
+        "imageUploadHint",
+        "composerAttachments",
+        "scrollTopButton",
+        "scrollBottomButton",
+        "chatStatusToast",
+        "authorsNoteInput",
+        "clearAuthorsNoteButton",
+        "modelSelect",
+        "auxiliaryModelSelect",
+        "temperatureInput",
+        "reasoningControlSelect",
+        "thinkingTokenLimitField",
+        "thinkingTokenLimitInput",
+        "reasoningEffortFields",
+        "reasoningEffortSelect",
+        "reasoningEffortCustomField",
+        "reasoningEffortCustomInput",
+        "rpResponsePerspectiveField",
+        "rpResponsePerspectiveSelect",
+        "rpResponseLengthField",
+        "rpResponseLengthSelect",
+        "systemPromptInput",
+        "forbiddenWordsInput",
+        "forbiddenWordsHint",
+        "openPromptPresetOverlayButton",
+        "promptPresetNameInput",
+        "savePromptPresetButton",
+        "promptPresetList",
+        "sendButton",
+        "saveModelSettingsButton",
+        "refreshModelsButton",
+        "illustrationEnabledInput",
+        "chatT2iEnabledInput",
+        "talkT2iEnabledInput",
+        "talkGroupUnlimitedInput",
+        "illustrationIgnoreNonCharacterPeopleInput",
+        "illustrationPromptStyleSelect",
+        "illustrationArtStyleSelect",
+        "imageModelSelect",
+        "illustrationRequiredPromptInput",
+        "illustrationRequiredNegativePromptInput",
+        "refreshImageModelsButton",
+        "illustrationGenerationControls",
+        "illustrationCfgScaleInput",
+        "illustrationCfgScaleValue",
+        "illustrationStepsInput",
+        "illustrationStepsValue",
+        "illustrationWidthInput",
+        "illustrationWidthValue",
+        "illustrationHeightInput",
+        "illustrationHeightValue",
+        "saveIllustrationSettingsButton",
+        "ttsModelInput",
+        "ttsCustomVoiceLabel",
+        "ttsCustomVoiceInput",
+        "ttsVoicePresetField",
+        "ttsVoiceSelect",
+        "ttsVoiceCustomField",
+        "ttsVoiceInput",
+        "ttsTemperatureInput",
+        "ttsChunkLengthInput",
+        "ttsProfilePresetSelect",
+        "deleteTtsProfilePresetButton",
+        "ttsAudioProfileInput",
+        "ttsProfilePresetNameInput",
+        "saveTtsProfilePresetButton",
+        "saveTtsSettingsButton",
+        "refreshTtsModelsButton",
+        "modelCount",
+        "modelsSyncedAt",
+        "imagePreviewImage",
+        "imagePreviewCaption",
+        "rpImageCropViewport",
+        "rpImageCropImage",
+        "rpImageCropMeta",
+        "rpImageCropZoomInput",
+        "rpImageCropZoomValue",
+        "cancelRpImageCropButton",
+        "applyRpImageCropButton",
+        "characterCardList"
+      ),
       characterSettingsPanel: query("#characterOverlay .card-pane"),
-      characterCardNameInput: byId("characterCardNameInput"),
-      characterCardIsWorldCardInput: byId("characterCardIsWorldCardInput"),
-      characterCardDescriptionLabelText: byId("characterCardDescriptionLabelText"),
-      characterCardDescriptionModeSelect: byId("characterCardDescriptionModeSelect"),
-      characterCardDescriptionInput: byId("characterCardDescriptionInput"),
-      characterCardFirstMessageInput: byId("characterCardFirstMessageInput"),
-      talkGroupMembersField: byId("talkGroupMembersField"),
-      talkGroupMembersTitle: byId("talkGroupMembersTitle"),
-      talkGroupMembersHint: byId("talkGroupMembersHint"),
-      talkGroupMembersList: byId("talkGroupMembersList"),
-      talkGroupMembersLimitNotice: byId("talkGroupMembersLimitNotice"),
-      openTalkGroupMemberOverlayButton: byId("openTalkGroupMemberOverlayButton"),
-      talkGroupMemberCandidateList: byId("talkGroupMemberCandidateList"),
-      characterNewButton: byId("characterNewButton"),
-      characterNewGroupButton: byId("characterNewGroupButton"),
-      characterImportButton: byId("characterImportButton"),
-      characterSaveButton: byId("characterSaveButton"),
-      characterExportButton: byId("characterExportButton"),
-      characterImageButton: byId("characterImageButton"),
-      characterImageClearButton: byId("characterImageClearButton"),
-      characterDeleteButton: byId("characterDeleteButton"),
-      characterProfileImageInput: byId("characterProfileImageInput"),
-      characterCardImportInput: byId("characterCardImportInput"),
-      personaCardList: byId("personaCardList"),
+      ...getElementsById(
+        "characterCardNameInput",
+        "characterCardIsWorldCardInput",
+        "characterCardDescriptionLabelText",
+        "characterCardDescriptionModeSelect",
+        "characterCardDescriptionInput",
+        "characterCardFirstMessageInput",
+        "talkGroupMembersField",
+        "talkGroupMembersTitle",
+        "talkGroupMembersHint",
+        "talkGroupMembersList",
+        "talkGroupMembersLimitNotice",
+        "openTalkGroupMemberOverlayButton",
+        "talkGroupMemberCandidateList",
+        "characterNewButton",
+        "characterNewGroupButton",
+        "characterImportButton",
+        "characterSaveButton",
+        "characterExportButton",
+        "characterImageButton",
+        "characterImageClearButton",
+        "characterDeleteButton",
+        "characterProfileImageInput",
+        "characterCardImportInput",
+        "personaCardList"
+      ),
       personaSettingsPanel: query("#personaOverlay .card-pane"),
-      personaCardNameInput: byId("personaCardNameInput"),
-      personaCardDescriptionInput: byId("personaCardDescriptionInput"),
-      personaNewButton: byId("personaNewButton"),
-      personaImportButton: byId("personaImportButton"),
-      personaSaveButton: byId("personaSaveButton"),
-      personaExportButton: byId("personaExportButton"),
-      personaImageButton: byId("personaImageButton"),
-      personaImageClearButton: byId("personaImageClearButton"),
-      personaDeleteButton: byId("personaDeleteButton"),
-      personaProfileImageInput: byId("personaProfileImageInput"),
-      personaCardImportInput: byId("personaCardImportInput")
+      ...getElementsById(
+        "personaCardNameInput",
+        "personaCardDescriptionInput",
+        "personaNewButton",
+        "personaImportButton",
+        "personaSaveButton",
+        "personaExportButton",
+        "personaImageButton",
+        "personaImageClearButton",
+        "personaDeleteButton",
+        "personaProfileImageInput",
+        "personaCardImportInput"
+      ),
     };
     let state = structuredClone(DEFAULT_APP_STATE);
     let isSending = false;
@@ -4766,6 +4793,9 @@
     let persistStateTimerId = 0;
     let persistStateInFlight = Promise.resolve();
     let isStatePersistWriteInFlight = false;
+    let queuedStatePersistWrites = 0;
+    let statePersistFailed = false;
+    let stateLoadFailed = false;
     let pendingInactiveChatUnloadRequested = false;
     let rpImageCropState = null;
     let streamingMessageRenderFrameId = 0;
@@ -4824,9 +4854,8 @@
         state = await loadState();
         syncPersistedChatRecordIds(state);
       } catch (error) {
-        console.error("Init failed", error);
-        state = structuredClone(DEFAULT_APP_STATE);
-        syncPersistedChatRecordIds(state);
+        handleStateLoadFailure(error);
+        return;
       }
       claimPrimaryTab({ skipActivation: true });
       if (isPrimaryTab) {
@@ -4842,6 +4871,9 @@
       if (isPrimaryTab) {
         await ensureCurrentActiveChatLoaded();
         renderAll({ persist: false });
+        if (statePersistFailed) {
+          persistState();
+        }
       }
       setSettingsOverlayTab(activeSettingsTab);
       observeComposerLayout();
@@ -5148,13 +5180,21 @@
     async function loadState() {
       const legacyRecord = readLegacyLocalStorageState();
       const legacyState = legacyRecord?.state || null;
+      const persistLoadedState = async (loadedState) => {
+        const committed = await writeStoredState(cloneStateForPersistence(loadedState));
+        if (!committed) {
+          statePersistFailed = true;
+          pendingStatePersistRequested = true;
+          setChatStatus(t("stateSaveFailed"), "error");
+        }
+      };
       if (!supportsIndexedDb()) {
         return legacyState || structuredClone(DEFAULT_APP_STATE);
       }
       try {
         if (legacyRecord?.pending) {
           await hydrateSettingsSecrets(legacyState);
-          await writeStoredState(cloneStateForPersistence(legacyState));
+          await persistLoadedState(legacyState);
           return legacyState;
         }
         const storedState = await readStateFromIndexedDb();
@@ -5162,22 +5202,25 @@
           const normalizedState = normalizeStoredAppState(storedState);
           const secretHydration = await hydrateSettingsSecrets(normalizedState);
           if (secretHydration.hadPlaintextSecrets || !isSplitChatStorageState(storedState)) {
-            await writeStoredState(cloneStateForPersistence(normalizedState));
+            await persistLoadedState(normalizedState);
+          } else {
+            localStorage.removeItem(APP_STORAGE_KEY);
           }
-          localStorage.removeItem(APP_STORAGE_KEY);
           return normalizedState;
         }
         if (legacyState) {
           await hydrateSettingsSecrets(legacyState);
-          await writeStoredState(cloneStateForPersistence(legacyState));
-          localStorage.removeItem(APP_STORAGE_KEY);
+          await persistLoadedState(legacyState);
           return legacyState;
         }
       } catch (error) {
         console.error("IDB load failed", error);
         if (legacyState) {
+          statePersistFailed = true;
+          pendingStatePersistRequested = true;
           return legacyState;
         }
+        throw error;
       }
       const defaultState = structuredClone(DEFAULT_APP_STATE);
       await hydrateSettingsSecrets(defaultState);
@@ -5411,14 +5454,14 @@
       if (!preset || typeof preset !== "object") {
         return null;
       }
-      const name = typeof preset.name === "string" ? preset.name.trim() : "";
+      const name = stringOrEmpty(preset.name).trim();
       if (!name) {
         return null;
       }
       return {
         id: typeof preset.id === "string" && preset.id ? preset.id : createId("prompt-preset"),
         name,
-        prompt: typeof preset.prompt === "string" ? preset.prompt : "",
+        prompt: stringOrEmpty(preset.prompt),
         updatedAt: typeof preset.updatedAt === "string" ? preset.updatedAt : nowIso()
       };
     }
@@ -5570,12 +5613,12 @@
         id: typeof card.id === "string" && card.id ? card.id : createId(`${kind}-card`),
         kind,
         name: typeof card.name === "string" && card.name.trim() ? card.name.trim() : t("newKindName", { kind: label }),
-        description: typeof card.description === "string" ? card.description : "",
-        firstMessage: kind === "character" && typeof card.firstMessage === "string" ? card.firstMessage : "",
+        description: stringOrEmpty(card.description),
+        firstMessage: kind === "character" && stringOrEmpty(card.firstMessage),
         isWorldCard: isGroupChat ? false : isWorldCard,
         isGroupChat,
         groupMembers: isGroupChat ? normalizeTalkGroupMembers(card.groupMembers, { excludeId: card.id }) : [],
-        mainCharacterDescription: !isGroupChat && isWorldCard && typeof card.mainCharacterDescription === "string" ? card.mainCharacterDescription : "",
+        mainCharacterDescription: !isGroupChat && isWorldCard && stringOrEmpty(card.mainCharacterDescription),
         profileImage: normalizeCardProfileImage(card.profileImage),
         createdAt: typeof card.createdAt === "string" ? card.createdAt : nowIso(),
         updatedAt: typeof card.updatedAt === "string" ? card.updatedAt : nowIso()
@@ -5748,7 +5791,7 @@
     async function writeIndexedDbRecord(recordKey, value) {
       const db = await openStateDatabase();
       return new Promise((resolve, reject) => {
-        const transaction = db.transaction(APP_DB_STORE, "readwrite");
+        const transaction = createDurableWriteTransaction(db);
         transaction.oncomplete = () => resolve();
         transaction.onerror = () => reject(transaction.error || new Error("IndexedDB 데이터를 저장하지 못했습니다."));
         transaction.onabort = () => reject(transaction.error || new Error("IndexedDB 저장이 중단되었습니다."));
@@ -5773,7 +5816,15 @@
       return records.length;
     }
     function createIndexedDbStateWritePlan(snapshot) {
-      const metadataState = snapshot;
+      const cloneChatList = (chats) => (isArray(chats) ? chats : []).map((chat) => ({ ...chat }));
+      const metadataState = { ...snapshot, chats: cloneChatList(snapshot.chats) };
+      for (const mode of ["rp", "talk"]) {
+        metadataState[mode] = {
+          ...snapshot[mode],
+          chatsByCharacterId: Object.fromEntries(Object.entries(snapshot[mode]?.chatsByCharacterId || {})
+            .map(([id, chats]) => [id, cloneChatList(chats)]))
+        };
+      }
       const chatIds = new Set();
       const chatRecords = [];
       getAllStateChats(metadataState).forEach((chat) => {
@@ -5855,22 +5906,53 @@
     async function detachImageAttachmentsMedia(attachments) {
       return Promise.all(normalizeImageAttachments(attachments).map(detachImageAttachmentMedia));
     }
-    async function writeStoredState(snapshot) {
+    function createDurableWriteTransaction(db) {
+      try {
+        return db.transaction(APP_DB_STORE, "readwrite", { durability: "strict" });
+      } catch (error) {
+        if (error.name !== "TypeError") {
+          throw error;
+        }
+        return db.transaction(APP_DB_STORE, "readwrite");
+      }
+    }
+    async function writeStoredState(snapshot, pendingSnapshot = readPendingStateSnapshot()) {
       if (supportsIndexedDb()) {
         try {
           const { metadataState, chatIds, chatRecords } = createIndexedDbStateWritePlan(snapshot);
-          await writeIndexedDbRecord(APP_DB_RECORD_KEY, metadataState);
           const deletedChatIds = [...persistedChatRecordIds].filter((chatId) => !chatIds.has(chatId));
-          await Promise.all(deletedChatIds.map((chatId) => deleteIndexedDbRecord(`${APP_CHAT_RECORD_PREFIX}${chatId}`)));
-          await Promise.all(chatRecords.map((record) => writeIndexedDbRecord(record.key, record.value)));
+          const db = await openStateDatabase();
+          await new Promise((resolve, reject) => {
+            const transaction = createDurableWriteTransaction(db);
+            transaction.oncomplete = () => resolve();
+            transaction.onerror = transaction.onabort = () => reject(transaction.error || new Error(t("stateSaveFailed")));
+            try {
+              const store = transaction.objectStore(APP_DB_STORE);
+              store.put(metadataState, APP_DB_RECORD_KEY);
+              deletedChatIds.forEach((chatId) => store.delete(`${APP_CHAT_RECORD_PREFIX}${chatId}`));
+              chatRecords.forEach((record) => store.put(record.value, record.key));
+            } catch (error) {
+              transaction.abort();
+              reject(error);
+            }
+          });
           persistedChatRecordIds = chatIds;
-          localStorage.removeItem(APP_STORAGE_KEY);
-          return;
+          try {
+            if (readPendingStateSnapshot() === pendingSnapshot) {
+              localStorage.removeItem(APP_STORAGE_KEY);
+            }
+          } catch (error) {
+            console.warn("Pending snapshot cleanup failed", error);
+          }
+          return true;
         } catch (error) {
           console.error("IDB write failed", error);
         }
       }
-      writePendingStateSnapshot(snapshot);
+      if (readPendingStateSnapshot() === pendingSnapshot) {
+        writePendingStateSnapshot(snapshot);
+      }
+      return false;
     }
     function cloneStateForPersistence(nextState) {
       let snapshot;
@@ -5967,7 +6049,7 @@
     }
     async function collectReferencedMediaIdsForStoredChat(chatOrId, mediaIds = new Set()) {
       const chat = typeof chatOrId === "string" ? findChatById(chatOrId) : chatOrId;
-      const chatId = chat?.id || (typeof chatOrId === "string" ? chatOrId : "");
+      const chatId = chat?.id || (stringOrEmpty(chatOrId));
       if (chat?.messagesLoaded !== false || !supportsIndexedDb() || !chatId) {
         return collectReferencedMediaIdsFromMessages(chat?.messages, mediaIds);
       }
@@ -6232,7 +6314,7 @@
       });
     }
     function hasPendingStatePersistWork() {
-      return pendingStatePersistRequested || Boolean(persistStateTimerId) || isStatePersistWriteInFlight;
+      return pendingStatePersistRequested || Boolean(persistStateTimerId) || isStatePersistWriteInFlight || queuedStatePersistWrites > 0 || statePersistFailed;
     }
     function requestInactiveChatUnload() {
       pendingInactiveChatUnloadRequested = true;
@@ -6246,6 +6328,9 @@
       unloadInactiveChatMessages();
     }
     function writeLegacyEmergencyStateSnapshot() {
+      if (!isPrimaryTab) {
+        return;
+      }
       try {
         writePendingStateSnapshot(cloneStateForPersistence(state));
       } catch (error) {
@@ -6254,6 +6339,13 @@
     }
     function writePendingStateSnapshot(snapshot) {
       storeJson(APP_STORAGE_KEY, { format: APP_STORAGE_ENVELOPE_FORMAT, state: snapshot });
+    }
+    function readPendingStateSnapshot() {
+      try {
+        return localStorage.getItem(APP_STORAGE_KEY);
+      } catch {
+        return null;
+      }
     }
     function storeJson(key, value) {
       localStorage.setItem(key, toJson(value));
@@ -6286,18 +6378,30 @@
       }
       const shouldPersist = pendingStatePersistRequested;
       pendingStatePersistRequested = false;
+      if (!isPrimaryTab) {
+        return;
+      }
       if (!shouldPersist) {
         flushPendingInactiveChatUnload();
         return;
       }
       const snapshot = cloneStateForPersistence(state);
+      const pendingSnapshot = readPendingStateSnapshot();
+      queuedStatePersistWrites += 1;
       persistStateInFlight = persistStateInFlight
         .catch(() => {})
         .then(async () => {
+          if (!isPrimaryTab) {
+            return;
+          }
           isStatePersistWriteInFlight = true;
           const indexedDbMediaGcCandidateIds = new Set(pendingIndexedDbMediaGcCandidateIds);
-          pendingIndexedDbMediaGcCandidateIds.clear();
-          await writeStoredState(snapshot);
+          const storedInIndexedDb = await writeStoredState(snapshot, pendingSnapshot);
+          if (!storedInIndexedDb && supportsIndexedDb()) {
+            throw new Error(t("stateSaveFailed"));
+          }
+          statePersistFailed = false;
+          indexedDbMediaGcCandidateIds.forEach((id) => pendingIndexedDbMediaGcCandidateIds.delete(id));
           if (indexedDbMediaGcCandidateIds.size) {
             try {
               await garbageCollectIndexedDbMedia(indexedDbMediaGcCandidateIds);
@@ -6309,12 +6413,18 @@
         })
         .catch((error) => {
           console.error("Persist failed", error);
+          if (!statePersistFailed) {
+            setChatStatus(t("stateSaveFailed"), "error");
+          }
+          statePersistFailed = true;
+          pendingStatePersistRequested = true;
         })
         .finally(() => {
+          queuedStatePersistWrites -= 1;
           isStatePersistWriteInFlight = false;
           flushPendingInactiveChatUnload();
-          if (pendingStatePersistRequested && !persistStateTimerId) {
-            persistStateTimerId = setTimeout(flushPendingStatePersist, getPersistStateDebounceMs());
+          if (isPrimaryTab && pendingStatePersistRequested && !persistStateTimerId) {
+            persistStateTimerId = setTimeout(flushPendingStatePersist, statePersistFailed ? 2000 : getPersistStateDebounceMs());
           }
         });
     }
@@ -6340,13 +6450,13 @@
       return {
         id: typeof chat.id === "string" && chat.id ? chat.id : createId("chat"),
         title: typeof chat.title === "string" && chat.title.trim() ? chat.title.trim() : suggestChatTitle(messages),
-        authorsNote: typeof chat.authorsNote === "string" ? chat.authorsNote : "",
-        rpSummary: typeof chat.rpSummary === "string" ? chat.rpSummary : "",
+        authorsNote: stringOrEmpty(chat.authorsNote),
+        rpSummary: stringOrEmpty(chat.rpSummary),
         rpSummaryUpdatedMessageCount: normalizeOptionalInteger(chat.rpSummaryUpdatedMessageCount, { min: 0 }) ?? 0,
-        rpSceneState: typeof chat.rpSceneState === "string" ? chat.rpSceneState : "",
+        rpSceneState: stringOrEmpty(chat.rpSceneState),
         autoTitleGenerated: Boolean(chat.autoTitleGenerated),
         titleManuallyEdited: Boolean(chat.titleManuallyEdited),
-        characterCardId: typeof chat.characterCardId === "string" ? chat.characterCardId : "",
+        characterCardId: stringOrEmpty(chat.characterCardId),
         chatMode,
         createdAt: typeof chat.createdAt === "string" ? chat.createdAt : nowIso(),
         updatedAt: typeof chat.updatedAt === "string" ? chat.updatedAt : nowIso(),
@@ -6363,7 +6473,7 @@
             id: typeof message.id === "string" && message.id ? message.id : createId("msg"),
             role: ["system", "user", "assistant"].includes(message.role) ? message.role : "assistant",
             content: message.content,
-            reasoningContent: typeof message.reasoningContent === "string" ? message.reasoningContent : "",
+            reasoningContent: stringOrEmpty(message.reasoningContent),
             attachments: normalizeImageAttachments(message.attachments),
             documents: normalizeDocumentAttachments(message.documents),
             generatedDocument: normalizeGeneratedDocument(message.generatedDocument),
@@ -6372,11 +6482,11 @@
             isThinking: Boolean(message.isThinking),
             isFirstMessage: Boolean(message.isFirstMessage),
             illustration: normalizeMessageIllustration(message.illustration),
-            rpSceneState: typeof message.rpSceneState === "string" ? message.rpSceneState : "",
+            rpSceneState: stringOrEmpty(message.rpSceneState),
             responseTokens: normalizeOptionalInteger(message.responseTokens, { min: 0 }),
             contextTokens: normalizeOptionalInteger(message.contextTokens, { min: 0 }),
-            characterCardId: typeof message.characterCardId === "string" ? message.characterCardId : "",
-            personaCardId: typeof message.personaCardId === "string" ? message.personaCardId : ""
+            characterCardId: stringOrEmpty(message.characterCardId),
+            personaCardId: stringOrEmpty(message.personaCardId)
           }))
         : [];
     }
@@ -6417,12 +6527,16 @@
       chat.messagesLoaded = false;
     }
     function unloadInactiveChatMessages() {
+      if (hasPendingStatePersistWork()) {
+        pendingInactiveChatUnloadRequested = true;
+        return;
+      }
       const activeChatId = getCurrentActiveChatId();
       if (!persistedChatRecordIds.size) {
         return;
       }
       getAllStateChats().forEach((chat) => {
-        if (chat.id !== activeChatId) {
+        if (chat.id !== activeChatId && persistedChatRecordIds.has(chat.id)) {
           unloadChatMessages(chat);
         }
       });
@@ -6438,6 +6552,10 @@
         return chat;
       }
       if (!supportsIndexedDb()) {
+        if (getChatMessageCount(chat) > 0) {
+          setChatStatus(t("chatHistoryLoadFailed"), "error");
+          throw new Error(t("chatHistoryLoadFailed"));
+        }
         chat.messages = normalizeChatMessagesForMode(isArray(chat.messages) ? chat.messages : [], chat.chatMode);
         chat.messagesLoaded = true;
         syncChatMessageCount(chat);
@@ -6449,10 +6567,18 @@
       }
       const loadPromise = readChatMessagesFromIndexedDb(chat.id)
         .then((record) => {
+          if ((record && !isArray(record.messages))
+            || (getChatMessageCount(chat) > 0 && !record?.messages?.length)) {
+            throw new Error(t("chatHistoryLoadFailed"));
+          }
           chat.messages = normalizeChatMessagesForMode(normalizeStoredChatMessages(record?.messages), chat.chatMode);
           chat.messagesLoaded = true;
           chat.messageCount = chat.messages.length;
           return chat;
+        })
+        .catch((error) => {
+          setChatStatus(t("chatHistoryLoadFailed"), "error");
+          throw error;
         })
         .finally(() => {
           chatMessageLoadPromises.delete(chat.id);
@@ -6483,9 +6609,9 @@
       const status = ["generating", "complete", "error"].includes(illustration.status) ? illustration.status : (image ? "complete" : "generating");
       return {
         status,
-        prompt: typeof illustration.prompt === "string" ? illustration.prompt : "",
+        prompt: stringOrEmpty(illustration.prompt),
         image,
-        error: typeof illustration.error === "string" ? illustration.error : "",
+        error: stringOrEmpty(illustration.error),
         createdAt: typeof illustration.createdAt === "string" ? illustration.createdAt : nowIso(),
         updatedAt: typeof illustration.updatedAt === "string" ? illustration.updatedAt : nowIso()
       };
@@ -6512,6 +6638,9 @@
       return Number.isFinite(heartbeatAt) && Date.now() - heartbeatAt < TAB_LOCK_TTL_MS;
     }
     function claimPrimaryTab(options = {}) {
+      if (stateLoadFailed) {
+        return false;
+      }
       const lockRecord = readTabLockRecord();
       if (!options.force && lockRecord && lockRecord.tabId !== tabSessionId && isFreshTabLock(lockRecord)) {
         setPrimaryTabState(false);
@@ -6537,12 +6666,20 @@
       return claimed;
     }
     async function activatePrimaryTab() {
+      if (stateLoadFailed) {
+        return;
+      }
       const wasPrimary = isPrimaryTab;
       setPrimaryTabState(true);
       if (wasPrimary) {
         return;
       }
-      state = await loadState();
+      try {
+        state = await loadState();
+      } catch (error) {
+        handleStateLoadFailure(error);
+        return;
+      }
       syncPersistedChatRecordIds(state);
       ensureInitialChat();
       populateSettingsForm();
@@ -6555,11 +6692,21 @@
       }
     }
     function setPrimaryTabState(nextValue) {
-      isPrimaryTab = nextValue;
+      isPrimaryTab = nextValue && !stateLoadFailed;
       if (nextValue) {
         clearPendingTabLockProbe();
       }
       renderTabLockState();
+    }
+    function handleStateLoadFailure(error) {
+      console.error("State load failed", error);
+      stateLoadFailed = true;
+      clearPendingTabLockProbe();
+      if (tabLockIntervalId) {
+        window.clearInterval(tabLockIntervalId);
+        tabLockIntervalId = 0;
+      }
+      setPrimaryTabState(false);
     }
     function renderTabLockState() {
       const isLocked = !isPrimaryTab;
@@ -6569,7 +6716,8 @@
       if (isLocked) {
         elements.appShell.setAttribute("inert", "");
         elements.appShell.setAttribute("aria-hidden", "true");
-        elements.tabLockWarningMessage.textContent = t("tabLockMessage");
+        elements.tabLockWarningTitle.textContent = t(stateLoadFailed ? "stateLoadFailedTitle" : "tabLockTitle");
+        elements.tabLockWarningMessage.textContent = t(stateLoadFailed ? "stateLoadFailed" : "tabLockMessage");
         return;
       }
       elements.appShell.removeAttribute("inert");
@@ -6674,7 +6822,12 @@
       }
     }
     async function refreshStateFromStorage() {
-      state = await loadState();
+      try {
+        state = await loadState();
+      } catch (error) {
+        handleStateLoadFailure(error);
+        return;
+      }
       syncPersistedChatRecordIds(state);
       populateSettingsForm();
       syncChatSelection();
@@ -6682,6 +6835,9 @@
       if (isPrimaryTab) {
         await ensureCurrentActiveChatLoaded();
         renderAll({ persist: false });
+        if (statePersistFailed) {
+          persistState();
+        }
       }
     }
     function handleStorageSync(event) {
@@ -6741,7 +6897,7 @@
     }
     function createChatRecord(options = {}) {
       const createdAt = nowIso();
-      const characterCardId = typeof options.characterCardId === "string" ? options.characterCardId : "";
+      const characterCardId = stringOrEmpty(options.characterCardId);
       const chatMode = options.chatMode === "talk" ? "talk" : (characterCardId ? "rp" : "chat");
       const ownerState = chatMode === "talk" ? state.talk : state.rp;
       const existingRpChats = characterCardId ? ownerState?.chatsByCharacterId?.[characterCardId] : null;
@@ -6780,7 +6936,7 @@
         status: "complete",
         isThinking: false,
         isFirstMessage: true,
-        characterCardId: typeof characterCardId === "string" ? characterCardId : "",
+        characterCardId: stringOrEmpty(characterCardId),
         personaCardId: ""
       };
     }
@@ -9957,6 +10113,9 @@
     async function flushStateBeforeFullBackup() {
       persistStateNow();
       await persistStateInFlight;
+      if (statePersistFailed) {
+        throw new Error(t("stateSaveFailed"));
+      }
     }
     function createBackupZipPath(prefix, id) {
       return `${prefix}/${encodeURIComponent(id)}.json`;
@@ -13519,10 +13678,10 @@
         return null;
       }
       return {
-        archiveBase64: typeof epub.archiveBase64 === "string" ? epub.archiveBase64 : "",
+        archiveBase64: stringOrEmpty(epub.archiveBase64),
         packagePath: normalizePosixPath(epub.packagePath),
-        title: typeof epub.title === "string" ? epub.title.trim() : "",
-        language: typeof epub.language === "string" ? epub.language.trim() : "",
+        title: stringOrEmpty(epub.title).trim(),
+        language: stringOrEmpty(epub.language).trim(),
         textEntries
       };
     }
@@ -13542,11 +13701,11 @@
         title: typeof generatedDocument.title === "string" && generatedDocument.title
           ? generatedDocument.title
           : "document",
-        sourceMessageId: typeof generatedDocument.sourceMessageId === "string" ? generatedDocument.sourceMessageId : "",
-        sourceDocumentId: typeof generatedDocument.sourceDocumentId === "string" ? generatedDocument.sourceDocumentId : "",
-        rawContent: typeof generatedDocument.rawContent === "string" ? generatedDocument.rawContent : "",
+        sourceMessageId: stringOrEmpty(generatedDocument.sourceMessageId),
+        sourceDocumentId: stringOrEmpty(generatedDocument.sourceDocumentId),
+        rawContent: stringOrEmpty(generatedDocument.rawContent),
         epubTemplate: normalizeEpubTemplate(generatedDocument.epubTemplate),
-        archiveBase64: typeof generatedDocument.archiveBase64 === "string" ? generatedDocument.archiveBase64 : ""
+        archiveBase64: stringOrEmpty(generatedDocument.archiveBase64)
       };
     }
     function normalizeDocumentAttachments(attachments) {
@@ -13646,7 +13805,8 @@
       };
     }
     async function extractEpubTemplate(file) {
-      const zip = await getZipLibrary("documentLibraryMissing").loadAsync(await file.arrayBuffer());
+      const arrayBuffer = await file.arrayBuffer();
+      const zip = await getZipLibrary("documentLibraryMissing").loadAsync(arrayBuffer);
       const parser = typeof DOMParser === "function" ? new DOMParser() : null;
       if (!parser) {
         throw missingResponseError();
@@ -15663,6 +15823,9 @@
       const value = trimmed(dataUrl);
       const match = value.match(/^data:[^;,]+;base64,(.+)$/i);
       return match?.[1] || "";
+    }
+    function stringOrEmpty(value) {
+      return typeof value === "string" ? value : "";
     }
     function trimmed(value) {
       return String(value || "").trim();
