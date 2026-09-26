@@ -2776,7 +2776,7 @@
             <section class="brand">
               <a class="brand-mark-link" href="https://github.com/furabyss/FocusAbove" target="_blank" rel="noopener noreferrer"><div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#icon-brand"></use></svg><span>FocusAbove</span></div></a>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.10.2, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.10.3, ⓒ 2026 Fur-Abyss</p>
             </section>
             <div class="settings-tab-strip" role="tablist">
               <button id="settingsGeneralTabButton" type="button" class="settings-tab-button active" role="tab" aria-selected="true" aria-controls="settingsGeneralPanel"></button>
@@ -5062,6 +5062,7 @@
       elements.messageInput.addEventListener("keydown", handleComposerKeydown);
       elements.imageUploadInput.addEventListener("change", handleImageUploadSelection);
       elements.documentUploadInput.addEventListener("change", handleDocumentUploadSelection);
+      ["dragover", "drop"].forEach((type) => elements.messageInput.addEventListener(type, handleComposerFileDrop));
       bindRpCardEditorEvents("character", getRpCardEditorEventConfig("character"));
       bindInputActions([
         [elements.characterCardDescriptionInput, updateCharacterCardDescriptionDraft]
@@ -7498,23 +7499,14 @@
     }
     function setSettingsOverlayTab(nextTab, options = {}) {
       activeSettingsTab = ["model", "illustration", "tts"].includes(nextTab) ? nextTab : "general";
-      const isGeneral = activeSettingsTab === "general";
-      const isModel = activeSettingsTab === "model";
-      const isIllustration = activeSettingsTab === "illustration";
-      const isTts = activeSettingsTab === "tts";
       elements.settingsIllustrationTabButton.hidden = false;
-      elements.settingsGeneralTabButton.classList.toggle("active", isGeneral);
-      elements.settingsGeneralTabButton.setAttribute("aria-selected", isGeneral ? "true" : "false");
-      elements.settingsGeneralPanel.hidden = !isGeneral;
-      elements.settingsModelTabButton.classList.toggle("active", isModel);
-      elements.settingsModelTabButton.setAttribute("aria-selected", isModel ? "true" : "false");
-      elements.settingsModelPanel.hidden = !isModel;
-      elements.settingsIllustrationTabButton.classList.toggle("active", isIllustration);
-      elements.settingsIllustrationTabButton.setAttribute("aria-selected", isIllustration ? "true" : "false");
-      elements.settingsIllustrationPanel.hidden = !isIllustration;
-      elements.settingsTtsTabButton.classList.toggle("active", isTts);
-      elements.settingsTtsTabButton.setAttribute("aria-selected", isTts ? "true" : "false");
-      elements.settingsTtsPanel.hidden = !isTts;
+      ["General", "Model", "Illustration", "Tts"].forEach((name) => {
+        const selected = activeSettingsTab === name.toLowerCase();
+        const button = elements[`settings${name}TabButton`];
+        button.classList.toggle("active", selected);
+        button.setAttribute("aria-selected", selected ? "true" : "false");
+        elements[`settings${name}Panel`].hidden = !selected;
+      });
       if (options.resetScroll !== false) {
         resetSettingsOverlayScroll();
       }
@@ -13552,50 +13544,59 @@
     function normalizeMessageEditorValue(value) {
       return String(value || "").replace(/\r\n?/g, "\n");
     }
-    async function handleImageUploadSelection(event) {
-      const files = Array.from(event.target.files || []);
-      if (!files.length) {
-        return;
-      }
-      try {
-        files.forEach(validateImageUploadFile);
-        const currentPendingBytes = sumImageAttachmentBytes(pendingImageAttachments);
-        const nextAttachments = await Promise.all(files.map(readImageAttachmentFile));
-        const nextBytes = sumImageAttachmentBytes(nextAttachments);
-        if (currentPendingBytes + nextBytes > MAX_PENDING_IMAGE_BYTES) {
-          throw new Error(t("imageSizeLimitExceeded", { bytes: formatByteSize(MAX_PENDING_IMAGE_BYTES) }));
-        }
-        pendingImageAttachments.push(...nextAttachments);
-        renderComposer();
-        setChatStatus(t("imagesAttached", { count: nextAttachments.length }), "success");
-      } catch (error) {
-        console.error("Image attach failed", error);
-        setChatStatus(t("imageAttachFailed", { error: error.message }), "error");
-      } finally {
-        elements.imageUploadInput.value = "";
-      }
+    function canAttachComposerFiles(image = true) {
+      return isPrimaryTab && !isSending
+        && !elements.messageInput.matches(":disabled, [readonly]")
+        && !elements.messageInput.closest("[inert]")
+        && (image || !isRpLikeModeActive());
     }
-    async function handleDocumentUploadSelection(event) {
-      const files = Array.from(event.target.files || []);
-      if (!files.length) {
+    async function handleComposerFileDrop(event) {
+      const transfer = event.dataTransfer;
+      if (!transfer?.types.includes("Files")) {
         return;
       }
+      event.preventDefault();
+      transfer.dropEffect = canAttachComposerFiles() ? "copy" : "none";
+      if (event.type !== "drop" || !canAttachComposerFiles()) {
+        return;
+      }
+      const files = Array.from(transfer.files);
+      const images = files.filter((file) => /^image\//i.test(file.type));
+      const documents = canAttachComposerFiles(false) ? files.filter((file) => !images.includes(file) && getDocumentKind(file)) : [];
+      await attachComposerFiles(images, true);
+      await attachComposerFiles(documents, false);
+    }
+    function handleImageUploadSelection(event) {
+      return attachComposerFiles(event.target.files, true);
+    }
+    function handleDocumentUploadSelection(event) {
+      return attachComposerFiles(event.target.files, false);
+    }
+    async function attachComposerFiles(fileList, image) {
+      const files = Array.from(fileList || []);
+      if (!files.length || !canAttachComposerFiles(image)) {
+        return;
+      }
+      const limit = image ? MAX_PENDING_IMAGE_BYTES : MAX_PENDING_DOCUMENT_BYTES;
+      const sumBytes = image ? sumImageAttachmentBytes : sumDocumentAttachmentBytes;
       try {
-        files.forEach(validateDocumentUploadFile);
-        const currentPendingBytes = sumDocumentAttachmentBytes(pendingDocumentAttachments);
-        const nextAttachments = await Promise.all(files.map(readDocumentAttachmentFile));
-        const nextBytes = sumDocumentAttachmentBytes(nextAttachments);
-        if (currentPendingBytes + nextBytes > MAX_PENDING_DOCUMENT_BYTES) {
-          throw new Error(t("documentTooLarge", { bytes: formatByteSize(MAX_PENDING_DOCUMENT_BYTES) }));
+        files.forEach(image ? validateImageUploadFile : validateDocumentUploadFile);
+        const nextAttachments = await Promise.all(files.map(image ? readImageAttachmentFile : readDocumentAttachmentFile));
+        if (!canAttachComposerFiles(image)) {
+          return;
         }
-        pendingDocumentAttachments.push(...nextAttachments);
+        const pending = image ? pendingImageAttachments : pendingDocumentAttachments;
+        if (sumBytes(pending) + sumBytes(nextAttachments) > limit) {
+          throw new Error(t(image ? "imageSizeLimitExceeded" : "documentTooLarge", { bytes: formatByteSize(limit) }));
+        }
+        pending.push(...nextAttachments);
         renderComposer();
-        setChatStatus(t("documentsAttached", { count: nextAttachments.length }), "success");
+        setChatStatus(t(image ? "imagesAttached" : "documentsAttached", { count: nextAttachments.length }), "success");
       } catch (error) {
-        console.error("Document attach failed", error);
-        setChatStatus(t("documentAttachFailed", { error: error.message }), "error");
+        console.error("File attach failed", error);
+        setChatStatus(t(image ? "imageAttachFailed" : "documentAttachFailed", { error: error.message }), "error");
       } finally {
-        elements.documentUploadInput.value = "";
+        (image ? elements.imageUploadInput : elements.documentUploadInput).value = "";
       }
     }
     function removePendingImageAttachment(attachmentId) {
