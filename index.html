@@ -2779,7 +2779,7 @@ background: #2a1917;
             <section class="brand">
               <a class="brand-mark-link" href="https://github.com/furabyss/FocusAbove" target="_blank" rel="noopener noreferrer"><div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#icon-brand"></use></svg><span>FocusAbove</span></div></a>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.11.0, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.11.1, ⓒ 2026 Fur-Abyss</p>
             </section>
             <div class="settings-tab-strip" role="tablist">
               <button id="settingsGeneralTabButton" type="button" class="settings-tab-button active" role="tab" aria-selected="true" aria-controls="settingsGeneralPanel"></button>
@@ -2852,6 +2852,9 @@ background: #2a1917;
                   </label>
                   <label class="inline-checkbox" for="smoothStreamingInput">
                     <input id="smoothStreamingInput" name="smoothStreaming" type="checkbox">
+                  </label>
+                  <label class="inline-checkbox" for="responseSoundInput">
+                    <input id="responseSoundInput" name="responseSound" type="checkbox">
                   </label>
                   <label class="inline-checkbox" for="autoContinueInput">
                     <input id="autoContinueInput" name="autoContinue" type="checkbox">
@@ -3644,6 +3647,7 @@ background: #2a1917;
         languageKo: "한국어",
         languageEn: "English",
         smoothStreaming: "부드러운 응답 스트리밍(성능 영향 있음)",
+        responseSound: "응답 완료·오류 알림음",
         autoContinue: "응답이 토큰 제한으로 잘리면 자동으로 이어 쓰기",
         autoContinuingResponse: "응답이 길이 제한으로 끊겨 이어 쓰는 중입니다.",
         autoContinueInstruction: "방금 응답이 출력 토큰 제한으로 중간에 끊겼습니다. 직전 내용 다음부터 같은 형식과 톤을 유지한 채 이어서 작성하세요. 이미 쓴 내용은 다시 시작하거나 요약하거나 반복하지 말고, 이어지는 내용만 출력하세요.",
@@ -4044,6 +4048,7 @@ background: #2a1917;
         languageKo: "Korean",
         languageEn: "English",
         smoothStreaming: "Smooth streaming",
+        responseSound: "Response completion and error sounds",
         autoContinue: "Automatically continue when output hits the token limit",
         autoContinuingResponse: "The response hit the token limit, continuing automatically.",
         autoContinueInstruction: "Your previous response was cut off by the output token limit. Continue exactly from where you stopped, keeping the same format and tone. Do not restart, summarize, or repeat prior text. Output only the continuation.",
@@ -4419,6 +4424,7 @@ background: #2a1917;
         themeMode: "system",
         smoothStreaming: true,
         autoContinue: false,
+        responseSound: false,
         conversationSummary: { summaryEnabled: false, summaryTokenThreshold: 20000, summaryMaxTokens: 1000 },
         chatT2iEnabled: false,
         talkT2iEnabled: false,
@@ -4581,6 +4587,7 @@ background: #2a1917;
       settingsIllustrationSectionTitle: query("#settingsIllustrationPanel .section-title"),
       settingsTtsSectionTitle: byId("settingsTtsSectionTitle"),
       smoothStreamingLabel: query('label.inline-checkbox[for="smoothStreamingInput"]'),
+      responseSoundLabel: query('label.inline-checkbox[for="responseSoundInput"]'),
       autoContinueLabel: query('label.inline-checkbox[for="autoContinueInput"]'),
       backupIncludeSecretsLabel: query('label.inline-checkbox[for="backupIncludeSecretsInput"]'),
       rpSummaryEnabledLabel: query('label.inline-checkbox[for="rpSummaryEnabledInput"]'),
@@ -4612,7 +4619,7 @@ background: #2a1917;
         "themeModeSelect",
         "languageSelect",
         "smoothStreamingInput",
-        "autoContinueInput",
+        "autoContinueInput", "responseSoundInput",
         "rpAssistanceFields",
         "rpSummaryEnabledInput",
         "conversationSummaryDetailsRow",
@@ -4774,6 +4781,7 @@ background: #2a1917;
       ),
     };
     let state = structuredClone(DEFAULT_APP_STATE);
+    let responseAudioContext = null;
     let isSending = false;
     let isRefreshingModels = false;
     let isRefreshingImageModels = false;
@@ -5299,6 +5307,7 @@ background: #2a1917;
         themeMode: normalizeThemeMode(parsed?.settings?.themeMode),
         smoothStreaming,
         autoContinue,
+        responseSound: parsed?.settings?.responseSound === true,
         conversationSummary: normalizeConversationSummarySettings(parsed?.settings?.conversationSummary ?? parsed?.rp?.assistance),
         chatT2iEnabled: typeof parsed?.settings?.chatT2iEnabled === "boolean"
           ? parsed.settings.chatT2iEnabled
@@ -7564,6 +7573,7 @@ background: #2a1917;
       elements.languageSelect.value = normalizeAppLanguage(state.settings.language);
       elements.smoothStreamingInput.checked = state.settings.smoothStreaming !== false;
       elements.autoContinueInput.checked = state.settings.autoContinue === true;
+      elements.responseSoundInput.checked = state.settings.responseSound === true;
       elements.settingsRpSectionGroup.hidden = !isRpModeActive();
       elements.settingsTalkSectionGroup.hidden = !isTalkModeActive();
       elements.talkGroupUnlimitedInput.checked = state.settings.talkGroupUnlimited === true;
@@ -8831,6 +8841,8 @@ background: #2a1917;
       state.settings.themeMode = normalizeThemeMode(elements.themeModeSelect.value);
       state.settings.smoothStreaming = elements.smoothStreamingInput.checked;
       state.settings.autoContinue = elements.autoContinueInput.checked;
+      state.settings.responseSound = elements.responseSoundInput.checked;
+      prepareResponseSound();
       state.settings.conversationSummary = normalizeConversationSummarySettings({
         summaryEnabled: elements.rpSummaryEnabledInput.checked,
         summaryTokenThreshold: elements.rpSummaryTokenThresholdInput.value,
@@ -8863,7 +8875,7 @@ background: #2a1917;
         "apiBaseUrl", "apiKey", "imageApiBaseUrl", "imageApiKey",
         "ttsEnabled", "ttsUseLlmApi", "ttsApiBaseUrl", "ttsApiKey", "ttsModel", "ttsVoice",
         "ttsCustomVoiceEnabled", "ttsTemperature", "ttsChunkLength", "ttsAudioProfile", "ttsProfilePresetId", "ttsProfilePresets",
-        "userAlias", "modelAlias", "chatTone", "language", "themeMode", "smoothStreaming", "autoContinue",
+        "userAlias", "modelAlias", "chatTone", "language", "themeMode", "smoothStreaming", "autoContinue", "responseSound",
         "chatT2iEnabled", "talkT2iEnabled", "talkGroupUnlimited"
       ].forEach((key) => {
         state.settings[key] = nextDefaultSettings[key];
@@ -10993,8 +11005,39 @@ background: #2a1917;
       }
       setChatStatus(message, tone);
     }
+    function prepareResponseSound() {
+      if (!state.settings.responseSound) return;
+      try {
+        responseAudioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+        if (responseAudioContext.state === "suspended") void responseAudioContext.resume().catch(() => {});
+      } catch {}
+    }
+    function playResponseSound(outcome) {
+      const context = responseAudioContext;
+      if (!state.settings.responseSound || context?.state !== "running" || !["success", "error"].includes(outcome)) return;
+      try {
+        const error = outcome === "error";
+        (error ? [220] : [660, 880]).forEach((frequency, index) => {
+          const oscillator = context.createOscillator();
+          const gain = context.createGain();
+          const start = context.currentTime + index * 0.12;
+          const end = start + (error ? 0.24 : 0.22);
+          oscillator.type = error ? "triangle" : "sine";
+          oscillator.frequency.setValueAtTime(frequency, start);
+          if (error) oscillator.frequency.exponentialRampToValueAtTime(165, end);
+          gain.gain.setValueAtTime(0, start);
+          gain.gain.linearRampToValueAtTime(0.07, start + 0.012);
+          gain.gain.exponentialRampToValueAtTime(0.001, end);
+          oscillator.connect(gain).connect(context.destination);
+          oscillator.onended = () => { oscillator.disconnect(); gain.disconnect(); };
+          oscillator.start(start);
+          oscillator.stop(end);
+        });
+      } catch {}
+    }
     async function handleSendMessage(event) {
       event.preventDefault();
+      prepareResponseSound();
       if (isSending) {
         stopAssistantResponse();
         return;
@@ -11132,6 +11175,7 @@ background: #2a1917;
         return;
       }
       activeTalkGroupResponseChatId = chat.id;
+      let groupOutcome = "";
       refreshActiveMessageMetaActions();
       renderComposerControls();
       try {
@@ -11143,15 +11187,19 @@ background: #2a1917;
           if (currentRequestAbortController?.signal?.aborted) {
             break;
           }
-          await requestAssistantResponse(chat, {
+          const outcome = await requestAssistantResponse(chat, {
             ...options,
+            suppressResponseSound: true,
             sourceMessages: chat.messages,
             characterCardId: member.characterId
           });
-          if (!isSending && currentRequestAbortController === null) {
-            continue;
+          if (outcome === "aborted") {
+            groupOutcome = "";
+            break;
           }
+          if (groupOutcome !== "error") groupOutcome = outcome;
         }
+        playResponseSound(groupOutcome);
       } finally {
         if (activeTalkGroupResponseChatId === chat.id) {
           activeTalkGroupResponseChatId = "";
@@ -11388,6 +11436,7 @@ background: #2a1917;
       currentRequestAbortController.abort();
     }
     async function rerollAssistantResponse(messageId) {
+      prepareResponseSound();
       if (isSending) {
         return;
       }
@@ -11514,6 +11563,7 @@ background: #2a1917;
       const requestStatusRunId = postResponseStatusRunId + 1;
       postResponseStatusRunId = requestStatusRunId;
       const requestAbortController = new AbortController();
+      let responseOutcome = "error";
       const rawSourceMessages = (isArray(options.sourceMessages)
         ? options.sourceMessages
         : isArray(chat?.messages) ? chat.messages : []).slice();
@@ -11590,6 +11640,7 @@ background: #2a1917;
             break;
           }
         }
+        requestAbortController.signal.throwIfAborted();
         assistantMessage.status = "complete";
         assistantMessage.isThinking = false;
         assistantMessage.generatedDocument = await createGeneratedDocumentMetadata(sourceMessages, assistantMessage);
@@ -11601,6 +11652,8 @@ background: #2a1917;
         persistState();
         replaceMessageArticleDom(chat, assistantMessage, { scrollToBottom: true });
         renderChatList();
+        responseOutcome = "success";
+        if (!options.suppressResponseSound) playResponseSound(responseOutcome);
         void finalizePostResponseAuxiliaryTasks(chat, assistantMessage, {
           ...options,
           chatT2iPrompt,
@@ -11608,9 +11661,11 @@ background: #2a1917;
         }, requestStatusRunId);
       } catch (error) {
         if (isAbortError(error)) {
+          responseOutcome = "aborted";
           finalizeAbortedAssistantMessage(chat, assistantMessage);
           setChatStatus(t("responseStopped"), "success");
         } else {
+          if (!options.suppressResponseSound) playResponseSound("error");
           console.error("Stream failed", error);
           const hasVisibleContent = assistantMessage.content.trim() && !isStreamingThinkingPlaceholder(assistantMessage.content);
           assistantMessage.isThinking = false;
@@ -11638,6 +11693,7 @@ background: #2a1917;
         refreshActiveMessageMetaActions();
         persistState();
       }
+      return responseOutcome;
     }
     function shouldGenerateIllustrationForResponse(chat, assistantMessage) {
       if (!chat || !assistantMessage || assistantMessage.role !== "assistant" || assistantMessage.status !== "complete") {
@@ -16374,6 +16430,7 @@ background: #2a1917;
       applyElementTranslationBindings([
         ["leading", "smoothStreamingLabel", "smoothStreaming"],
         ["leading", "autoContinueLabel", "autoContinue"],
+        ["leading", "responseSoundLabel", "responseSound"],
         ["leading", "backupIncludeSecretsLabel", "backupIncludeSecrets"],
         ["leading", "rpSummaryEnabledLabel", "rpSummaryEnabled"],
         ["leading", "rpInputEnhancementEnabledLabel", "rpInputEnhancementEnabled"],
