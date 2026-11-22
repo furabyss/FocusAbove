@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A simple frontend for your own local LLM.">
   <title>FocusAbove</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='8' y='8' width='48' height='48' rx='14' fill='%23a34b1f'/%3E%3Ccircle cx='32' cy='32' r='13' fill='none' stroke='%23fff7ee' stroke-width='6'/%3E%3Ccircle cx='46' cy='18' r='3' fill='%23fff7ee' fill-opacity='0.9'/%3E%3C/svg%3E">
   <style>
@@ -2754,7 +2755,7 @@ background: #2a1917;
     <div class="status-toast-layer" aria-live="polite" aria-atomic="true">
       <div id="chatStatusToast" class="status-toast" aria-hidden="true"></div>
     </div>
-    <div id="authorsNoteOverlay" class="overlay-shell" aria-hidden="true">
+    <div id="authorsNoteOverlay" class="overlay-shell" data-nosnippet aria-hidden="true">
       <aside class="panel overlay-panel" role="dialog" aria-modal="true" aria-labelledby="authorsNoteOverlayTitle">
         <div class="panel-inner">
           <div class="overlay-header" data-overlay-title-id="authorsNoteOverlayTitle" data-overlay-close-id="closeAuthorsNoteOverlayButton"></div>
@@ -2771,7 +2772,7 @@ background: #2a1917;
         </div>
       </aside>
     </div>
-    <div id="settingsOverlay" class="overlay-shell" aria-hidden="true">
+    <div id="settingsOverlay" class="overlay-shell" data-nosnippet aria-hidden="true">
       <aside class="panel overlay-panel" role="dialog" aria-modal="true" aria-labelledby="settingsOverlayTitle">
         <div class="panel-inner">
           <div class="overlay-header" data-overlay-title-id="settingsOverlayTitle" data-overlay-close-id="closeSettingsOverlayButton"></div>
@@ -2779,7 +2780,7 @@ background: #2a1917;
             <section class="brand">
               <a class="brand-mark-link" href="https://github.com/furabyss/FocusAbove" target="_blank" rel="noopener noreferrer"><div class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#icon-brand"></use></svg><span>FocusAbove</span></div></a>
               <h1>Simple LLM Frontend</h1>
-              <p>v1.11.1, ⓒ 2026 Fur-Abyss</p>
+              <p>v1.11.2, ⓒ 2026 Fur-Abyss</p>
             </section>
             <div class="settings-tab-strip" role="tablist">
               <button id="settingsGeneralTabButton" type="button" class="settings-tab-button active" role="tab" aria-selected="true" aria-controls="settingsGeneralPanel"></button>
@@ -3111,7 +3112,7 @@ background: #2a1917;
         </div>
       </aside>
     </div>
-    <div id="promptPresetOverlay" class="overlay-shell" aria-hidden="true">
+    <div id="promptPresetOverlay" class="overlay-shell" data-nosnippet aria-hidden="true">
       <aside class="panel overlay-panel" role="dialog" aria-modal="true" aria-labelledby="promptPresetOverlayTitle">
         <div class="panel-inner">
           <div class="overlay-header" data-overlay-title-id="promptPresetOverlayTitle" data-overlay-close-id="closePromptPresetOverlayButton"></div>
@@ -3132,7 +3133,7 @@ background: #2a1917;
         </div>
       </aside>
     </div>
-    <div id="tabsOverlay" class="overlay-shell" aria-hidden="true">
+    <div id="tabsOverlay" class="overlay-shell" data-nosnippet aria-hidden="true">
       <aside class="panel overlay-panel" role="dialog" aria-modal="true" aria-labelledby="tabsOverlayTitle">
         <div class="panel-inner">
           <div class="overlay-header" data-overlay-title-id="tabsOverlayTitle" data-overlay-close-id="closeTabsOverlayButton"></div>
@@ -3149,7 +3150,7 @@ background: #2a1917;
         </div>
       </aside>
     </div>
-    <div id="characterOverlay" class="overlay-shell" aria-hidden="true">
+    <div id="characterOverlay" class="overlay-shell" data-nosnippet aria-hidden="true">
       <aside class="panel overlay-panel" role="dialog" aria-modal="true" aria-labelledby="characterOverlayTitle">
         <div class="panel-inner">
           <div class="overlay-header" data-overlay-title-id="characterOverlayTitle" data-overlay-close-id="closeCharacterOverlayButton"></div>
@@ -3163,7 +3164,7 @@ background: #2a1917;
         </div>
       </aside>
     </div>
-    <div id="personaOverlay" class="overlay-shell" aria-hidden="true">
+    <div id="personaOverlay" class="overlay-shell" data-nosnippet aria-hidden="true">
       <aside class="panel overlay-panel" role="dialog" aria-modal="true" aria-labelledby="personaOverlayTitle">
         <div class="panel-inner">
           <div class="overlay-header" data-overlay-title-id="personaOverlayTitle" data-overlay-close-id="closePersonaOverlayButton"></div>
@@ -3177,7 +3178,7 @@ background: #2a1917;
         </div>
       </aside>
     </div>
-    <div id="talkGroupMemberOverlay" class="overlay-shell" aria-hidden="true">
+    <div id="talkGroupMemberOverlay" class="overlay-shell" data-nosnippet aria-hidden="true">
       <aside class="panel overlay-panel" role="dialog" aria-modal="true" aria-labelledby="talkGroupMemberOverlayTitle">
         <div class="panel-inner">
           <div class="overlay-header" data-overlay-title-id="talkGroupMemberOverlayTitle" data-overlay-close-id="closeTalkGroupMemberOverlayButton"></div>
@@ -3190,7 +3191,7 @@ background: #2a1917;
         </div>
       </aside>
     </div>
-    <div id="imagePreviewOverlay" class="overlay-shell image-preview-overlay media-overlay" aria-hidden="true">
+    <div id="imagePreviewOverlay" class="overlay-shell image-preview-overlay media-overlay" data-nosnippet aria-hidden="true">
       <aside class="panel image-preview-panel media-overlay-panel" role="dialog" aria-modal="true" aria-labelledby="imagePreviewTitle">
         <div class="panel-inner">
           <div class="overlay-header" data-overlay-title-id="imagePreviewTitle" data-overlay-action-id="downloadImagePreviewButton" data-overlay-action-icon="export" data-overlay-close-id="closeImagePreviewButton"></div>
@@ -3201,7 +3202,7 @@ background: #2a1917;
         </div>
       </aside>
     </div>
-    <div id="rpImageCropOverlay" class="overlay-shell image-crop-overlay media-overlay" aria-hidden="true">
+    <div id="rpImageCropOverlay" class="overlay-shell image-crop-overlay media-overlay" data-nosnippet aria-hidden="true">
       <aside class="panel image-crop-panel media-overlay-panel" role="dialog" aria-modal="true" aria-labelledby="rpImageCropTitle">
         <div class="panel-inner">
           <div class="overlay-header" data-overlay-title-id="rpImageCropTitle" data-overlay-close-id="closeRpImageCropButton"></div>
@@ -3227,7 +3228,7 @@ background: #2a1917;
         </div>
       </aside>
     </div>
-    <div id="backupProgressOverlay" class="overlay-shell backup-progress-overlay" aria-hidden="true">
+    <div id="backupProgressOverlay" class="overlay-shell backup-progress-overlay" data-nosnippet aria-hidden="true">
       <aside class="panel backup-progress-panel" role="dialog" aria-modal="true" aria-labelledby="backupProgressTitle">
         <div class="panel-inner">
           <h2 id="backupProgressTitle" class="section-title"></h2>
@@ -3393,8 +3394,7 @@ background: #2a1917;
       return option;
     }
     function createRpCardThumb(card, kind) {
-      const thumb = createElement("div");
-      thumb.className = "card-thumb";
+      const thumb = createDiv("card-thumb");
       if (card.profileImage?.dataUrl || card.profileImage?.mediaId) {
         const image = createElement("img");
         image.alt = card.name;
@@ -4874,9 +4874,6 @@ background: #2a1917;
       }
       claimPrimaryTab({ skipActivation: true });
       if (isPrimaryTab) {
-        void garbageCollectIndexedDbMedia().catch((error) => {
-          console.error("Media sweep failed", error);
-        });
         ensureInitialChat();
       }
       resetAllSettingsDrafts();
@@ -4885,7 +4882,7 @@ background: #2a1917;
       renderAll({ persist: false });
       if (isPrimaryTab) {
         await ensureCurrentActiveChatLoaded();
-        renderAll({ persist: false });
+        renderChatInteractionSections({ persist: false });
         if (statePersistFailed) {
           persistState();
         }
@@ -4895,9 +4892,29 @@ background: #2a1917;
       scheduleComposerLayoutUpdate();
       renderTabLockState();
       startTabLockLoop();
+      scheduleStartupMediaSweep();
       if (isPrimaryTab && state.settings.apiBaseUrl) {
         void refreshModels({ silent: true });
       }
+    }
+    function scheduleStartupMediaSweep() {
+      const run = () => {
+        if (!isPrimaryTab) return;
+        if (isSending || hasPendingStatePersistWork()) {
+          setTimeout(scheduleStartupMediaSweep, 3000);
+          return;
+        }
+        void garbageCollectIndexedDbMedia().catch((error) => {
+          console.error("Media sweep failed", error);
+        });
+      };
+      setTimeout(() => {
+        if (typeof window.requestIdleCallback === "function") {
+          window.requestIdleCallback(run);
+        } else {
+          run();
+        }
+      }, 3000);
     }
     function bindRpCardEditorEvents(kind, config) {
       const clickBindings = [
@@ -4952,31 +4969,11 @@ background: #2a1917;
     function bindEvents() {
       elements.settingsForm.addEventListener("submit", handleSettingsSave);
       bindClickActions([
-        [elements.chatModeButton, () => {
-          void switchAppMode("chat");
-        }],
-        [elements.rpModeButton, () => {
-          void switchAppMode("rp");
-        }],
-        [elements.talkModeButton, () => {
-          void switchAppMode("talk");
-        }],
         [elements.openPromptPresetOverlayButton, openPromptPresetOverlay],
         [elements.authorsNoteButton, openAuthorsNoteOverlay],
-        [elements.closeSettingsOverlayButton, () => closeOverlay(elements.settingsOverlay)],
-        [elements.closePromptPresetOverlayButton, () => closeOverlay(elements.promptPresetOverlay)],
-        [elements.closeAuthorsNoteOverlayButton, () => closeOverlay(elements.authorsNoteOverlay)],
-        [elements.closeTabsOverlayButton, () => closeOverlay(elements.tabsOverlay)],
-        [elements.closeCharacterOverlayButton, () => closeOverlay(elements.characterOverlay)],
-        [elements.closePersonaOverlayButton, () => closeOverlay(elements.personaOverlay)],
-        [elements.closeTalkGroupMemberOverlayButton, () => closeOverlay(elements.talkGroupMemberOverlay)],
         [elements.downloadImagePreviewButton, downloadImagePreview],
         [elements.closeImagePreviewButton, closeImagePreview],
         [elements.closeRpImageCropButton, () => cancelRpImageCrop({ silent: true })],
-        [elements.settingsGeneralTabButton, () => setSettingsOverlayTab("general")],
-        [elements.settingsModelTabButton, () => setSettingsOverlayTab("model")],
-        [elements.settingsIllustrationTabButton, () => setSettingsOverlayTab("illustration")],
-        [elements.settingsTtsTabButton, () => setSettingsOverlayTab("tts")],
         [elements.resetSettingsButton, resetSettingsToDefault],
         [elements.exportFullBackupButton, exportFullBackup],
         [elements.importFullBackupButton, triggerImportFullBackup],
@@ -5000,6 +4997,18 @@ background: #2a1917;
         [elements.cancelRpImageCropButton, () => cancelRpImageCrop({ silent: true })],
         [elements.applyRpImageCropButton, applyRpImageCrop]
       ]);
+      for (const mode of ["chat", "rp", "talk"]) {
+        elements[`${mode}ModeButton`].addEventListener("click", () => {
+          void switchAppMode(mode);
+        });
+      }
+      for (const name of ["Settings", "PromptPreset", "AuthorsNote", "Tabs", "Character", "Persona", "TalkGroupMember"]) {
+        const overlay = elements[`${name[0].toLowerCase()}${name.slice(1)}Overlay`];
+        elements[`close${name}OverlayButton`].addEventListener("click", () => closeOverlay(overlay));
+      }
+      for (const tab of ["General", "Model", "Illustration", "Tts"]) {
+        elements[`settings${tab}TabButton`].addEventListener("click", () => setSettingsOverlayTab(tab.toLowerCase()));
+      }
       bindOverlayOpenAction(elements.openSettingsOverlayButton, elements.settingsOverlay, () => {
         resetModelSettingsDraft();
         populateSettingsForm();
@@ -5011,16 +5020,16 @@ background: #2a1917;
       bindOverlayOpenAction(elements.openTabsOverlayButton, elements.tabsOverlay, () => {
         renderChatList({ includeOverlay: true });
       });
-      bindOverlayOpenAction(elements.openCharacterOverlayButton, elements.characterOverlay, () => {
-        ensureRpModeReady();
-        resetRpCardDraft("character");
-        renderAppSections({ persist: false, rpCards: true, header: true });
-      });
-      bindOverlayOpenAction(elements.openPersonaOverlayButton, elements.personaOverlay, () => {
-        ensureRpModeReady();
-        resetRpCardDraft("persona");
-        renderAppSections({ persist: false, rpCards: true, header: true });
-      });
+      for (const [kind, button, overlay] of [
+        ["character", elements.openCharacterOverlayButton, elements.characterOverlay],
+        ["persona", elements.openPersonaOverlayButton, elements.personaOverlay]
+      ]) {
+        bindOverlayOpenAction(button, overlay, () => {
+          ensureRpModeReady();
+          resetRpCardDraft(kind);
+          renderAppSections({ persist: false, rpCards: true, header: true });
+        });
+      }
       bindOverlayOpenAction(elements.openTalkGroupMemberOverlayButton, elements.talkGroupMemberOverlay, () => {
         renderTalkGroupMemberCandidateList();
       });
@@ -5780,7 +5789,7 @@ background: #2a1917;
         request.onerror = () => reject(request.error || new Error("IndexedDB 데이터를 읽지 못했습니다."));
       });
     }
-    async function readIndexedDbRecordsByKeyPrefix(recordKeyPrefix) {
+    async function readIndexedDbRecordsByKeyPrefix(recordKeyPrefix, options = {}) {
       const db = await openStateDatabase();
       return new Promise((resolve, reject) => {
         const records = [];
@@ -5791,21 +5800,28 @@ background: #2a1917;
         const keyRange = window.IDBKeyRange
           ? window.IDBKeyRange.bound(lowerBound, upperBound)
           : null;
-        const request = keyRange
-          ? store.openCursor(keyRange)
-          : store.openCursor();
+        const request = options.keysOnly
+          ? store.openKeyCursor(keyRange)
+          : store.openCursor(keyRange);
         request.onsuccess = () => {
           const cursor = request.result;
           if (!cursor) {
             resolve(records);
             return;
           }
-          if (!keyRange) {
-            if (typeof cursor.key === "string" && cursor.key.startsWith(lowerBound)) {
-              records.push({ id: cursor.key, value: cursor.value });
+          if (keyRange || (typeof cursor.key === "string" && cursor.key.startsWith(lowerBound))) {
+            const record = { id: cursor.key, value: options.keysOnly ? undefined : cursor.value };
+            if (options.visit) {
+              try {
+                options.visit(record);
+              } catch (error) {
+                reject(error);
+                transaction.abort();
+                return;
+              }
+            } else {
+              records.push(record);
             }
-          } else {
-            records.push({ id: cursor.key, value: cursor.value });
           }
           cursor.continue();
         };
@@ -6099,24 +6115,26 @@ background: #2a1917;
         return 0;
       }
       const candidateIdSet = normalizedCandidateIds ? new Set(normalizedCandidateIds) : null;
-      const [metadataState, chatRecords, mediaRecords] = await Promise.all([
-        readStateFromIndexedDb(),
-        readIndexedDbRecordsByKeyPrefix(APP_CHAT_RECORD_PREFIX),
-        candidateIdSet ? [] : readIndexedDbRecordsByKeyPrefix(APP_MEDIA_RECORD_PREFIX)
-      ]);
-      if (!candidateIdSet && !mediaRecords.length) {
-        return 0;
-      }
+      // Read media keys only; never hydrate image payloads for reference cleanup.
+      const mediaRecords = candidateIdSet ? [] : await readIndexedDbRecordsByKeyPrefix(APP_MEDIA_RECORD_PREFIX, { keysOnly: true });
+      if (!candidateIdSet && !mediaRecords.length) return 0;
       const referencedMediaIds = new Set();
+      const metadataState = await readStateFromIndexedDb();
       forEachStateImageAttachment(metadataState, (attachment) => {
         const mediaId = trimmed(attachment?.mediaId);
         if (mediaId && (!candidateIdSet || candidateIdSet.has(mediaId))) {
           referencedMediaIds.add(mediaId);
         }
       });
-      chatRecords.forEach((record) => {
-        collectReferencedMediaIdsFromMessages(record?.value?.messages, referencedMediaIds, candidateIdSet);
+      // Release each chat after visiting it instead of retaining every conversation.
+      await readIndexedDbRecordsByKeyPrefix(APP_CHAT_RECORD_PREFIX, {
+        visit: (record) => collectReferencedMediaIdsFromMessages(record?.value?.messages, referencedMediaIds, candidateIdSet)
       });
+      // A user may have added a live reference while the asynchronous scan ran.
+      forEachStateImageAttachment(state, (attachment) => {
+        if (attachment?.mediaId) referencedMediaIds.add(attachment.mediaId);
+      });
+      if (!isPrimaryTab) return 0;
       const staleRecordKeys = candidateIdSet
         ? normalizedCandidateIds.filter((mediaId) => !referencedMediaIds.has(mediaId)).map((mediaId) => `${APP_MEDIA_RECORD_PREFIX}${mediaId}`)
         : mediaRecords
@@ -6170,6 +6188,16 @@ background: #2a1917;
     }
     function hasAnySettingsSecret(secrets) {
       return Boolean(String(secrets?.apiKey || "") || String(secrets?.imageApiKey || "") || String(secrets?.ttsApiKey || ""));
+    }
+    async function trySaveSettingsSecrets(errorLabel) {
+      try {
+        await saveSettingsSecretsFromState();
+        return true;
+      } catch (error) {
+        console.error(errorLabel, error);
+        setChatStatus(t("secretStorageFailed", { error: error.message }), "error");
+        return false;
+      }
     }
     async function saveSettingsSecretsFromState() {
       if (!supportsSettingsSecretStorage()) {
@@ -7833,8 +7861,7 @@ background: #2a1917;
       return [
         normalizeAppLanguage(state.settings.language),
         state.settings.talkGroupUnlimited === true ? "group-unlimited" : "group-limited",
-        draft?.cardId || "",
-        toJson(draft?.groupMembers || []),
+        state.activeMode,
         getRpCardCollection(kind)
           .map((card) => [card.id, card.updatedAt || "", card.name || "", card.profileImage?.id || "", card.isGroupChat ? "group" : "", toJson(card.groupMembers || [])].join(":"))
           .join("|")
@@ -7867,6 +7894,9 @@ background: #2a1917;
           listElement.appendChild(button);
         });
         rpCardListRenderSignatures[kind] = listSignature;
+      }
+      for (const button of listElement.children) {
+        button.classList.toggle("active", button.dataset.cardId === draft.cardId);
       }
       nameInput.value = draft.name || "";
       if (isCharacter) {
@@ -8023,9 +8053,12 @@ background: #2a1917;
         rpLikeState.activePersonaId = cardId;
       }
       resetRpCardDraft(kind);
-      renderChatInteractionSections({ persist: false, chatList: kind === "character", modelsPanel: kind === "character", rpCards: true, header: true });
       if (kind === "character") {
+        if (getActiveChat()?.messagesLoaded === false) {
+          renderChatInteractionSections({ persist: false, chatList: true, modelsPanel: true, rpCards: true, header: true });
+        }
         await ensureCurrentActiveChatLoaded();
+        if (getActiveRpLikeState() !== rpLikeState || rpLikeState.activeCharacterId !== cardId) return;
       }
       renderChatInteractionSections({
         chatList: kind === "character",
@@ -8857,11 +8890,7 @@ background: #2a1917;
           inputEnhancementEnabled: elements.rpInputEnhancementEnabledInput.checked
         };
       }
-      try {
-        await saveSettingsSecretsFromState();
-      } catch (error) {
-        console.error("Secret save failed", error);
-        setChatStatus(t("secretStorageFailed", { error: error.message }), "error");
+      if (!await trySaveSettingsSecrets("Secret save failed")) {
         return;
       }
       persistState();
@@ -8890,11 +8919,7 @@ background: #2a1917;
         state.rp.illustration = { ...DEFAULT_RP_ILLUSTRATION_SETTINGS };
         state.rp.assistance = { ...DEFAULT_RP_ASSISTANCE_SETTINGS };
       }
-      try {
-        await saveSettingsSecretsFromState();
-      } catch (error) {
-        console.error("Secret clear failed", error);
-        setChatStatus(t("secretStorageFailed", { error: error.message }), "error");
+      if (!await trySaveSettingsSecrets("Secret clear failed")) {
         return;
       }
       populateSettingsForm();
@@ -8988,11 +9013,7 @@ background: #2a1917;
       elements.ttsChunkLengthInput.value = state.settings.ttsChunkLength;
       state.settings.ttsAudioProfile = elements.ttsAudioProfileInput.value.trim();
       state.settings.ttsProfilePresetId = normalizeTtsProfilePresetId(elements.ttsProfilePresetSelect.value, getCustomTtsProfilePresets());
-      try {
-        await saveSettingsSecretsFromState();
-      } catch (error) {
-        console.error("Secret save failed", error);
-        setChatStatus(t("secretStorageFailed", { error: error.message }), "error");
+      if (!await trySaveSettingsSecrets("Secret save failed")) {
         return;
       }
       persistState();
@@ -9265,8 +9286,7 @@ background: #2a1917;
       setImageElementPlaceholderSource(image);
       if (options.defer) {
         image.hidden = true;
-        const placeholder = createElement("div");
-        placeholder.className = "message-image-placeholder";
+        const placeholder = createDiv("message-image-placeholder");
         placeholder.textContent = t("imageLoading");
         image.before(placeholder);
         const observer = getLazyImageObserver();
@@ -9946,6 +9966,7 @@ background: #2a1917;
         return;
       }
       requestIndexedDbMediaGc(await collectReferencedMediaIdsForStoredChat(chat));
+      const wasActiveChat = getCurrentActiveChatId() === chat.id;
       if (isRpLikeModeActive()) {
         const rpLikeState = getActiveRpLikeState();
         rpLikeState.chatsByCharacterId[rpLikeState.activeCharacterId] = chats.filter((item) => item.id !== chat.id);
@@ -9957,6 +9978,9 @@ background: #2a1917;
       }
       chatTitleDrafts.delete(chat.id);
       ensureInitialChat();
+      if (wasActiveChat) {
+        setCurrentActiveChatId(getSortedCurrentChats()[0].id);
+      }
       syncChatSelection();
       await ensureCurrentActiveChatLoaded();
       renderChatInteractionSections({
@@ -10799,6 +10823,14 @@ background: #2a1917;
       }
       return null;
     }
+    async function fetchApiModels(apiBase, headers) {
+      const response = await fetch(`${apiBase}/models`, { headers });
+      if (!response.ok) {
+        throw createHttpError(response);
+      }
+      const payload = await response.json();
+      return isArray(payload?.data) ? payload.data : [];
+    }
     async function refreshModels(options = {}) {
       if (isRefreshingModels) {
         return;
@@ -10812,14 +10844,7 @@ background: #2a1917;
       elements.refreshModelsButton.disabled = true;
       setModelsStatus("/models 엔드포인트에서 모델 정보를 불러오는 중입니다.", "default", options);
       try {
-        const response = await fetch(`${apiBase}/models`, {
-          headers: buildHeaders()
-        });
-        if (!response.ok) {
-          throw createHttpError(response);
-        }
-        const payload = await response.json();
-        state.models = isArray(payload?.data) ? payload.data : [];
+        state.models = await fetchApiModels(apiBase, buildHeaders());
         state.modelsSyncedAt = nowIso();
         syncSelectedModelWithModels();
         renderAppSections({
@@ -10914,14 +10939,7 @@ background: #2a1917;
       elements.refreshTtsModelsButton.disabled = true;
       setModelsStatus(t("ttsModelsLoading"), "default", options);
       try {
-        const response = await fetch(`${apiBase}/models`, {
-          headers: buildBearerHeaders(ttsApi.key)
-        });
-        if (!response.ok) {
-          throw createHttpError(response);
-        }
-        const payload = await response.json();
-        const responseModels = isArray(payload?.data) ? payload.data : [];
+        const responseModels = await fetchApiModels(apiBase, buildBearerHeaders(ttsApi.key));
         const useLlmApi = elements.ttsUseLlmApiInput.checked;
         state.ttsModels = normalizeImageModelList(useLlmApi
           ? responseModels.filter(isTtsModelCandidate)
@@ -11082,13 +11100,7 @@ background: #2a1917;
         if (activeTalkGroup) {
           await requestTalkGroupResponses(activeChat, lastMessage, { apiBase, selectedModel });
         } else {
-          await requestAssistantResponse(activeChat, {
-            apiBase,
-            selectedModel,
-            sourceMessages: activeChat.messages,
-            notifyMissingAuxiliaryIllustrationModel: shouldNotifyMissingAuxiliaryIllustrationModel(),
-            notifyMissingIllustrationImageApi: shouldNotifyMissingIllustrationImageApi()
-          });
+          await requestSentMessageResponse(activeChat, apiBase, selectedModel);
         }
         return;
       }
@@ -11152,10 +11164,13 @@ background: #2a1917;
         });
         return;
       }
-      await requestAssistantResponse(activeChat, {
+      await requestSentMessageResponse(activeChat, apiBase, selectedModel);
+    }
+    function requestSentMessageResponse(chat, apiBase, selectedModel) {
+      return requestAssistantResponse(chat, {
         apiBase,
         selectedModel,
-        sourceMessages: activeChat.messages,
+        sourceMessages: chat.messages,
         notifyMissingAuxiliaryIllustrationModel: shouldNotifyMissingAuxiliaryIllustrationModel(),
         notifyMissingIllustrationImageApi: shouldNotifyMissingIllustrationImageApi()
       });
@@ -13375,8 +13390,7 @@ background: #2a1917;
         && element.dataset.streamingMode === "plain"
         && nextContent.startsWith(previousContent);
       if (!canAppendTail) {
-        const block = createElement("div");
-        block.className = "message-streaming-text";
+        const block = createDiv("message-streaming-text");
         block.textContent = nextContent;
         element.replaceChildren(block);
       } else if (nextContent.length > previousContent.length) {
